@@ -6,16 +6,32 @@ import Combine
 class ContactManager: ObservableObject {
     private let persistenceManager = PersistenceManager.shared
     private var cancellables = Set<AnyCancellable>()
+    private lazy var firebaseService = FirebaseContactService(contactManager: self)
     
     @Published var contacts: [Contact] = []
     @Published var contactGroups: [ContactGroup] = []
     @Published var isLoading = false
     @Published var error: ContactError?
+    @Published var isSyncing = false
     
     init() {
         loadContacts()
         loadContactGroups()
         createSystemGroupsIfNeeded()
+        setupFirebaseSync()
+    }
+    
+    private func setupFirebaseSync() {
+        // Bind Firebase sync status to local properties
+        firebaseService.$isSyncing
+            .assign(to: \.isSyncing, on: self)
+            .store(in: &cancellables)
+        
+        firebaseService.$syncError
+            .compactMap { $0 }
+            .map { ContactError.syncFailed($0.localizedDescription) }
+            .assign(to: \.error, on: self)
+            .store(in: &cancellables)
     }
     
     // MARK: - Contact CRUD Operations
@@ -30,6 +46,11 @@ class ContactManager: ObservableObject {
         
         // Add activity
         addContactActivity(for: contact.id, type: .contactAdded)
+        
+        // Sync to Firebase
+        Task {
+            try? await firebaseService.syncContactToFirebase(contact)
+        }
     }
     
     func updateContact(_ contact: Contact) {
@@ -46,6 +67,11 @@ class ContactManager: ObservableObject {
                 
                 // Add activity
                 addContactActivity(for: contact.id, type: .contactEdited)
+                
+                // Sync to Firebase
+                Task {
+                    try? await firebaseService.syncContactToFirebase(contact)
+                }
             }
         } catch {
             self.error = .updateFailed(error.localizedDescription)
@@ -63,6 +89,11 @@ class ContactManager: ObservableObject {
                 context.delete(entity)
                 saveContext()
                 loadContacts()
+                
+                // Delete from Firebase
+                Task {
+                    try? await firebaseService.deleteContactFromFirebase(contact)
+                }
             }
         } catch {
             self.error = .deleteFailed(error.localizedDescription)
@@ -216,6 +247,23 @@ class ContactManager: ObservableObject {
         return contacts.filter { $0.tags.contains(tag) }
     }
     
+    // MARK: - Firebase Sync Methods
+    
+    func syncAllContactsToCloud() async {
+        await firebaseService.syncAllContactsToFirebase()
+        await firebaseService.syncContactGroupsToFirebase()
+    }
+    
+    func syncAllContactsFromCloud() async {
+        await firebaseService.syncAllContactsFromFirebase()
+        await firebaseService.syncContactGroupsFromFirebase()
+    }
+    
+    func enableCloudSync() {
+        // Cloud sync is automatically enabled when user is authenticated
+        // Real-time listening is handled by FirebaseContactService
+    }
+    
     // MARK: - Private Helper Methods
     
     private func loadContacts() {
@@ -278,6 +326,7 @@ enum ContactError: LocalizedError {
     case deleteFailed(String)
     case invalidData(String)
     case permissionDenied(String)
+    case syncFailed(String)
     
     var errorDescription: String? {
         switch self {
@@ -293,6 +342,8 @@ enum ContactError: LocalizedError {
             return "Invalid contact data: \(message)"
         case .permissionDenied(let message):
             return "Permission denied: \(message)"
+        case .syncFailed(let message):
+            return "Cloud sync failed: \(message)"
         }
     }
 }

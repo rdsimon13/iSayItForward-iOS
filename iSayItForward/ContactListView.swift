@@ -6,6 +6,7 @@ struct ContactListView: View {
     @State private var showingAddContact = false
     @State private var selectedContact: Contact?
     @State private var showingContactDetail = false
+    @State private var showingSettings = false
     
     private var filteredContacts: [Contact] {
         contactManager.searchContacts(query: searchText)
@@ -28,6 +29,14 @@ struct ContactListView: View {
             .navigationTitle("Contacts")
             .searchable(text: $searchText, prompt: "Search contacts")
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        showingSettings = true
+                    } label: {
+                        Image(systemName: "gear")
+                    }
+                }
+                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Add") {
                         showingAddContact = true
@@ -41,6 +50,9 @@ struct ContactListView: View {
                 if let contact = selectedContact {
                     ContactDetailView(contact: contact, contactManager: contactManager)
                 }
+            }
+            .sheet(isPresented: $showingSettings) {
+                ContactSettingsView(contactManager: contactManager)
             }
             .alert("Error", isPresented: .constant(contactManager.error != nil)) {
                 Button("OK") {
