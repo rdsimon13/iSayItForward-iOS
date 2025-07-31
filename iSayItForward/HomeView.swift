@@ -113,6 +113,8 @@ private struct PromoCard: View {
 
 // MARK: - Main HomeView
 struct HomeView: View {
+    @EnvironmentObject var notificationService: NotificationService
+    
     var body: some View {
         if #available(iOS 16.0, *) {
             TabView {
@@ -130,6 +132,26 @@ struct HomeView: View {
                         Text("Send SIF")
                     }
 
+                // Notifications Tab
+                NotificationCenterView()
+                    .tabItem {
+                        ZStack {
+                            Image(systemName: "bell")
+                            
+                            if notificationService.unreadCount > 0 {
+                                // Badge indicator
+                                Text("\(min(notificationService.unreadCount, 99))")
+                                    .font(.caption2)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.white)
+                                    .frame(minWidth: 16, minHeight: 16)
+                                    .background(Circle().fill(Color.red))
+                                    .offset(x: 8, y: -8)
+                            }
+                        }
+                        Text("Notifications")
+                    }
+
                 TemplateGalleryView()
                     .tabItem {
                         Image(systemName: "doc.on.doc")
@@ -143,6 +165,7 @@ struct HomeView: View {
                     }
             }
             .accentColor(Color.brandDarkBlue)
+            .handleDeepLinks()
         } else {
             Text("Home requires iOS 16.0 or newer.")
                 .multilineTextAlignment(.center)

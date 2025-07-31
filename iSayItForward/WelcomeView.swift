@@ -1,13 +1,12 @@
 import SwiftUI
 
 struct WelcomeView: View {
+    @EnvironmentObject var authService: AuthenticationService
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var showingSignupSheet = false
     @State private var showingAlert = false
     @State private var alertMessage = ""
-    @State private var isLoggedIn = false
-    @State private var currentUser: AppUser?
 
     var body: some View {
         NavigationStack {
@@ -46,8 +45,7 @@ struct WelcomeView: View {
                         .textFieldStyle(PillTextFieldStyle())
 
                     Button("Sign In") {
-                        currentUser = AppUser(uid: "demoUID", name: "Damon Sims", email: email)
-                        isLoggedIn = true
+                        authService.signInDemo(email: email, name: "Damon Sims")
                     }
                     .buttonStyle(SecondaryActionButtonStyle())
 
@@ -85,8 +83,7 @@ struct WelcomeView: View {
                 .padding(.horizontal, 32)
                 .sheet(isPresented: $showingSignupSheet) {
                     SignupView { user in
-                        currentUser = user
-                        isLoggedIn = true
+                        authService.signUpDemo(name: user.name, email: user.email)
                         showingSignupSheet = false
                     }
                 }
@@ -94,7 +91,7 @@ struct WelcomeView: View {
                     Alert(title: Text("Notice"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
                 }
 
-                NavigationLink(destination: HomeView(), isActive: $isLoggedIn) {
+                NavigationLink(destination: HomeView(), isActive: $authService.isAuthenticated) {
                     EmptyView()
                 }
             }
