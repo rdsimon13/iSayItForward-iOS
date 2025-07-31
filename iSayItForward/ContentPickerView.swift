@@ -1,5 +1,6 @@
 import SwiftUI
 import PhotosUI
+import UniformTypeIdentifiers
 
 struct ContentPickerView: View {
     @Binding var selectedContentType: ContentType
