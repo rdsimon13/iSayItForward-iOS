@@ -124,6 +124,12 @@ struct HomeView: View {
                     Text("Home")
                 }
 
+                SIFTimelineView()
+                    .tabItem {
+                        Image(systemName: "list.bullet.rectangle")
+                        Text("Feed")
+                    }
+
                 CreateSIFView()
                     .tabItem {
                         Image(systemName: "square.and.pencil")
