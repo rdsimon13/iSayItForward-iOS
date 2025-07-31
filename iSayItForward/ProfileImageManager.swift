@@ -1,7 +1,11 @@
 import Foundation
 import SwiftUI
 import PhotosUI
+// NOTE: FirebaseStorage needs to be added to Xcode project dependencies
+// Add FirebaseStorage to the Firebase package dependency in Xcode
+#if canImport(FirebaseStorage)
 import FirebaseStorage
+#endif
 import FirebaseAuth
 
 @MainActor
@@ -12,10 +16,17 @@ class ProfileImageManager: ObservableObject {
     @Published var errorMessage: String?
     @Published var uploadProgress: Double = 0.0
     
-    private let storage = Storage.storage()
+    private let storage: Storage?
     private let imageCache = NSCache<NSString, UIImage>()
     
     init() {
+        // Configure storage if available
+        #if canImport(FirebaseStorage)
+        self.storage = Storage.storage()
+        #else
+        self.storage = nil
+        #endif
+        
         // Configure cache
         imageCache.countLimit = 100
         imageCache.totalCostLimit = 50 * 1024 * 1024 // 50MB
@@ -36,6 +47,11 @@ class ProfileImageManager: ObservableObject {
     func uploadProfileImage(_ image: UIImage) async -> String? {
         guard let uid = Auth.auth().currentUser?.uid else {
             errorMessage = "User not authenticated"
+            return nil
+        }
+        
+        guard let storage = storage else {
+            errorMessage = "Firebase Storage not available. Please add FirebaseStorage to project dependencies."
             return nil
         }
         
@@ -168,6 +184,11 @@ class ProfileImageManager: ObservableObject {
     func deleteProfileImage() async -> Bool {
         guard let uid = Auth.auth().currentUser?.uid else {
             errorMessage = "User not authenticated"
+            return false
+        }
+        
+        guard let storage = storage else {
+            errorMessage = "Firebase Storage not available"
             return false
         }
         
