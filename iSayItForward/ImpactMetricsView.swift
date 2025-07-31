@@ -1,5 +1,4 @@
 import SwiftUI
-import Charts
 
 /// View for displaying impact statistics and analytics
 struct ImpactMetricsView: View {

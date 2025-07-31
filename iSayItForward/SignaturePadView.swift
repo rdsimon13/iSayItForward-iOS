@@ -216,9 +216,32 @@ struct SignaturePadView: View {
     }
     
     private func captureSignature() {
-        let renderer = ImageRenderer(content: signatureCanvas)
-        renderer.scale = UIScreen.main.scale
-        capturedImage = renderer.uiImage
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 300, height: 150))
+        capturedImage = renderer.image { context in
+            let cgContext = context.cgContext
+            
+            // White background
+            cgContext.setFillColor(UIColor.white.cgColor)
+            cgContext.fill(CGRect(origin: .zero, size: CGSize(width: 300, height: 150)))
+            
+            // Draw all paths
+            cgContext.setStrokeColor(UIColor(strokeColor).cgColor)
+            cgContext.setLineWidth(lineWidth)
+            cgContext.setLineCap(.round)
+            cgContext.setLineJoin(.round)
+            
+            for path in paths {
+                if let cgPath = path.cgPath as? CGPath {
+                    cgContext.addPath(cgPath)
+                    cgContext.strokePath()
+                }
+            }
+            
+            if !currentPath.isEmpty, let cgPath = currentPath.cgPath as? CGPath {
+                cgContext.addPath(cgPath)
+                cgContext.strokePath()
+            }
+        }
     }
     
     private var signatureCanvas: some View {
