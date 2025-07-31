@@ -14,9 +14,15 @@ struct SIFItem: Identifiable, Codable, Hashable, Equatable {
     let createdDate: Date
     var scheduledDate: Date
     
-    // These properties are placeholders for future features
-    var attachmentURL: String? = nil
+    // Enhanced content support
+    var attachmentURL: String? = nil // Legacy field for backward compatibility
     var templateName: String? = nil
+    
+    // New content management fields
+    var contentItems: [ContentItem] = []
+    var hasAttachments: Bool {
+        return !contentItems.isEmpty
+    }
     
     // Hashable & Equatable conformance for SwiftUI lists
     func hash(into hasher: inout Hasher) {
