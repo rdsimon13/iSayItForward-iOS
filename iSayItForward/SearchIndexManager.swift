@@ -145,12 +145,12 @@ class SearchIndexManager: ObservableObject {
     }
     
     private func indexTemplates() async throws {
-        let templates = TemplateLibrary.allTemplates
+        let templates = TemplateLibrary.templates
         
         for template in templates {
             let content: [String: Any] = [
-                "title": template.title,
-                "content": template.content,
+                "name": template.name,
+                "message": template.message,
                 "category": template.category.rawValue
             ]
             
@@ -219,11 +219,11 @@ class SearchIndexManager: ObservableObject {
             }
             
         case .template:
-            if let title = content["title"] as? String {
-                text += title + " "
+            if let name = content["name"] as? String {
+                text += name + " "
             }
-            if let templateContent = content["content"] as? String {
-                text += templateContent + " "
+            if let message = content["message"] as? String {
+                text += message + " "
             }
             if let category = content["category"] as? String {
                 text += category + " "

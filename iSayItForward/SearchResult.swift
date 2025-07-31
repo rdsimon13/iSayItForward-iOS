@@ -129,9 +129,9 @@ struct SearchResultFactory {
         return SearchResult(
             id: template.id.uuidString,
             type: .template,
-            title: template.title,
+            title: template.name,
             subtitle: template.category.rawValue,
-            description: template.content,
+            description: template.message,
             score: score,
             lastModified: Date(),
             metadata: metadata

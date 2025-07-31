@@ -174,11 +174,11 @@ class SearchService: ObservableObject {
     }
     
     private func searchTemplates(query: String, filters: SearchFilter) async throws -> [SearchResult] {
-        // Since templates are likely stored locally, we'll search through the template library
-        let templates = TemplateLibrary.allTemplates
+        // Search through the template library
+        let templates = TemplateLibrary.templates
         
         let filteredTemplates = templates.filter { template in
-            let searchableText = "\(template.title) \(template.content)".lowercased()
+            let searchableText = "\(template.name) \(template.message)".lowercased()
             let matchesQuery = searchableText.contains(query.lowercased())
             
             // Apply category filter if specified
@@ -293,13 +293,13 @@ class SearchService: ObservableObject {
         let queryLowercased = query.lowercased()
         var score = 0.0
         
-        // Title match
-        if template.title.lowercased().contains(queryLowercased) {
+        // Name match
+        if template.name.lowercased().contains(queryLowercased) {
             score += 3.0
         }
         
-        // Content match
-        if template.content.lowercased().contains(queryLowercased) {
+        // Message content match
+        if template.message.lowercased().contains(queryLowercased) {
             score += 1.0
         }
         
