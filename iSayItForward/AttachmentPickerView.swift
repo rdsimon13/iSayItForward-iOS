@@ -20,6 +20,15 @@ struct AttachmentPickerView: View {
     @State private var showingError = false
     @State private var errorMessage = ""
     
+    // Configuration
+    private let maxAttachments = 10
+    private let maxTotalSize: Int64 = 100 * 1024 * 1024 // 100MB
+    
+    private var canAddMoreAttachments: Bool {
+        attachments.count < maxAttachments && 
+        attachmentManager.totalAttachmentsSize(attachments) < maxTotalSize
+    }
+
     var body: some View {
         VStack(spacing: 16) {
             // Header
@@ -33,8 +42,9 @@ struct AttachmentPickerView: View {
                 Button(action: { showingActionSheet = true }) {
                     Image(systemName: "plus.circle.fill")
                         .font(.title2)
-                        .foregroundColor(.brandYellow)
+                        .foregroundColor(canAddMoreAttachments ? .brandYellow : .gray)
                 }
+                .disabled(!canAddMoreAttachments)
             }
             
             // Processing indicator
@@ -45,6 +55,20 @@ struct AttachmentPickerView: View {
             
             // Attachments grid
             if !attachments.isEmpty {
+                // Summary info
+                HStack {
+                    Text("\(attachments.count) file\(attachments.count == 1 ? "" : "s")")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    Spacer()
+                    
+                    Text("Total: \(attachmentManager.formatTotalSize(attachments))")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .padding(.horizontal, 4)
+                
                 LazyVGrid(columns: [
                     GridItem(.flexible(), spacing: 8),
                     GridItem(.flexible(), spacing: 8),
@@ -133,6 +157,12 @@ struct AttachmentPickerView: View {
     private func processPhotoPickerItems(_ items: [PhotosPickerItem]) {
         guard !items.isEmpty else { return }
         
+        // Check if we can add more attachments
+        if attachments.count + items.count > maxAttachments {
+            showError("Cannot add more than \(maxAttachments) attachments")
+            return
+        }
+        
         isProcessing = true
         processingProgress = 0
         
@@ -149,6 +179,13 @@ struct AttachmentPickerView: View {
                         )
                         
                         await MainActor.run {
+                            // Check total size before adding
+                            let newTotalSize = attachmentManager.totalAttachmentsSize(attachments) + attachment.fileSize
+                            if newTotalSize > maxTotalSize {
+                                showError("Total attachment size would exceed \(ByteCountFormatter.string(fromByteCount: maxTotalSize, countStyle: .file)) limit")
+                                return
+                            }
+                            
                             attachments.append(attachment)
                             processingProgress = Double(index + 1) / totalItems
                         }
@@ -171,6 +208,12 @@ struct AttachmentPickerView: View {
     }
     
     private func processCapturedImage(_ image: UIImage) {
+        // Check if we can add more attachments
+        if attachments.count >= maxAttachments {
+            showError("Cannot add more than \(maxAttachments) attachments")
+            return
+        }
+        
         isProcessing = true
         
         Task {
@@ -183,6 +226,14 @@ struct AttachmentPickerView: View {
                 )
                 
                 await MainActor.run {
+                    // Check total size before adding
+                    let newTotalSize = attachmentManager.totalAttachmentsSize(attachments) + attachment.fileSize
+                    if newTotalSize > maxTotalSize {
+                        showError("Total attachment size would exceed \(ByteCountFormatter.string(fromByteCount: maxTotalSize, countStyle: .file)) limit")
+                        isProcessing = false
+                        return
+                    }
+                    
                     attachments.append(attachment)
                     isProcessing = false
                 }
@@ -200,6 +251,12 @@ struct AttachmentPickerView: View {
     
     private func processDocumentURLs(_ urls: [URL]) {
         guard !urls.isEmpty else { return }
+        
+        // Check if we can add more attachments
+        if attachments.count + urls.count > maxAttachments {
+            showError("Cannot add more than \(maxAttachments) attachments")
+            return
+        }
         
         isProcessing = true
         processingProgress = 0
@@ -223,6 +280,13 @@ struct AttachmentPickerView: View {
                     )
                     
                     await MainActor.run {
+                        // Check total size before adding
+                        let newTotalSize = attachmentManager.totalAttachmentsSize(attachments) + attachment.fileSize
+                        if newTotalSize > maxTotalSize {
+                            showError("Total attachment size would exceed \(ByteCountFormatter.string(fromByteCount: maxTotalSize, countStyle: .file)) limit")
+                            return
+                        }
+                        
                         attachments.append(attachment)
                         processingProgress = Double(index + 1) / totalItems
                     }
@@ -272,6 +336,11 @@ struct AttachmentThumbnailView: View {
     
     @StateObject private var attachmentManager = AttachmentManager.shared
     @State private var thumbnailImage: UIImage?
+    @State private var showingUploadProgress = false
+    
+    var uploadStatus: AttachmentUploadStatus? {
+        attachmentManager.uploadStatuses[attachment.id]
+    }
     
     var body: some View {
         ZStack {
@@ -289,10 +358,15 @@ struct AttachmentThumbnailView: View {
                         .frame(width: 80, height: 60)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                 } else {
-                    Image(systemName: attachment.systemImageName)
-                        .font(.system(size: 24))
-                        .foregroundColor(.brandYellow)
-                        .frame(width: 80, height: 60)
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(attachment.fileType.color.opacity(0.2))
+                            .frame(width: 80, height: 60)
+                        
+                        Image(systemName: attachment.systemImageName)
+                            .font(.system(size: 24))
+                            .foregroundColor(attachment.fileType.color)
+                    }
                 }
                 
                 Text(attachment.originalName)
@@ -303,6 +377,28 @@ struct AttachmentThumbnailView: View {
                 Text(attachment.displaySize)
                     .font(.caption2)
                     .foregroundColor(.gray)
+                
+                // Upload progress indicator
+                if let status = uploadStatus {
+                    switch status {
+                    case .pending:
+                        Image(systemName: "clock")
+                            .font(.caption2)
+                            .foregroundColor(.orange)
+                    case .uploading(let progress):
+                        ProgressView(value: progress)
+                            .progressViewStyle(LinearProgressViewStyle(tint: .brandYellow))
+                            .frame(width: 60)
+                    case .completed:
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.caption2)
+                            .foregroundColor(.green)
+                    case .failed:
+                        Image(systemName: "exclamationmark.circle.fill")
+                            .font(.caption2)
+                            .foregroundColor(.red)
+                    }
+                }
             }
             
             // Delete button
@@ -323,6 +419,14 @@ struct AttachmentThumbnailView: View {
         }
         .onAppear {
             loadThumbnail()
+            
+            // Start upload simulation for demo
+            if attachmentManager.uploadStatuses[attachment.id] == nil {
+                attachmentManager.addToUploadQueue(attachment)
+                Task {
+                    await attachmentManager.simulateUpload(for: attachment)
+                }
+            }
         }
     }
     

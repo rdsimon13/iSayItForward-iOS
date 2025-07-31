@@ -322,4 +322,31 @@ class AttachmentManager: ObservableObject {
         let url = URL(string: thumbnailPath) ?? thumbnailDirectory.appendingPathComponent("thumb_\(attachment.fileName)")
         return fileManager.fileExists(atPath: url.path) ? url : nil
     }
+    
+    // MARK: - Upload Simulation (for demo purposes)
+    func simulateUpload(for attachment: Attachment) async {
+        updateUploadStatus(attachment.id, status: .uploading(progress: 0.0))
+        
+        // Simulate upload progress
+        for progress in stride(from: 0.1, through: 1.0, by: 0.1) {
+            try? await Task.sleep(nanoseconds: UInt64(0.5 * 1_000_000_000)) // 0.5 second delay
+            await MainActor.run {
+                updateUploadStatus(attachment.id, status: .uploading(progress: progress))
+            }
+        }
+        
+        await MainActor.run {
+            updateUploadStatus(attachment.id, status: .completed)
+        }
+    }
+    
+    // MARK: - Utility Methods
+    func totalAttachmentsSize(_ attachments: [Attachment]) -> Int64 {
+        return attachments.reduce(0) { $0 + $1.fileSize }
+    }
+    
+    func formatTotalSize(_ attachments: [Attachment]) -> String {
+        let totalSize = totalAttachmentsSize(attachments)
+        return ByteCountFormatter.string(fromByteCount: totalSize, countStyle: .file)
+    }
 }
