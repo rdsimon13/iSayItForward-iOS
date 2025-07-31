@@ -136,6 +136,14 @@ struct HomeView: View {
                         Text("Templates")
                     }
 
+                NavigationStack {
+                    AddressBookView()
+                }
+                .tabItem {
+                    Image(systemName: "person.crop.rectangle.stack")
+                    Text("Contacts")
+                }
+
                 ProfileView()
                     .tabItem {
                         Image(systemName: "person.crop.circle")
