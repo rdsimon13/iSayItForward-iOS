@@ -1,13 +1,32 @@
 import SwiftUI
 
-// This creates the custom style for our pill-shaped text fields.
+// Modern text field style with improved design
 struct PillTextFieldStyle: TextFieldStyle {
+    let iconName: String?
+    
+    init(iconName: String? = nil) {
+        self.iconName = iconName
+    }
+    
     func _body(configuration: TextField<Self._Label>) -> some View {
-        configuration
-            .padding(.vertical, 12)
-            .padding(.horizontal, 20)
-            .background(.white.opacity(0.8))
-            .clipShape(Capsule()) // This creates the pill shape
-            .shadow(color: .black.opacity(0.1), radius: 2, y: 1)
+        HStack(spacing: 12) {
+            if let iconName = iconName {
+                Image(systemName: iconName)
+                    .foregroundColor(.neutralGray400)
+                    .frame(width: 20)
+            }
+            
+            configuration
+                .font(.system(size: 16, weight: .medium))
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.neutralGray200, lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.05), radius: 2, y: 1)
     }
 }

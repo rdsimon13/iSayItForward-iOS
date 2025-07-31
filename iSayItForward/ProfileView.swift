@@ -1,90 +1,220 @@
 import SwiftUI
 import FirebaseAuth
-import FirebaseFirestore // This was the missing line
+import FirebaseFirestore
 
 struct ProfileView: View {
-    // This now correctly gets the logged-in user's name and email
-    @State private var userName: String = "User"
-    @State private var userEmail: String = "No email found"
-    
+    @StateObject private var subscriptionManager = SubscriptionManager()
+    @State private var showingTierSelection = false
     @State private var showingAlert = false
     @State private var alertMessage = ""
 
     var body: some View {
-        ZStack {
-            Color.mainAppGradient.ignoresSafeArea()
+        NavigationView {
+            ZStack {
+                Color.mainAppGradient.ignoresSafeArea()
 
-            VStack(spacing: 20) {
-                Text("Profile")
-                    .font(.largeTitle.weight(.bold))
-                    .foregroundColor(.white)
-                    .padding(.top)
+                ScrollView {
+                    VStack(spacing: 24) {
+                        // Header
+                        Text("Profile")
+                            .font(.system(size: 32, weight: .bold, design: .rounded))
+                            .foregroundColor(.neutralGray800)
+                            .padding(.top)
 
-                // --- CHANGE IS HERE ---
-                // I've wrapped the avatar in a ZStack and added a background
-                // and border to make it pop.
-                ZStack {
-                    Circle()
-                        .fill(.white.opacity(0.15))
-                        .shadow(radius: 5)
-                    
-                    Image(systemName: "person.crop.circle.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(.white.opacity(0.8))
-                        .padding(15) // Give it some space from the edge
-                }
-                .frame(width: 130, height: 130)
-                .padding(.top, 20)
+                        // User Avatar
+                        ZStack {
+                            Circle()
+                                .fill(Color.white)
+                                .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
+                            
+                            Image(systemName: "person.crop.circle.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .foregroundColor(.brandBlue)
+                                .padding(20)
+                        }
+                        .frame(width: 120, height: 120)
 
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Image(systemName: "person.fill")
-                        Text(userName)
+                        // User Info Card
+                        ModernCard {
+                            VStack(spacing: 16) {
+                                // User details
+                                VStack(alignment: .leading, spacing: 12) {
+                                    HStack {
+                                        Image(systemName: "person.fill")
+                                            .foregroundColor(.brandBlue)
+                                            .frame(width: 20)
+                                        Text(subscriptionManager.currentUser?.name ?? "User")
+                                            .font(.system(size: 16, weight: .semibold))
+                                    }
+                                    
+                                    Divider()
+                                    
+                                    HStack {
+                                        Image(systemName: "envelope.fill")
+                                            .foregroundColor(.brandBlue)
+                                            .frame(width: 20)
+                                        Text(subscriptionManager.currentUser?.email ?? "No email")
+                                            .font(.system(size: 16, weight: .medium))
+                                    }
+                                }
+                                
+                                // Current tier section
+                                VStack(spacing: 12) {
+                                    Divider()
+                                    
+                                    HStack {
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text("Current Plan")
+                                                .font(.system(size: 14, weight: .medium))
+                                                .foregroundColor(.neutralGray600)
+                                            
+                                            if let user = subscriptionManager.currentUser {
+                                                TierBadge(tier: user.effectiveTier, style: .detailed)
+                                            }
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        Button("Manage") {
+                                            showingTierSelection = true
+                                        }
+                                        .buttonStyle(ModernSecondaryButtonStyle())
+                                        .frame(width: 80, height: 32)
+                                    }
+                                }
+                            }
+                            .padding(20)
+                        }
+                        
+                        // Tier benefits card
+                        if let user = subscriptionManager.currentUser {
+                            ModernCard {
+                                VStack(alignment: .leading, spacing: 16) {
+                                    HStack {
+                                        Image(systemName: "star.fill")
+                                            .foregroundColor(.brandGold)
+                                        Text("Your Benefits")
+                                            .font(.system(size: 18, weight: .semibold))
+                                    }
+                                    
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        ForEach(user.effectiveTier.features, id: \.self) { feature in
+                                            HStack(alignment: .top, spacing: 12) {
+                                                Image(systemName: "checkmark.circle.fill")
+                                                    .font(.system(size: 14))
+                                                    .foregroundColor(.successGreen)
+                                                    .frame(width: 16)
+                                                
+                                                Text(feature)
+                                                    .font(.system(size: 14, weight: .medium))
+                                                    .multilineTextAlignment(.leading)
+                                                
+                                                Spacer()
+                                            }
+                                        }
+                                    }
+                                    
+                                    if user.effectiveTier != .pro {
+                                        Button("Upgrade Plan") {
+                                            showingTierSelection = true
+                                        }
+                                        .buttonStyle(ModernPrimaryButtonStyle(
+                                            gradient: Color.tierGradient(for: .pro)
+                                        ))
+                                        .padding(.top, 8)
+                                    }
+                                }
+                                .padding(20)
+                            }
+                        }
+                        
+                        // Usage stats (if available)
+                        if let user = subscriptionManager.currentUser {
+                            ModernCard {
+                                VStack(spacing: 16) {
+                                    HStack {
+                                        Image(systemName: "chart.bar.fill")
+                                            .foregroundColor(.brandBlue)
+                                        Text("Usage Stats")
+                                            .font(.system(size: 18, weight: .semibold))
+                                        Spacer()
+                                    }
+                                    
+                                    VStack(spacing: 12) {
+                                        HStack {
+                                            Text("Data Storage")
+                                                .font(.system(size: 14, weight: .medium))
+                                            Spacer()
+                                            Text(user.effectiveTier.dataLimitMB == -1 ? "Unlimited" : "\(user.effectiveTier.dataLimitMB) MB")
+                                                .font(.system(size: 14, weight: .semibold))
+                                                .foregroundColor(.brandBlue)
+                                        }
+                                        
+                                        HStack {
+                                            Text("Monthly SIFs")
+                                                .font(.system(size: 14, weight: .medium))
+                                            Spacer()
+                                            Text(user.effectiveTier.maxSIFsPerMonth == -1 ? "Unlimited" : "\(user.effectiveTier.maxSIFsPerMonth)")
+                                                .font(.system(size: 14, weight: .semibold))
+                                                .foregroundColor(.brandBlue)
+                                        }
+                                        
+                                        HStack {
+                                            Text("E-Signature")
+                                                .font(.system(size: 14, weight: .medium))
+                                            Spacer()
+                                            Text(user.effectiveTier.allowsESignature ? "Available" : "Not Available")
+                                                .font(.system(size: 14, weight: .semibold))
+                                                .foregroundColor(user.effectiveTier.allowsESignature ? .successGreen : .neutralGray500)
+                                        }
+                                    }
+                                }
+                                .padding(20)
+                            }
+                        }
+
+                        Spacer()
+
+                        // Logout button
+                        Button("Log Out") {
+                            handleLogout()
+                        }
+                        .buttonStyle(ModernSecondaryButtonStyle())
+                        .foregroundColor(.errorRed)
+                        
+                        Spacer(minLength: 40)
                     }
-                    Divider()
-                    HStack {
-                        Image(systemName: "envelope.fill")
-                        Text(userEmail)
-                    }
+                    .padding(.horizontal, 20)
                 }
-                .font(.headline)
-                .padding()
-                .background(.white.opacity(0.85))
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .foregroundColor(Color.brandDarkBlue)
-                .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
-
-                Spacer()
-
-                Button("Log Out") {
-                    do {
-                        try Auth.auth().signOut()
-                    } catch let signOutError as NSError {
-                        self.alertMessage = "Error signing out: \(signOutError.localizedDescription)"
-                        self.showingAlert = true
-                    }
-                }
-                .buttonStyle(PrimaryActionButtonStyle())
             }
-            .padding()
-            .alert(isPresented: $showingAlert) {
-                Alert(title: Text("Logout Error"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+            .navigationBarHidden(true)
+            .sheet(isPresented: $showingTierSelection) {
+                TierSelectionView(isUpgradeFlow: true)
+                    .environmentObject(subscriptionManager)
             }
-            .onAppear(perform: fetchUserData) // Fetch user data when the view appears
+            .alert("Logout Error", isPresented: $showingAlert) {
+                Button("OK") { }
+            } message: {
+                Text(alertMessage)
+            }
+            .onAppear {
+                // Fetch user data when view appears
+                if let uid = Auth.auth().currentUser?.uid {
+                    Task {
+                        await subscriptionManager.fetchUserData(uid: uid)
+                    }
+                }
+            }
         }
     }
     
-    // Fetch user data from Firestore
-    func fetchUserData() {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        
-        let db = Firestore.firestore()
-        db.collection("users").document(uid).getDocument { snapshot, error in
-            if let document = snapshot, document.exists {
-                self.userName = document.data()?["name"] as? String ?? "User"
-                self.userEmail = document.data()?["email"] as? String ?? "No email found"
-            }
+    private func handleLogout() {
+        do {
+            try Auth.auth().signOut()
+        } catch let signOutError as NSError {
+            alertMessage = "Error signing out: \(signOutError.localizedDescription)"
+            showingAlert = true
         }
     }
 }
