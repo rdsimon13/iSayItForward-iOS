@@ -5,35 +5,22 @@ import FirebaseCore
 @main
 struct iSayItForwardApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    @StateObject private var authState = AuthState()
+    @StateObject private var authManager = AuthenticationManager()
 
     var body: some Scene {
         WindowGroup {
             if UIDevice.current.userInterfaceIdiom == .pad {
                 iPadMainView()
-                    .environmentObject(authState)
+                    .environmentObject(authManager)
             } else {
-                WelcomeView() // or ContentView() if you prefer
-                    .environmentObject(authState)
+                if authManager.isAuthenticated {
+                    HomeView()
+                        .environmentObject(authManager)
+                } else {
+                    WelcomeView()
+                        .environmentObject(authManager)
+                }
             }
-        }
-    }
-}
-
-// MARK: - Auth State Observable Object
-class AuthState: ObservableObject {
-    @Published var isUserLoggedIn = false
-    private var authHandle: AuthStateDidChangeListenerHandle?
-
-    init() {
-        authHandle = Auth.auth().addStateDidChangeListener { auth, user in
-            self.isUserLoggedIn = (user != nil)
-        }
-    }
-
-    deinit {
-        if let authHandle = authHandle {
-            Auth.auth().removeStateDidChangeListener(authHandle)
         }
     }
 }
