@@ -2,6 +2,8 @@ import SwiftUI
 
 struct SIFDetailView: View {
     let sif: SIFItem
+    @State private var showingContentPreview = false
+    @State private var selectedContentItem: ContentItem?
 
     var body: some View {
         ZStack {
@@ -37,6 +39,32 @@ struct SIFDetailView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                     .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
 
+                    // Attachments section
+                    if sif.hasAttachments {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Attachments (\(sif.contentItems.count))")
+                                .font(.headline)
+                            
+                            LazyVGrid(columns: [
+                                GridItem(.flexible()),
+                                GridItem(.flexible()),
+                                GridItem(.flexible())
+                            ], spacing: 12) {
+                                ForEach(sif.contentItems) { contentItem in
+                                    AttachmentCard(contentItem: contentItem) {
+                                        selectedContentItem = contentItem
+                                        showingContentPreview = true
+                                    }
+                                }
+                            }
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(.white.opacity(0.85))
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
+                    }
+
                     Spacer()
                 }
                 .padding()
@@ -44,6 +72,85 @@ struct SIFDetailView: View {
             .navigationTitle("SIF Details")
         }
         .foregroundColor(Color.brandDarkBlue)
+        .sheet(isPresented: $showingContentPreview) {
+            if let contentItem = selectedContentItem {
+                ContentPreviewView(contentItem: contentItem)
+            }
+        }
+    }
+}
+
+// Attachment card view
+struct AttachmentCard: View {
+    let contentItem: ContentItem
+    let onTap: () -> Void
+    @State private var thumbnail: UIImage?
+    
+    var body: some View {
+        Button(action: onTap) {
+            VStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color(.systemGray6))
+                    .frame(height: 80)
+                    .overlay(
+                        Group {
+                            if let thumbnail = thumbnail {
+                                Image(uiImage: thumbnail)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .clipped()
+                            } else {
+                                VStack(spacing: 4) {
+                                    Image(systemName: contentItem.mediaType.iconName)
+                                        .font(.title2)
+                                        .foregroundColor(iconColor)
+                                    
+                                    Text(contentItem.mediaType.displayName)
+                                        .font(.caption2)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                        }
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                
+                VStack(spacing: 2) {
+                    Text(contentItem.displayName)
+                        .font(.caption)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                    
+                    Text(contentItem.formattedFileSize)
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+        .buttonStyle(.plain)
+        .onAppear {
+            loadThumbnail()
+        }
+    }
+    
+    private var iconColor: Color {
+        switch contentItem.mediaType {
+        case .photo:
+            return .blue
+        case .video:
+            return .purple
+        case .audio:
+            return .red
+        case .document:
+            return .orange
+        case .text:
+            return .gray
+        }
+    }
+    
+    private func loadThumbnail() {
+        Task {
+            thumbnail = await ContentManager.shared.generateThumbnail(for: contentItem)
+        }
     }
 }
 

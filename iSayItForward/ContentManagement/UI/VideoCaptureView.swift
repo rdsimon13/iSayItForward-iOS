@@ -1,6 +1,7 @@
 import SwiftUI
 import UIKit
 import MobileCoreServices
+import UniformTypeIdentifiers
 
 /// View for capturing videos using the camera
 struct VideoCaptureView: View {
@@ -27,7 +28,13 @@ struct VideoCaptureRepresentable: UIViewControllerRepresentable {
         let picker = UIImagePickerController()
         picker.delegate = context.coordinator
         picker.sourceType = .camera
-        picker.mediaTypes = [UTType.movie.identifier]
+        
+        if #available(iOS 14.0, *) {
+            picker.mediaTypes = [UTType.movie.identifier]
+        } else {
+            picker.mediaTypes = [kUTTypeMovie as String]
+        }
+        
         picker.videoQuality = .typeMedium
         picker.videoMaximumDuration = 300 // 5 minutes max
         return picker

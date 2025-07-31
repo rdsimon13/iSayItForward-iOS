@@ -22,6 +22,10 @@ struct CreateSIFView: View {
     @State private var subject: String = ""
     @State private var message: String = ""
 
+    // Content management
+    @State private var selectedContent: [ContentItem] = []
+    @StateObject private var contentManager = ContentManager.shared
+
     // Scheduling
     @State private var shouldSchedule = false
     @State private var scheduleDate = Date()
@@ -30,6 +34,7 @@ struct CreateSIFView: View {
     @State private var showingAlert = false
     @State private var alertTitle = ""
     @State private var alertMessage = ""
+    @State private var isUploading = false
 
     // Placeholder data for the group picker
     let groups = ["Team", "Family", "Friends"]
@@ -81,6 +86,15 @@ struct CreateSIFView: View {
                             .background(.white.opacity(0.8))
                             .cornerRadius(20)
 
+                        // Media attachments section
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Attachments")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                            
+                            UploadMediaView(selectedContent: $selectedContent)
+                        }
+
                         // Scheduling UI
                         Toggle("Schedule for later", isOn: $shouldSchedule)
                             .tint(Color.brandYellow)
@@ -99,10 +113,22 @@ struct CreateSIFView: View {
                         Spacer()
 
                         // Send Button
-                        Button("Send SIF") {
-                            saveSIF()
+                        Button(action: {
+                            Task {
+                                await saveSIF()
+                            }
+                        }) {
+                            HStack {
+                                if isUploading {
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                        .scaleEffect(0.8)
+                                }
+                                Text(isUploading ? "Uploading..." : "Send SIF")
+                            }
                         }
                         .buttonStyle(PrimaryActionButtonStyle())
+                        .disabled(isUploading)
                         .padding(.top)
                     }
                     .padding()
@@ -117,7 +143,7 @@ struct CreateSIFView: View {
     }
 
     // MARK: - Firestore Logic
-    func saveSIF() {
+    func saveSIF() async {
         guard let authorUid = Auth.auth().currentUser?.uid else {
             showAlert(title: "Error", message: "You must be logged in to send a SIF.")
             return
@@ -141,7 +167,22 @@ struct CreateSIFView: View {
             recipientList = [selectedGroup]
         }
 
-        let newSif = SIFItem(
+        isUploading = true
+
+        // Upload content items first
+        var uploadedContentItems: [ContentItem] = []
+        for contentItem in selectedContent {
+            do {
+                let uploadedItem = try await contentManager.uploadContent(contentItem)
+                uploadedContentItems.append(uploadedItem)
+            } catch {
+                showAlert(title: "Upload Error", message: "Failed to upload \(contentItem.displayName): \(error.localizedDescription)")
+                isUploading = false
+                return
+            }
+        }
+
+        var newSif = SIFItem(
             authorUid: authorUid,
             recipients: recipientList,
             subject: subject,
@@ -149,16 +190,30 @@ struct CreateSIFView: View {
             createdDate: Date(),
             scheduledDate: shouldSchedule ? scheduleDate : Date()
         )
+        
+        // Add uploaded content
+        newSif.contentItems = uploadedContentItems
 
         let db = Firestore.firestore()
         do {
             // The 'from' parameter requires SIFItem to conform to Codable
             try db.collection("sifs").addDocument(from: newSif)
             showAlert(title: "Success!", message: "Your SIF has been saved and is scheduled for delivery.")
-            // You can add code here to clear the form fields if desired
+            
+            // Clear form fields
+            singleRecipient = ""
+            multipleRecipients = ""
+            subject = ""
+            message = ""
+            selectedContent = []
+            shouldSchedule = false
+            scheduleDate = Date()
+            
         } catch let error {
             showAlert(title: "Error", message: "There was an issue saving your SIF: \(error.localizedDescription)")
         }
+        
+        isUploading = false
     }
     
     // Helper function to show alerts

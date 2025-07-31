@@ -88,13 +88,7 @@ struct DocumentUploadView: View {
         .fileImporter(
             isPresented: $showingDocumentPicker,
             allowedContentTypes: [
-                .pdf, .plainText, .rtf,
-                UTType(filenameExtension: "doc") ?? .data,
-                UTType(filenameExtension: "docx") ?? .data,
-                UTType(filenameExtension: "xls") ?? .data,
-                UTType(filenameExtension: "xlsx") ?? .data,
-                UTType(filenameExtension: "ppt") ?? .data,
-                UTType(filenameExtension: "pptx") ?? .data
+                .pdf, .plainText, .rtf, .data
             ],
             allowsMultipleSelection: true
         ) { result in
