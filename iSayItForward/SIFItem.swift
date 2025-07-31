@@ -7,16 +7,22 @@ struct SIFItem: Identifiable, Codable, Hashable, Equatable {
     // This property will automatically be managed by Firestore
     @DocumentID var id: String?
     
-    let authorUid: String
+    var authorUid: String
     var recipients: [String]
     var subject: String
     var message: String
     let createdDate: Date
     var scheduledDate: Date
     
-    // These properties are placeholders for future features
+    // Attachment support
     var attachmentURL: String? = nil
+    var attachmentURLs: [String]? = nil
     var templateName: String? = nil
+    
+    // Privacy controls
+    var isPrivate: Bool = false
+    var allowForwarding: Bool = true
+    var requireReadReceipt: Bool = false
     
     // Hashable & Equatable conformance for SwiftUI lists
     func hash(into hasher: inout Hasher) {
