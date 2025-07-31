@@ -1,7 +1,6 @@
 import Foundation
 import FirebaseAuth
 import FirebaseFirestore
-import FirebaseStorage
 import UIKit
 
 // MARK: - Message Service Protocol
@@ -15,7 +14,6 @@ protocol MessageServiceProtocol {
 @MainActor
 class SIFMessageService: ObservableObject, MessageServiceProtocol {
     private let db = Firestore.firestore()
-    private let storage = Storage.storage()
     
     // MARK: - Message Operations
     
@@ -45,44 +43,19 @@ class SIFMessageService: ObservableObject, MessageServiceProtocol {
     
     // MARK: - Attachment Operations
     
-    /// Uploads an attachment to Firebase Storage and returns the download URL
+    /// Uploads an attachment (placeholder implementation for Firebase Storage)
+    /// TODO: Add FirebaseStorage dependency and implement actual file upload
     func uploadAttachment(_ data: Data, fileName: String) async throws -> String {
-        guard let authorUid = Auth.auth().currentUser?.uid else {
-            throw MessageServiceError.notAuthenticated
-        }
+        // For now, return a placeholder URL
+        // In a real implementation, this would upload to Firebase Storage
+        let placeholderURL = "https://placeholder.com/attachments/\(UUID().uuidString)_\(fileName)"
         
-        let storageRef = storage.reference()
-        let attachmentRef = storageRef.child("attachments/\(authorUid)/\(UUID().uuidString)_\(fileName)")
+        // Simulate upload delay
+        try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
         
-        let metadata = StorageMetadata()
-        metadata.contentType = self.contentType(for: fileName)
-        
-        let _ = try await attachmentRef.putDataAsync(data, metadata: metadata)
-        let downloadURL = try await attachmentRef.downloadURL()
-        
-        return downloadURL.absoluteString
+        return placeholderURL
     }
-    
-    // MARK: - Helper Methods
-    
-    private func contentType(for fileName: String) -> String {
-        let fileExtension = (fileName as NSString).pathExtension.lowercased()
-        
-        switch fileExtension {
-        case "jpg", "jpeg":
-            return "image/jpeg"
-        case "png":
-            return "image/png"
-        case "pdf":
-            return "application/pdf"
-        case "doc":
-            return "application/msword"
-        case "docx":
-            return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        default:
-            return "application/octet-stream"
-        }
-    }
+}
 }
 
 // MARK: - Error Handling
