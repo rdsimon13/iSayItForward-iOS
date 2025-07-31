@@ -58,9 +58,16 @@ extension Tag {
     }
     
     init(name: String, createdBy: String?) {
+        self.id = nil
         self.name = name
         self.normalizedName = Tag.normalize(name)
         self.createdDate = Date()
         self.createdBy = createdBy
+        self.usageCount = 1
+        self.lastUsedDate = Date()
+        self.trendingScore = 0.0
+        self.isVerified = false
+        self.isBlocked = false
+        self.relatedTags = []
     }
 }

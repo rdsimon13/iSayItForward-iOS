@@ -144,19 +144,9 @@ class CategoryService: ObservableObject {
         // Check if tag already exists
         if let existingTag = await findTag(by: normalizedName) {
             // Update usage count
-            let updatedTag = Tag(
-                id: existingTag.id,
-                name: existingTag.name,
-                normalizedName: existingTag.normalizedName,
-                createdDate: existingTag.createdDate,
-                createdBy: existingTag.createdBy,
-                usageCount: existingTag.usageCount + 1,
-                lastUsedDate: Date(),
-                trendingScore: existingTag.trendingScore,
-                isVerified: existingTag.isVerified,
-                isBlocked: existingTag.isBlocked,
-                relatedTags: existingTag.relatedTags
-            )
+            var updatedTag = existingTag
+            updatedTag.usageCount += 1
+            updatedTag.lastUsedDate = Date()
             
             if await updateTag(updatedTag) {
                 return updatedTag

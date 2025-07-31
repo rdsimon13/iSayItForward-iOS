@@ -45,6 +45,7 @@ extension Category {
     static var systemCategories: [Category] {
         [
             Category(
+                id: nil,
                 name: "encouragement",
                 description: "Uplifting and motivational messages",
                 iconName: "heart.fill",
@@ -52,9 +53,15 @@ extension Category {
                 isSystem: true,
                 parentCategoryId: nil,
                 createdDate: Date(),
-                createdBy: nil
+                createdBy: nil,
+                messageCount: 0,
+                subscriberCount: 0,
+                lastUsedDate: nil,
+                isActive: true,
+                sortOrder: 1
             ),
             Category(
+                id: nil,
                 name: "celebration",
                 description: "Birthday, anniversary, and achievement messages",
                 iconName: "party.popper.fill",
@@ -62,9 +69,15 @@ extension Category {
                 isSystem: true,
                 parentCategoryId: nil,
                 createdDate: Date(),
-                createdBy: nil
+                createdBy: nil,
+                messageCount: 0,
+                subscriberCount: 0,
+                lastUsedDate: nil,
+                isActive: true,
+                sortOrder: 2
             ),
             Category(
+                id: nil,
                 name: "sympathy",
                 description: "Condolences and support messages",
                 iconName: "hands.sparkles.fill",
@@ -72,9 +85,15 @@ extension Category {
                 isSystem: true,
                 parentCategoryId: nil,
                 createdDate: Date(),
-                createdBy: nil
+                createdBy: nil,
+                messageCount: 0,
+                subscriberCount: 0,
+                lastUsedDate: nil,
+                isActive: true,
+                sortOrder: 3
             ),
             Category(
+                id: nil,
                 name: "announcement",
                 description: "News, updates, and important information",
                 iconName: "megaphone.fill",
@@ -82,9 +101,15 @@ extension Category {
                 isSystem: true,
                 parentCategoryId: nil,
                 createdDate: Date(),
-                createdBy: nil
+                createdBy: nil,
+                messageCount: 0,
+                subscriberCount: 0,
+                lastUsedDate: nil,
+                isActive: true,
+                sortOrder: 4
             ),
             Category(
+                id: nil,
                 name: "holiday",
                 description: "Seasonal and holiday greetings",
                 iconName: "gift.fill",
@@ -92,9 +117,15 @@ extension Category {
                 isSystem: true,
                 parentCategoryId: nil,
                 createdDate: Date(),
-                createdBy: nil
+                createdBy: nil,
+                messageCount: 0,
+                subscriberCount: 0,
+                lastUsedDate: nil,
+                isActive: true,
+                sortOrder: 5
             ),
             Category(
+                id: nil,
                 name: "gratitude",
                 description: "Thank you and appreciation messages",
                 iconName: "hand.raised.fill",
@@ -102,8 +133,39 @@ extension Category {
                 isSystem: true,
                 parentCategoryId: nil,
                 createdDate: Date(),
-                createdBy: nil
+                createdBy: nil,
+                messageCount: 0,
+                subscriberCount: 0,
+                lastUsedDate: nil,
+                isActive: true,
+                sortOrder: 6
             )
         ]
+    }
+    
+    // MARK: - Convenience Initializers
+    init(
+        name: String,
+        description: String,
+        iconName: String,
+        colorHex: String,
+        isSystem: Bool = false,
+        parentCategoryId: String? = nil,
+        createdBy: String? = nil
+    ) {
+        self.id = nil
+        self.name = name
+        self.description = description
+        self.iconName = iconName
+        self.colorHex = colorHex
+        self.isSystem = isSystem
+        self.parentCategoryId = parentCategoryId
+        self.createdDate = Date()
+        self.createdBy = createdBy
+        self.messageCount = 0
+        self.subscriberCount = 0
+        self.lastUsedDate = nil
+        self.isActive = true
+        self.sortOrder = 0
     }
 }
