@@ -37,6 +37,22 @@ struct SIFDetailView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                     .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
 
+                    // Attachments section
+                    if !sif.attachments.isEmpty {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Attachments (\(sif.attachments.count))")
+                                .font(.headline)
+                            
+                            ForEach(sif.attachments) { attachment in
+                                AttachmentPreviewView(attachment: attachment)
+                            }
+                        }
+                        .padding()
+                        .background(.white.opacity(0.85))
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
+                    }
+
                     Spacer()
                 }
                 .padding()

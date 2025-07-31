@@ -14,9 +14,24 @@ struct SIFItem: Identifiable, Codable, Hashable, Equatable {
     let createdDate: Date
     var scheduledDate: Date
     
+    // Attachment support
+    var attachments: [Attachment] = []
+    
     // These properties are placeholders for future features
-    var attachmentURL: String? = nil
+    var attachmentURL: String? = nil // Legacy field - kept for backward compatibility
     var templateName: String? = nil
+    
+    // Custom initializer to support attachments
+    init(authorUid: String, recipients: [String], subject: String, message: String, 
+         createdDate: Date, scheduledDate: Date, attachments: [Attachment] = []) {
+        self.authorUid = authorUid
+        self.recipients = recipients
+        self.subject = subject
+        self.message = message
+        self.createdDate = createdDate
+        self.scheduledDate = scheduledDate
+        self.attachments = attachments
+    }
     
     // Hashable & Equatable conformance for SwiftUI lists
     func hash(into hasher: inout Hasher) {

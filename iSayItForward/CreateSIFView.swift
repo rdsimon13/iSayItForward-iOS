@@ -21,6 +21,7 @@ struct CreateSIFView: View {
 
     @State private var subject: String = ""
     @State private var message: String = ""
+    @State private var attachments: [Attachment] = []
 
     // Scheduling
     @State private var shouldSchedule = false
@@ -80,6 +81,9 @@ struct CreateSIFView: View {
                             .padding(8)
                             .background(.white.opacity(0.8))
                             .cornerRadius(20)
+
+                        // Attachment picker
+                        AttachmentPickerView(attachments: $attachments)
 
                         // Scheduling UI
                         Toggle("Schedule for later", isOn: $shouldSchedule)
@@ -147,7 +151,8 @@ struct CreateSIFView: View {
             subject: subject,
             message: message,
             createdDate: Date(),
-            scheduledDate: shouldSchedule ? scheduleDate : Date()
+            scheduledDate: shouldSchedule ? scheduleDate : Date(),
+            attachments: attachments
         )
 
         let db = Firestore.firestore()
