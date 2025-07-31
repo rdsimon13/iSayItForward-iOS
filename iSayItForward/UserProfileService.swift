@@ -16,6 +16,13 @@ class UserProfileService: ObservableObject {
             return cachedProfile
         }
         
+        // Handle demo/sample users for testing
+        if SampleDataUtility.isDemoUser(uid) {
+            let profile = SampleDataUtility.sampleUsers.first { $0.uid == uid }!
+            cache[uid] = profile
+            return profile
+        }
+        
         let document = try await db.collection("users").document(uid).getDocument()
         
         guard document.exists, let data = document.data() else {
@@ -42,6 +49,12 @@ class UserProfileService: ObservableObject {
     
     /// Fetch messages/SIFs created by a specific user
     func fetchUserMessages(uid: String, limit: Int = 20, lastDocument: DocumentSnapshot? = nil) async throws -> (messages: [SIFItem], lastDocument: DocumentSnapshot?) {
+        // Handle demo/sample users for testing
+        if SampleDataUtility.isDemoUser(uid) {
+            let messages = SampleDataUtility.sampleMessages(for: uid)
+            return (messages: messages, lastDocument: nil)
+        }
+        
         var query = db.collection("sifs")
             .whereField("authorUid", isEqualTo: uid)
             .whereField("isPublic", isEqualTo: true) // Only fetch public messages
@@ -67,6 +80,11 @@ class UserProfileService: ObservableObject {
     func checkFollowStatus(targetUID: String) async throws -> Bool {
         guard let currentUID = Auth.auth().currentUser?.uid else {
             throw ProfileServiceError.notAuthenticated
+        }
+        
+        // Handle demo users - simulate follow status
+        if SampleDataUtility.isDemoUser(targetUID) {
+            return false // Default to not following for demo
         }
         
         let document = try await db.collection("follows")
