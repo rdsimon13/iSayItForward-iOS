@@ -8,6 +8,8 @@ struct ContactSettingsView: View {
     @State private var autoSync = true
     @State private var encryptSensitiveData = true
     @State private var allowContactImport = true
+    @State private var showingImportView = false
+    @State private var showingExportView = false
     
     enum SyncAction {
         case toCloud
@@ -89,12 +91,12 @@ struct ContactSettingsView: View {
                     Toggle("Allow Contact Import", isOn: $allowContactImport)
                     
                     Button("Import from Device Contacts") {
-                        // TODO: Implement device contact import
+                        showingImportView = true
                     }
                     .disabled(!allowContactImport)
                     
                     Button("Export Contacts") {
-                        // TODO: Implement contact export
+                        showingExportView = true
                     }
                 }
                 
@@ -153,6 +155,12 @@ struct ContactSettingsView: View {
                 case .fromCloud:
                     Text("This will download all cloud contacts. Local contacts may be overwritten.")
                 }
+            }
+            .sheet(isPresented: $showingImportView) {
+                DeviceContactsImportView(contactManager: contactManager)
+            }
+            .sheet(isPresented: $showingExportView) {
+                ContactExportView(contactManager: contactManager)
             }
         }
     }
