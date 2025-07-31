@@ -10,7 +10,7 @@ struct iSayItForwardApp: App {
     var body: some Scene {
         WindowGroup {
             if UIDevice.current.userInterfaceIdiom == .pad {
-                iPadMainView()
+                iPadRootView()
                     .environmentObject(authManager)
             } else {
                 if authManager.isAuthenticated {

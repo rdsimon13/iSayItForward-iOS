@@ -110,23 +110,9 @@ struct LoginView: View {
                         .disabled(authManager.isLoading)
 
                         // Apple Sign In Button
-                        SignInWithAppleButton(
-                            onRequest: { request in
-                                request.requestedScopes = [.fullName, .email]
-                            },
-                            onCompletion: { result in
-                                // Handle Apple Sign In result
-                                switch result {
-                                case .success:
-                                    // This will be handled by the ASAuthorizationControllerDelegate
-                                    break
-                                case .failure:
-                                    authManager.errorMessage = "Apple Sign In failed. Please try again."
-                                }
-                            }
-                        )
-                        .frame(height: 50)
-                        .cornerRadius(25)
+                        AppleSignInButton(authManager: authManager)
+                            .frame(height: 50)
+                            .cornerRadius(25)
 
                         NavigationLink("Don't have an account? Sign up") {
                             SignupView()
@@ -166,6 +152,62 @@ struct LoginView: View {
                 .foregroundColor(.red)
                 .multilineTextAlignment(.center)
                 .padding()
+        }
+    }
+}
+
+// MARK: - Custom Apple Sign In Button
+struct AppleSignInButton: UIViewRepresentable {
+    @ObservedObject var authManager: AuthenticationManager
+    
+    func makeUIView(context: Context) -> ASAuthorizationAppleIDButton {
+        let button = ASAuthorizationAppleIDButton(type: .signIn, style: .black)
+        button.addTarget(context.coordinator, action: #selector(Coordinator.handleAppleSignIn), for: .touchUpInside)
+        return button
+    }
+    
+    func updateUIView(_ uiView: ASAuthorizationAppleIDButton, context: Context) {}
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    class Coordinator: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+        let parent: AppleSignInButton
+        
+        init(_ parent: AppleSignInButton) {
+            self.parent = parent
+        }
+        
+        @objc func handleAppleSignIn() {
+            let appleIDProvider = ASAuthorizationAppleIDProvider()
+            let request = appleIDProvider.createRequest()
+            request.requestedScopes = [.fullName, .email]
+            
+            let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+            authorizationController.delegate = self
+            authorizationController.presentationContextProvider = self
+            authorizationController.performRequests()
+        }
+        
+        func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let window = windowScene.windows.first else {
+                return ASPresentationAnchor()
+            }
+            return window
+        }
+        
+        func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+            if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
+                Task {
+                    await parent.authManager.signInWithAppleCredential(appleIDCredential)
+                }
+            }
+        }
+        
+        func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+            parent.authManager.errorMessage = AuthenticationError.appleSignInFailed.errorDescription
         }
     }
 }

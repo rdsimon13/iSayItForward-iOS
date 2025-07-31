@@ -185,9 +185,48 @@ class AuthenticationManager: ObservableObject {
             
             let authorizationController = ASAuthorizationController(authorizationRequests: [request])
             
-            // We need to handle this with a coordinator pattern in SwiftUI
-            // For now, set error that Apple Sign In needs UI integration
-            errorMessage = "Apple Sign In requires UI integration. Please use the Sign in with Apple button."
+            // This method needs to be called from a UI context with proper delegation
+            // The actual implementation will be handled by the UI component
+            errorMessage = "Please use the Sign in with Apple button for Apple authentication."
+            
+        } catch {
+            errorMessage = AuthenticationError.appleSignInFailed.errorDescription
+        }
+        
+        isLoading = false
+    }
+    
+    // MARK: - Apple Sign In with Credential (called from UI)
+    func signInWithAppleCredential(_ credential: ASAuthorizationAppleIDCredential) async {
+        isLoading = true
+        errorMessage = nil
+        
+        do {
+            guard let nonce = generateNonce() else {
+                errorMessage = "Invalid state: A login callback was received, but no login request was sent."
+                isLoading = false
+                return
+            }
+            
+            guard let appleIDToken = credential.identityToken else {
+                errorMessage = "Unable to fetch identity token"
+                isLoading = false
+                return
+            }
+            
+            guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
+                errorMessage = "Unable to serialize token string from data"
+                isLoading = false
+                return
+            }
+            
+            let firebaseCredential = OAuthProvider.credential(withProviderID: "apple.com",
+                                                            idToken: idTokenString,
+                                                            rawNonce: nonce)
+            
+            let result = try await Auth.auth().signIn(with: firebaseCredential)
+            user = result.user
+            isAuthenticated = true
             
         } catch {
             errorMessage = AuthenticationError.appleSignInFailed.errorDescription
@@ -264,6 +303,38 @@ class AuthenticationManager: ObservableObject {
     func clearError() {
         errorMessage = nil
     }
+    
+    // MARK: - Nonce Generation for Apple Sign In
+    private func generateNonce() -> String? {
+        // Generate a cryptographically secure nonce for Apple Sign In
+        let charset: Array<Character> = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+        var result = ""
+        var remainingLength = 32
+        
+        while remainingLength > 0 {
+            let randoms: [UInt8] = (0..<16).map { _ in
+                var random: UInt8 = 0
+                let errorCode = SecRandomCopyBytes(kSecRandomDefault, 1, &random)
+                if errorCode != errSecSuccess {
+                    fatalError("Unable to generate nonce. SecRandomCopyBytes failed with OSStatus \(errorCode)")
+                }
+                return random
+            }
+            
+            randoms.forEach { random in
+                if remainingLength == 0 {
+                    return
+                }
+                
+                if random < charset.count {
+                    result.append(charset[Int(random)])
+                    remainingLength -= 1
+                }
+            }
+        }
+        
+        return result
+    }
 }
 
 // MARK: - Apple Sign In Coordinator
@@ -294,37 +365,8 @@ struct AppleSignInCoordinator: UIViewControllerRepresentable {
         
         func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
             if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
-                guard let nonce = getCurrentNonce() else {
-                    parent.authManager.errorMessage = "Invalid state: A login callback was received, but no login request was sent."
-                    return
-                }
-                guard let appleIDToken = appleIDCredential.identityToken else {
-                    parent.authManager.errorMessage = "Unable to fetch identity token"
-                    return
-                }
-                guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
-                    parent.authManager.errorMessage = "Unable to serialize token string from data"
-                    return
-                }
-                
-                let credential = OAuthProvider.credential(withProviderID: "apple.com",
-                                                        idToken: idTokenString,
-                                                        rawNonce: nonce)
-                
                 Task {
-                    do {
-                        let result = try await Auth.auth().signIn(with: credential)
-                        await MainActor.run {
-                            parent.authManager.user = result.user
-                            parent.authManager.isAuthenticated = true
-                            parent.authManager.isLoading = false
-                        }
-                    } catch {
-                        await MainActor.run {
-                            parent.authManager.errorMessage = AuthenticationError.appleSignInFailed.errorDescription
-                            parent.authManager.isLoading = false
-                        }
-                    }
+                    await parent.authManager.signInWithAppleCredential(appleIDCredential)
                 }
             }
         }
@@ -334,11 +376,4 @@ struct AppleSignInCoordinator: UIViewControllerRepresentable {
             parent.authManager.isLoading = false
         }
     }
-}
-
-// MARK: - Nonce Helper (simplified)
-private func getCurrentNonce() -> String? {
-    // This should generate a cryptographically secure nonce
-    // For simplicity, returning a UUID string - in production, use proper nonce generation
-    return UUID().uuidString
 }
