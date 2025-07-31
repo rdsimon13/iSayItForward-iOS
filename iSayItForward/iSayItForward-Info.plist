@@ -11,5 +11,13 @@
 			<string>com.googleusercontent.apps.1466798814601-sww46kscb4dfcd7ccb1t159k7f8357t8</string>
 		</dict>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs camera access to capture photos and videos for your messages.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs microphone access to record voice messages and videos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs photo library access to select and attach media to your messages.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>This app needs access to documents to attach files to your messages.</string>
 </dict>
 </plist>
