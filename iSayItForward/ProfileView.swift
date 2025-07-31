@@ -9,6 +9,7 @@ struct ProfileView: View {
     
     @State private var showingAlert = false
     @State private var alertMessage = ""
+    @State private var showingSettings = false
 
     var body: some View {
         ZStack {
@@ -57,6 +58,11 @@ struct ProfileView: View {
 
                 Spacer()
 
+                Button("Settings") {
+                    showingSettings = true
+                }
+                .buttonStyle(SecondaryActionButtonStyle())
+
                 Button("Log Out") {
                     do {
                         try Auth.auth().signOut()
@@ -72,6 +78,9 @@ struct ProfileView: View {
                 Alert(title: Text("Logout Error"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
             }
             .onAppear(perform: fetchUserData) // Fetch user data when the view appears
+            .sheet(isPresented: $showingSettings) {
+                SettingsView()
+            }
         }
     }
     
