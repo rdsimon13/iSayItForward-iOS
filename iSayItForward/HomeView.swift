@@ -130,6 +130,12 @@ struct HomeView: View {
                         Text("Send SIF")
                     }
 
+                ContactListView()
+                    .tabItem {
+                        Image(systemName: "person.2.fill")
+                        Text("Contacts")
+                    }
+
                 TemplateGalleryView()
                     .tabItem {
                         Image(systemName: "doc.on.doc")
