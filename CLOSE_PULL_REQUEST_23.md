@@ -1,0 +1,1 @@
+We are taking a cleaner approach by building advanced features properly on top of the working base app instead of fixing the tangled integration.
