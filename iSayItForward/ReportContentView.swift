@@ -32,6 +32,8 @@ struct ReportContentView: View {
                         isPresented = false
                     }
                 }
+                .accessibilityLabel("Close report overlay")
+                .accessibilityHint("Tap to dismiss the report screen")
             
             // Main content card
             VStack(spacing: 0) {
@@ -75,6 +77,8 @@ struct ReportContentView: View {
                         .background(Color.gray.opacity(0.1))
                         .clipShape(Circle())
                 }
+                .accessibilityLabel("Close")
+                .accessibilityHint("Close the report screen")
             }
             .padding(.horizontal, 24)
             .padding(.top, 24)
