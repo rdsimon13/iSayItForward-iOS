@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		021BAC712E3EC11A006FE2D6 /* Screenshot 2025-07-29 at 10.30.53 PM.png in Resources */ = {isa = PBXBuildFile; fileRef = 021BAC6F2E3EC11A006FE2D6 /* Screenshot 2025-07-29 at 10.30.53 PM.png */; };
+		021BAC722E3EC11A006FE2D6 /* ReportUIDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021BAC6E2E3EC11A006FE2D6 /* ReportUIDemo.swift */; };
+		021BAC732E3EC11A006FE2D6 /* TestReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021BAC702E3EC11A006FE2D6 /* TestReportView.swift */; };
+		021BAC742E3EC11A006FE2D6 /* ReportOverlayModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021BAC6D2E3EC11A006FE2D6 /* ReportOverlayModifier.swift */; };
+		021BAC752E3EC11A006FE2D6 /* ReportContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021BAC6C2E3EC11A006FE2D6 /* ReportContentView.swift */; };
+		021BAC772E3EC1A7006FE2D6 /* ReportButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021BAC762E3EC1A7006FE2D6 /* ReportButton.swift */; };
 		7B14DFE52E29756D004AB2B3 /* UploadMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFDF2E29756D004AB2B3 /* UploadMediaView.swift */; };
 		7B14DFE62E29756D004AB2B3 /* SIFPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFD82E29756D004AB2B3 /* SIFPreviewView.swift */; };
 		7B14DFE72E29756D004AB2B3 /* TemplateItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFDC2E29756D004AB2B3 /* TemplateItem.swift */; };
@@ -54,6 +60,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		021BAC6C2E3EC11A006FE2D6 /* ReportContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportContentView.swift; sourceTree = "<group>"; };
+		021BAC6D2E3EC11A006FE2D6 /* ReportOverlayModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportOverlayModifier.swift; sourceTree = "<group>"; };
+		021BAC6E2E3EC11A006FE2D6 /* ReportUIDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportUIDemo.swift; sourceTree = "<group>"; };
+		021BAC6F2E3EC11A006FE2D6 /* Screenshot 2025-07-29 at 10.30.53 PM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Screenshot 2025-07-29 at 10.30.53 PM.png"; sourceTree = "<group>"; };
+		021BAC702E3EC11A006FE2D6 /* TestReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestReportView.swift; sourceTree = "<group>"; };
+		021BAC762E3EC1A7006FE2D6 /* ReportButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportButton.swift; sourceTree = "<group>"; };
 		7B14DFBB2E29756D004AB2B3 /*  Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = " Color+Hex.swift"; sourceTree = "<group>"; };
 		7B14DFBC2E29756D004AB2B3 /* AdvancedComposerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedComposerView.swift; sourceTree = "<group>"; };
 		7B14DFBD2E29756D004AB2B3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -121,8 +133,8 @@
 			children = (
 				7B14DFBB2E29756D004AB2B3 /*  Color+Hex.swift */,
 				7B14DFBC2E29756D004AB2B3 /* AdvancedComposerView.swift */,
-				7BDB06132E36094700339523 /* AppUser.swift */,
 				7B79AF8E2E32A06500BE0809 /* AppDelegate.swift */,
+				7BDB06132E36094700339523 /* AppUser.swift */,
 				7B14DFBD2E29756D004AB2B3 /* Assets.xcassets */,
 				7B14DFBE2E29756D004AB2B3 /* Color+Theme.swift */,
 				7B14DFBF2E29756D004AB2B3 /* ComposeSIFView.swift */,
@@ -147,7 +159,12 @@
 				7B79AF8C2E32529100BE0809 /* PrimaryActionButtonStyle.swift */,
 				7B4B2AE32E289CAA00F1ABCA /* Products */,
 				7B14DFD22E29756D004AB2B3 /* ProfileView.swift */,
+				021BAC762E3EC1A7006FE2D6 /* ReportButton.swift */,
+				021BAC6C2E3EC11A006FE2D6 /* ReportContentView.swift */,
+				021BAC6D2E3EC11A006FE2D6 /* ReportOverlayModifier.swift */,
+				021BAC6E2E3EC11A006FE2D6 /* ReportUIDemo.swift */,
 				7B14DFD32E29756D004AB2B3 /* ScheduleSIFView.swift */,
+				021BAC6F2E3EC11A006FE2D6 /* Screenshot 2025-07-29 at 10.30.53 PM.png */,
 				7B79AF8A2E32523E00BE0809 /* SecondaryActionButtonStyle.swift */,
 				7B14DFD42E29756D004AB2B3 /* SendSIFView.swift */,
 				7BDB06112E35BB5600339523 /* SidebarItem.swift */,
@@ -161,6 +178,7 @@
 				7B14DFDB2E29756D004AB2B3 /* TemplateGalleryView.swift */,
 				7B14DFDC2E29756D004AB2B3 /* TemplateItem.swift */,
 				7B14DFDD2E29756D004AB2B3 /* TemplateLibrary.swift */,
+				021BAC702E3EC11A006FE2D6 /* TestReportView.swift */,
 				7B14DFDF2E29756D004AB2B3 /* UploadMediaView.swift */,
 				7B79AF922E32B08F00BE0809 /* User.swift */,
 				7B14DFE12E29756D004AB2B3 /* VoiceNoteView.swift */,
@@ -264,6 +282,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B14E0072E29756D004AB2B3 /* Assets.xcassets in Resources */,
+				021BAC712E3EC11A006FE2D6 /* Screenshot 2025-07-29 at 10.30.53 PM.png in Resources */,
 				7B14E0082E29756D004AB2B3 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -276,6 +295,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B14DFE52E29756D004AB2B3 /* UploadMediaView.swift in Sources */,
+				021BAC772E3EC1A7006FE2D6 /* ReportButton.swift in Sources */,
 				7BDB06142E36094700339523 /* AppUser.swift in Sources */,
 				7B14DFE62E29756D004AB2B3 /* SIFPreviewView.swift in Sources */,
 				7BDB06102E35BAFC00339523 /* iPadMain16View.swift in Sources */,
@@ -308,6 +328,10 @@
 				7B14E0002E29756D004AB2B3 /* ComposeSIFView.swift in Sources */,
 				7B14E0012E29756D004AB2B3 /* Font+Theme.swift in Sources */,
 				7B14E0022E29756D004AB2B3 /* TemplateGalleryView.swift in Sources */,
+				021BAC722E3EC11A006FE2D6 /* ReportUIDemo.swift in Sources */,
+				021BAC732E3EC11A006FE2D6 /* TestReportView.swift in Sources */,
+				021BAC742E3EC11A006FE2D6 /* ReportOverlayModifier.swift in Sources */,
+				021BAC752E3EC11A006FE2D6 /* ReportContentView.swift in Sources */,
 				7B14E0032E29756D004AB2B3 /* SIFConfirmationView.swift in Sources */,
 				7B6601D92E3399E30097D647 /* CreateSIFView.swift in Sources */,
 				7B85EC792E2A4AB3002A16F4 /* TemplateCategory.swift in Sources */,

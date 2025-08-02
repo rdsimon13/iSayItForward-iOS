@@ -34,7 +34,10 @@ struct TestReportView: View {
                         
                         HStack {
                             Text("Quick Report:")
-                            ReportButton(context: "Test item")
+                            ReportButton {
+                                print("Report tapped for Test item")
+                                // Or show your report modal here!
+                            }
                             Spacer()
                         }
                         .padding(.horizontal)

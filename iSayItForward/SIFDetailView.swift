@@ -44,7 +44,11 @@ struct SIFDetailView: View {
             .navigationTitle("SIF Details")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    ReportButton(context: "SIF: \(sif.subject)")
+                    ReportButton {
+                        // Use the sif.subject for reporting context if needed
+                        print("Report tapped for SIF: \(sif.subject)")
+                        // Or show a report form, etc.
+                    }
                 }
             }
         }

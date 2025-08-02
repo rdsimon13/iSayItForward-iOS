@@ -80,7 +80,9 @@ struct ReportUIDemo: View {
                             HStack {
                                 Text("Quick Report Button:")
                                     .foregroundColor(Color.brandDarkBlue)
-                                ReportButton(context: "Quick action demo")
+                                ReportButton {
+                                    ReportManager.shared.showReport(context: "Quick action demo")
+                                }
                                 Spacer()
                             }
                             .padding(.horizontal)

@@ -38,7 +38,11 @@ private struct HomeLaunchpadView: View {
                             
                             VStack {
                                 Spacer()
-                                ReportButton(context: "Template Gallery Content")
+                                ReportButton {
+                                    // Put your desired action here, e.g.:
+                                    print("Report tapped (Template Gallery Content)")
+                                    // Or open a report modal, etc.
+                                }
                             }
                             .padding(.trailing, 8)
                         }
