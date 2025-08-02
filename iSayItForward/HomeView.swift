@@ -31,9 +31,17 @@ private struct HomeLaunchpadView: View {
                     }
 
                     NavigationLink(destination: TemplateGalleryView()) {
-                        PromoCard(title: "SIF Template Gallery",
-                                  description: "Explore a variety of ready made templates designed to help you express yourself with style and speed.",
-                                  iconName: "photo.on.rectangle.angled")
+                        HStack {
+                            PromoCard(title: "SIF Template Gallery",
+                                      description: "Explore a variety of ready made templates designed to help you express yourself with style and speed.",
+                                      iconName: "photo.on.rectangle.angled")
+                            
+                            VStack {
+                                Spacer()
+                                ReportButton(context: "Template Gallery Content")
+                            }
+                            .padding(.trailing, 8)
+                        }
                     }
 
                     NavigationLink(destination: CreateSIFView()) {
