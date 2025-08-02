@@ -2,6 +2,9 @@ import SwiftUI
 
 struct SIFDetailView: View {
     let sif: SIFItem
+    
+    @State private var showingReportView = false
+    @State private var showingBlockUserView = false
 
     var body: some View {
         ZStack {
@@ -42,8 +45,50 @@ struct SIFDetailView: View {
                 .padding()
             }
             .navigationTitle("SIF Details")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Menu {
+                        Button(action: {
+                            showingReportView = true
+                        }) {
+                            Label("Report Content", systemImage: "flag")
+                        }
+                        
+                        Button(action: {
+                            showingBlockUserView = true
+                        }) {
+                            Label("Block User", systemImage: "person.badge.minus")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                            .foregroundColor(.white)
+                    }
+                }
+            }
         }
         .foregroundColor(Color.brandDarkBlue)
+        .sheet(isPresented: $showingReportView) {
+            ReportView(
+                contentId: sif.id ?? "",
+                contentAuthorUid: sif.authorUid,
+                onDismiss: {
+                    showingReportView = false
+                }
+            )
+        }
+        .sheet(isPresented: $showingBlockUserView) {
+            BlockUserActionView(
+                userUid: sif.authorUid,
+                userName: "Content Author", // In a real app, you'd fetch this from user data
+                onDismiss: {
+                    showingBlockUserView = false
+                },
+                onBlock: {
+                    showingBlockUserView = false
+                    // Optional: show confirmation or navigate away
+                }
+            )
+        }
     }
 }
 

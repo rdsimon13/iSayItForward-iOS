@@ -4,6 +4,7 @@ import FirebaseAuth
 
 struct MySIFsView: View {
     @State private var sifs: [SIFItem] = []
+    @StateObject private var contentSafetyManager = ContentSafetyManager()
 
     var body: some View {
         if #available(iOS 16.0, *) {
@@ -17,7 +18,7 @@ struct MySIFsView: View {
                                 .font(.headline)
                                 .foregroundColor(.white)
                         } else {
-                            List(sifs) { sif in
+                            List(filteredSifs) { sif in
                                 NavigationLink(destination: SIFDetailView(sif: sif)) {
                                     VStack(alignment: .leading) {
                                         Text(sif.subject)
@@ -39,6 +40,9 @@ struct MySIFsView: View {
                     .navigationTitle("Manage My SIFs")
                     .onAppear {
                         fetchSIFs()
+                        Task {
+                            await contentSafetyManager.fetchBlockedUsers()
+                        }
                     }
                 }
             }
@@ -48,6 +52,11 @@ struct MySIFsView: View {
                 .multilineTextAlignment(.center)
                 .padding()
         }
+    }
+    
+    /// Filter out SIFs from blocked users
+    private var filteredSifs: [SIFItem] {
+        return contentSafetyManager.filterContent(sifs)
     }
 
     func fetchSIFs() {
@@ -75,6 +84,7 @@ struct MySIFsView: View {
                 }
             }
     }
+}
 }
 
 struct MySIFsView_Previews: PreviewProvider {
