@@ -5,6 +5,8 @@ struct ReportOverlayView: View {
     @State private var selectedReason: String = ""
     @State private var additionalDetails: String = ""
     @State private var isAnimating: Bool = false
+    @State private var showingSuccessAlert = false
+    @State private var isSubmitting = false
     
     private let reportReasons = [
         "Inappropriate Content",
@@ -90,12 +92,13 @@ struct ReportOverlayView: View {
                                 dismissOverlay()
                             }
                             .buttonStyle(SecondaryActionButtonStyle())
+                            .disabled(isSubmitting)
                             
-                            Button("Submit Report") {
+                            Button(isSubmitting ? "Submitting..." : "Submit Report") {
                                 submitReport()
                             }
                             .buttonStyle(PrimaryActionButtonStyle())
-                            .disabled(selectedReason.isEmpty)
+                            .disabled(selectedReason.isEmpty || isSubmitting)
                         }
                         .padding(.top, 8)
                     }
@@ -114,6 +117,13 @@ struct ReportOverlayView: View {
                 isAnimating = true
             }
         }
+        .alert("Report Submitted", isPresented: $showingSuccessAlert) {
+            Button("OK") {
+                dismissOverlay()
+            }
+        } message: {
+            Text("Thank you for your report. We'll review it shortly and take appropriate action if necessary.")
+        }
     }
     
     private func dismissOverlay() {
@@ -123,21 +133,32 @@ struct ReportOverlayView: View {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             isPresented = false
+            // Reset form state
+            selectedReason = ""
+            additionalDetails = ""
+            isSubmitting = false
         }
     }
     
     private func submitReport() {
-        // Submit the report
-        print("Report submitted: \(selectedReason)")
-        if !additionalDetails.isEmpty {
-            print("Additional details: \(additionalDetails)")
+        guard !selectedReason.isEmpty else { return }
+        
+        isSubmitting = true
+        
+        // Simulate network delay for submission
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            // Submit the report
+            print("Report submitted: \(selectedReason)")
+            if !additionalDetails.isEmpty {
+                print("Additional details: \(additionalDetails)")
+            }
+            
+            // Schedule notification for report submission
+            NotificationManager.shared.scheduleReportSubmissionNotification()
+            
+            isSubmitting = false
+            showingSuccessAlert = true
         }
-        
-        // Schedule notification for report submission
-        NotificationManager.shared.scheduleReportSubmissionNotification()
-        
-        // Dismiss the overlay
-        dismissOverlay()
     }
 }
 

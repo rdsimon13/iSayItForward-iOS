@@ -5,6 +5,7 @@ class NotificationManager: ObservableObject {
     static let shared = NotificationManager()
     
     @Published var isNotificationPermissionGranted: Bool = false
+    @Published var lastError: String?
     
     private init() {
         checkNotificationPermission()
@@ -27,10 +28,18 @@ class NotificationManager: ObservableObject {
             
             DispatchQueue.main.async {
                 self.isNotificationPermissionGranted = granted
+                if !granted {
+                    self.lastError = "Notification permission was denied by user"
+                } else {
+                    self.lastError = nil
+                }
             }
             
             return granted
         } catch {
+            DispatchQueue.main.async {
+                self.lastError = "Error requesting notification permission: \(error.localizedDescription)"
+            }
             print("Error requesting notification permission: \(error.localizedDescription)")
             return false
         }
@@ -39,6 +48,7 @@ class NotificationManager: ObservableObject {
     // MARK: - Notification Scheduling
     func scheduleReportSubmissionNotification() {
         guard isNotificationPermissionGranted else {
+            lastError = "Notification permission not granted"
             print("Notification permission not granted")
             return
         }
@@ -57,17 +67,22 @@ class NotificationManager: ObservableObject {
             trigger: trigger
         )
         
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                print("Error scheduling notification: \(error.localizedDescription)")
-            } else {
-                print("Report submission notification scheduled successfully")
+        UNUserNotificationCenter.current().add(request) { [weak self] error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self?.lastError = "Error scheduling notification: \(error.localizedDescription)"
+                    print("Error scheduling notification: \(error.localizedDescription)")
+                } else {
+                    self?.lastError = nil
+                    print("Report submission notification scheduled successfully")
+                }
             }
         }
     }
     
     func scheduleSIFDeliveryNotification(for sifTitle: String, deliveryDate: Date) {
         guard isNotificationPermissionGranted else {
+            lastError = "Notification permission not granted"
             print("Notification permission not granted")
             return
         }
@@ -87,11 +102,15 @@ class NotificationManager: ObservableObject {
             trigger: trigger
         )
         
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                print("Error scheduling SIF delivery notification: \(error.localizedDescription)")
-            } else {
-                print("SIF delivery notification scheduled for \(deliveryDate)")
+        UNUserNotificationCenter.current().add(request) { [weak self] error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self?.lastError = "Error scheduling SIF delivery notification: \(error.localizedDescription)"
+                    print("Error scheduling SIF delivery notification: \(error.localizedDescription)")
+                } else {
+                    self?.lastError = nil
+                    print("SIF delivery notification scheduled for \(deliveryDate)")
+                }
             }
         }
     }
@@ -103,5 +122,10 @@ class NotificationManager: ObservableObject {
     
     func removeNotifications(withIdentifiers identifiers: [String]) {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiers)
+    }
+    
+    // MARK: - Error Handling
+    func clearError() {
+        lastError = nil
     }
 }

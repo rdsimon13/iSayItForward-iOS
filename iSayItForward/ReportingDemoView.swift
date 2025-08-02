@@ -63,6 +63,13 @@ struct ReportingDemoView: View {
                                 .foregroundColor(Color.brandDarkBlue)
                         }
                         
+                        if let error = notificationManager.lastError {
+                            Text("Error: \(error)")
+                                .font(.caption)
+                                .foregroundColor(.red)
+                                .padding(.top, 4)
+                        }
+                        
                         if !notificationManager.isNotificationPermissionGranted {
                             Button("Enable Notifications") {
                                 Task {
