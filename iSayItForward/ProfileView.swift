@@ -55,6 +55,39 @@ struct ProfileView: View {
                 .foregroundColor(Color.brandDarkBlue)
                 .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
 
+                // Safety & Privacy Section
+                VStack(spacing: 12) {
+                    NavigationLink(destination: BlockedUsersView()) {
+                        HStack {
+                            Image(systemName: "person.slash")
+                                .foregroundColor(.red)
+                            Text("Blocked Users")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.secondary)
+                        }
+                        .padding()
+                        .background(.white.opacity(0.85))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .foregroundColor(Color.brandDarkBlue)
+                    }
+                    
+                    NavigationLink(destination: Text("Privacy Settings")) {
+                        HStack {
+                            Image(systemName: "shield")
+                                .foregroundColor(.blue)
+                            Text("Privacy & Safety")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.secondary)
+                        }
+                        .padding()
+                        .background(.white.opacity(0.85))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .foregroundColor(Color.brandDarkBlue)
+                    }
+                }
+
                 Spacer()
 
                 Button("Log Out") {
