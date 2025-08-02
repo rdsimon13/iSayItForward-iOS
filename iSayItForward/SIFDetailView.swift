@@ -2,6 +2,8 @@ import SwiftUI
 
 struct SIFDetailView: View {
     let sif: SIFItem
+    
+    @State private var showingReportView = false
 
     var body: some View {
         ZStack {
@@ -42,8 +44,31 @@ struct SIFDetailView: View {
                 .padding()
             }
             .navigationTitle("SIF Details")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Menu {
+                        Button(action: {
+                            showingReportView = true
+                        }) {
+                            Label("Report Content", systemImage: "flag")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                            .foregroundColor(.white)
+                    }
+                }
+            }
         }
         .foregroundColor(Color.brandDarkBlue)
+        .sheet(isPresented: $showingReportView) {
+            ReportView(
+                contentId: sif.id ?? "",
+                contentAuthorUid: sif.authorUid,
+                onDismiss: {
+                    showingReportView = false
+                }
+            )
+        }
     }
 }
 

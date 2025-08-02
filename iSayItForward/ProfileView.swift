@@ -6,6 +6,7 @@ struct ProfileView: View {
     // This now correctly gets the logged-in user's name and email
     @State private var userName: String = "User"
     @State private var userEmail: String = "No email found"
+    @State private var isModerator: Bool = false
     
     @State private var showingAlert = false
     @State private var alertMessage = ""
@@ -47,8 +48,44 @@ struct ProfileView: View {
                         Image(systemName: "envelope.fill")
                         Text(userEmail)
                     }
+                    
+                    // Show moderator badge if user is a moderator
+                    if isModerator {
+                        Divider()
+                        HStack {
+                            Image(systemName: "shield.fill")
+                            Text("Moderator")
+                                .foregroundColor(.orange)
+                        }
+                    }
                 }
                 .font(.headline)
+                .padding()
+                .background(.white.opacity(0.85))
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .foregroundColor(Color.brandDarkBlue)
+                .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
+
+                // Safety & Moderation Section
+                VStack(spacing: 12) {
+                    NavigationLink(destination: BlockedUsersView()) {
+                        SettingsRow(
+                            icon: "person.badge.minus",
+                            title: "Blocked Users",
+                            subtitle: "Manage blocked users"
+                        )
+                    }
+                    
+                    if isModerator {
+                        NavigationLink(destination: ModeratorView()) {
+                            SettingsRow(
+                                icon: "shield.fill",
+                                title: "Content Moderation",
+                                subtitle: "Review reported content"
+                            )
+                        }
+                    }
+                }
                 .padding()
                 .background(.white.opacity(0.85))
                 .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -84,7 +121,42 @@ struct ProfileView: View {
             if let document = snapshot, document.exists {
                 self.userName = document.data()?["name"] as? String ?? "User"
                 self.userEmail = document.data()?["email"] as? String ?? "No email found"
+                self.isModerator = document.data()?["isModerator"] as? Bool ?? false
             }
         }
+    }
+}
+
+// MARK: - Settings Row Component
+
+private struct SettingsRow: View {
+    let icon: String
+    let title: String
+    let subtitle: String
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundColor(Color.brandDarkBlue)
+                .frame(width: 24)
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundColor(.primary)
+                
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding(.vertical, 4)
     }
 }
