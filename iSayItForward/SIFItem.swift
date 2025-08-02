@@ -18,6 +18,12 @@ struct SIFItem: Identifiable, Codable, Hashable, Equatable {
     var attachmentURL: String? = nil
     var templateName: String? = nil
     
+    // Content moderation fields
+    var isRemoved: Bool = false
+    var removedDate: Date? = nil
+    var removedBy: String? = nil
+    var moderationStatus: String? = nil
+    
     // Hashable & Equatable conformance for SwiftUI lists
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)

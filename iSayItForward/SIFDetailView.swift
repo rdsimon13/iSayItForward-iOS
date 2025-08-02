@@ -1,7 +1,17 @@
 import SwiftUI
+import FirebaseAuth
+import FirebaseFirestore
 
 struct SIFDetailView: View {
     let sif: SIFItem
+    @State private var showingReportSheet = false
+    @State private var showingUserActionSheet = false
+    @State private var authorName: String = "Unknown User"
+    
+    private var isOwnContent: Bool {
+        guard let currentUserId = Auth.auth().currentUser?.uid else { return false }
+        return currentUserId == sif.authorUid
+    }
 
     var body: some View {
         ZStack {
@@ -42,8 +52,54 @@ struct SIFDetailView: View {
                 .padding()
             }
             .navigationTitle("SIF Details")
+            .toolbar {
+                if !isOwnContent {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Menu {
+                            Button(action: {
+                                showingReportSheet = true
+                            }) {
+                                Label("Report Content", systemImage: "flag")
+                            }
+                            
+                            Button(action: {
+                                showingUserActionSheet = true
+                            }) {
+                                Label("User Actions", systemImage: "person.crop.circle")
+                            }
+                        } label: {
+                            Image(systemName: "ellipsis.circle")
+                                .foregroundColor(Color.brandDarkBlue)
+                        }
+                    }
+                }
+            }
+            .onAppear {
+                fetchAuthorName()
+            }
         }
         .foregroundColor(Color.brandDarkBlue)
+        .sheet(isPresented: $showingReportSheet) {
+            ReportContentView(
+                contentId: sif.id ?? "",
+                contentAuthorId: sif.authorUid
+            )
+        }
+        .sheet(isPresented: $showingUserActionSheet) {
+            UserActionSheet(
+                userId: sif.authorUid,
+                userName: authorName
+            )
+        }
+    }
+    
+    private func fetchAuthorName() {
+        let db = Firestore.firestore()
+        db.collection("users").document(sif.authorUid).getDocument { snapshot, error in
+            if let document = snapshot, document.exists {
+                self.authorName = document.data()?["name"] as? String ?? "Unknown User"
+            }
+        }
     }
 }
 

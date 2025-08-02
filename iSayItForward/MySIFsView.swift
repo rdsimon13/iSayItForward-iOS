@@ -4,6 +4,7 @@ import FirebaseAuth
 
 struct MySIFsView: View {
     @State private var sifs: [SIFItem] = []
+    @StateObject private var blockingService = BlockingService()
 
     var body: some View {
         if #available(iOS 16.0, *) {
@@ -38,7 +39,7 @@ struct MySIFsView: View {
                     }
                     .navigationTitle("Manage My SIFs")
                     .onAppear {
-                        fetchSIFs()
+                        loadData()
                     }
                 }
             }
@@ -47,6 +48,15 @@ struct MySIFsView: View {
                 .font(.headline)
                 .multilineTextAlignment(.center)
                 .padding()
+        }
+    }
+
+    func loadData() {
+        Task {
+            // Load blocked users first
+            try? await blockingService.loadBlockedUsers()
+            // Then fetch SIFs
+            fetchSIFs()
         }
     }
 
@@ -70,9 +80,16 @@ struct MySIFsView: View {
                     return
                 }
 
-                self.sifs = documents.compactMap { doc -> SIFItem? in
+                let allSifs = documents.compactMap { doc -> SIFItem? in
                     try? doc.data(as: SIFItem.self)
                 }
+                
+                // Filter content using the content filter utility
+                self.sifs = ContentFilterUtility.filterContent(
+                    allSifs,
+                    for: uid,
+                    blockedUsers: blockingService.blockedUsers
+                )
             }
     }
 }
