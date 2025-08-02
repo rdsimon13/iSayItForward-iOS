@@ -42,6 +42,11 @@ struct SIFDetailView: View {
                 .padding()
             }
             .navigationTitle("SIF Details")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    ReportButton(context: "SIF: \(sif.subject)")
+                }
+            }
         }
         .foregroundColor(Color.brandDarkBlue)
     }

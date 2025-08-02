@@ -11,5 +11,11 @@
 			<string>com.googleusercontent.apps.1466798814601-sww46kscb4dfcd7ccb1t159k7f8357t8</string>
 		</dict>
 	</array>
+	<key>NSUserNotificationUsageDescription</key>
+	<string>This app uses notifications to remind you about scheduled messages and important updates.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 </dict>
 </plist>
