@@ -42,6 +42,12 @@ private struct HomeLaunchpadView: View {
                                   iconName: "calendar")
                     }
 
+                    NavigationLink(destination: ReportingDemoView()) {
+                        PromoCard(title: "Reporting System Demo",
+                                  description: "Test the new content reporting system and notification features.",
+                                  iconName: "exclamationmark.shield")
+                    }
+
                     Spacer()
                 }
                 .padding()
