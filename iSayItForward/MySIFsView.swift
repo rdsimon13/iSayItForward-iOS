@@ -80,9 +80,16 @@ struct MySIFsView: View {
                     return
                 }
 
-                self.sifs = documents.compactMap { doc -> SIFItem? in
+                let allSifs = documents.compactMap { doc -> SIFItem? in
                     try? doc.data(as: SIFItem.self)
                 }
+                
+                // Filter content using the content filter utility
+                self.sifs = ContentFilterUtility.filterContent(
+                    allSifs,
+                    for: uid,
+                    blockedUsers: blockingService.blockedUsers
+                )
             }
     }
 }
