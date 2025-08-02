@@ -5,6 +5,7 @@ struct SharedProfileActionSheet: View {
     let shareURL: URL?
     let shareText: String
     @Binding var isPresented: Bool
+    @State private var showingCopyConfirmation = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -87,6 +88,11 @@ struct SharedProfileActionSheet: View {
         .background(.white)
         .clipShape(RoundedRectangle(cornerRadius: 20))
         .shadow(radius: 10)
+        .alert("Link Copied!", isPresented: $showingCopyConfirmation) {
+            Button("OK") { }
+        } message: {
+            Text("Profile link has been copied to your clipboard.")
+        }
     }
     
     private func shareViaMessages() {
@@ -121,8 +127,16 @@ struct SharedProfileActionSheet: View {
             UIPasteboard.general.string = shareText
         }
         
-        // You could show a toast notification here
-        isPresented = false
+        // Provide haptic feedback and show confirmation
+        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+        impactFeedback.impactOccurred()
+        
+        showingCopyConfirmation = true
+        
+        // Auto-dismiss after showing confirmation
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+            isPresented = false
+        }
     }
     
     private func showSystemShareSheet() {
