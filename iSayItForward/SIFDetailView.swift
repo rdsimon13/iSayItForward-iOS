@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SIFDetailView: View {
     let sif: SIFItem
+    @State private var showingReportOverlay = false
 
     var body: some View {
         ZStack {
@@ -42,6 +43,20 @@ struct SIFDetailView: View {
                 .padding()
             }
             .navigationTitle("SIF Details")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Report") {
+                        showingReportOverlay = true
+                    }
+                    .font(.caption)
+                    .foregroundColor(.red)
+                }
+            }
+            
+            // Report overlay
+            if showingReportOverlay {
+                ReportOverlayView(isPresented: $showingReportOverlay)
+            }
         }
         .foregroundColor(Color.brandDarkBlue)
     }
