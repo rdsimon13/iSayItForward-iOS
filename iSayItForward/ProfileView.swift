@@ -85,6 +85,16 @@ struct ProfileView: View {
                             )
                         }
                     }
+                    
+                    #if DEBUG
+                    NavigationLink(destination: ContentSafetyDemoView()) {
+                        SettingsRow(
+                            icon: "testtube.2",
+                            title: "Content Safety Demo",
+                            subtitle: "Test and showcase features"
+                        )
+                    }
+                    #endif
                 }
                 .padding()
                 .background(.white.opacity(0.85))
