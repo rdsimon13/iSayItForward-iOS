@@ -16,23 +16,25 @@ struct SignupView: View {
             ZStack {
                 Color.mainAppGradient.ignoresSafeArea()
 
-                VStack(spacing: 20) {
+                VStack(spacing: 24) {
                     Text("Create Account")
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .padding(.bottom, 30)
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.brandDarkBlue)
 
-                    TextField("Your Name", text: $name)
-                        .textFieldStyle(PillTextFieldStyle())
+                    VStack(spacing: 16) {
+                        TextField("Your Name", text: $name)
+                            .textFieldStyle(PillTextFieldStyle())
 
-                    TextField("Your Email", text: $email)
-                        .textFieldStyle(PillTextFieldStyle())
-                        .autocapitalization(.none)
-                        .keyboardType(.emailAddress)
+                        TextField("Your Email", text: $email)
+                            .textFieldStyle(PillTextFieldStyle())
+                            .autocapitalization(.none)
+                            .keyboardType(.emailAddress)
 
-                    SecureField("Create Password", text: $password)
-                        .textFieldStyle(PillTextFieldStyle())
+                        SecureField("Create Password", text: $password)
+                            .textFieldStyle(PillTextFieldStyle())
+                    }
 
                     Spacer()
 
@@ -45,9 +47,12 @@ struct SignupView: View {
                 .padding(.vertical)
             }
             .navigationTitle("")
-            .navigationBarHidden(true)
+            .navigationBarTitleDisplayMode(.inline)
             .alert(isPresented: $showingAlert) {
                 Alert(title: Text("Sign Up Error"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+            }
+            .onAppear {
+                print("📝 SignupView appeared")
             }
         }
     }
@@ -59,7 +64,7 @@ struct SignupView: View {
             return
         }
         let newUser = AppUser(uid: "demoUID", name: name, email: email)
-        print("✅ [Demo Mode] Signed up user: \(newUser.name)")
+        print("✅ [Demo Mode] Signed up user: \(newUser.name), email: \(newUser.email)")
         onSignup?(newUser)
         presentationMode.wrappedValue.dismiss()
     }

@@ -11,5 +11,8 @@ struct PrimaryActionButtonStyle: ButtonStyle {
             .clipShape(Capsule()) // Creates the pill shape
             .shadow(color: Color.brandYellow.opacity(0.4), radius: 5, y: 3)
             .scaleEffect(configuration.isPressed ? 0.98 : 1.0) // Adds a nice press effect
+            .onAppear {
+                print("🟡 PrimaryActionButtonStyle loaded")
+            }
     }
 }

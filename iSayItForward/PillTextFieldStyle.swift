@@ -9,5 +9,8 @@ struct PillTextFieldStyle: TextFieldStyle {
             .background(.white.opacity(0.8))
             .clipShape(Capsule()) // This creates the pill shape
             .shadow(color: .black.opacity(0.1), radius: 2, y: 1)
+            .onAppear {
+                print("📝 PillTextFieldStyle loaded")
+            }
     }
 }

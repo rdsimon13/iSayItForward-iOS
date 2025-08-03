@@ -11,5 +11,8 @@ struct SecondaryActionButtonStyle: ButtonStyle {
             .clipShape(Capsule()) // Creates the pill shape
             .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
             .scaleEffect(configuration.isPressed ? 0.98 : 1.0) // Adds a nice press effect
+            .onAppear {
+                print("🔵 SecondaryActionButtonStyle loaded")
+            }
     }
 }
