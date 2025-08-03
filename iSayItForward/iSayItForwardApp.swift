@@ -9,13 +9,8 @@ struct iSayItForwardApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if UIDevice.current.userInterfaceIdiom == .pad {
-                iPadMainView()
-                    .environmentObject(authState)
-            } else {
-                WelcomeView() // or ContentView() if you prefer
-                    .environmentObject(authState)
-            }
+            AppInitializationView()
+                .environmentObject(authState)
         }
     }
 }
