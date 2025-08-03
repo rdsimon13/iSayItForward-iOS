@@ -6,8 +6,12 @@ struct PillTextFieldStyle: TextFieldStyle {
         configuration
             .padding(.vertical, 12)
             .padding(.horizontal, 20)
+            .frame(minHeight: 44) // Ensure minimum touch target
             .background(.white.opacity(0.8))
             .clipShape(Capsule()) // This creates the pill shape
             .shadow(color: .black.opacity(0.1), radius: 2, y: 1)
+            .onAppear {
+                print("📝 PillTextField: Style applied")
+            }
     }
 }

@@ -10,37 +10,26 @@ struct WelcomeView: View {
     @State private var currentUser: AppUser?
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                // Add error handling for gradient
-                Group {
-                    Color.mainAppGradient
-                }
-                .onAppear {
-                    print("🎨 WelcomeView: Gradient background loaded")
-                }
-                .ignoresSafeArea()
-
-                VStack(spacing: 24) {
-                    Spacer()
-
-                    // Add error handling for logo image
+        ErrorBoundary {
+            NavigationStack {
+                ZStack {
+                    // Add error handling for gradient
                     Group {
-                        if let _ = UIImage(named: "isifLogo") {
-                            Image("isifLogo")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 96, height: 96)
-                        } else {
-                            // Fallback icon if image is missing
-                            Image(systemName: "app.fill")
-                                .font(.system(size: 96))
-                                .foregroundColor(Color.brandDarkBlue.opacity(0.7))
-                        }
+                        Color.mainAppGradient
                     }
                     .onAppear {
-                        print("🖼️ WelcomeView: Logo loaded")
+                        print("🎨 WelcomeView: Gradient background loaded")
                     }
+                    .ignoresSafeArea()
+
+                    VStack(spacing: 24) {
+                        Spacer()
+
+                        // Use SafeImageView for better error handling
+                        SafeImageView("isifLogo", width: 96, height: 96, fallbackIcon: "app.fill")
+                            .onAppear {
+                                print("🖼️ WelcomeView: Logo loaded")
+                            }
 
                     Text("iSayItForward")
                         .font(.largeTitle)
@@ -129,7 +118,12 @@ struct WelcomeView: View {
                     HomeView()
                         .navigationBarBackButtonHidden(true)
                 }
+                }
             }
         }
     }
+}
+
+#Preview {
+    WelcomeView()
 }
