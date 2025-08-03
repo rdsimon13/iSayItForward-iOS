@@ -114,40 +114,70 @@ private struct PromoCard: View {
 // MARK: - Main HomeView
 struct HomeView: View {
     var body: some View {
-        if #available(iOS 16.0, *) {
-            TabView {
-                NavigationStack {
-                    HomeLaunchpadView()
+        Group {
+            if #available(iOS 16.0, *) {
+                TabView {
+                    NavigationStack {
+                        HomeLaunchpadView()
+                    }
+                    .tabItem {
+                        Image(systemName: "house.fill")
+                        Text("Home")
+                    }
+
+                    CreateSIFView()
+                        .tabItem {
+                            Image(systemName: "square.and.pencil")
+                            Text("Send SIF")
+                        }
+
+                    TemplateGalleryView()
+                        .tabItem {
+                            Image(systemName: "doc.on.doc")
+                            Text("Templates")
+                        }
+
+                    ProfileView()
+                        .tabItem {
+                            Image(systemName: "person.crop.circle")
+                            Text("Profile")
+                        }
                 }
-                .tabItem {
-                    Image(systemName: "house.fill")
-                    Text("Home")
+                .accentColor(Color.brandDarkBlue)
+            } else {
+                // Fallback for iOS 15 and below
+                TabView {
+                    NavigationView {
+                        HomeLaunchpadView()
+                    }
+                    .tabItem {
+                        Image(systemName: "house.fill")
+                        Text("Home")
+                    }
+
+                    CreateSIFView()
+                        .tabItem {
+                            Image(systemName: "square.and.pencil")
+                            Text("Send SIF")
+                        }
+
+                    TemplateGalleryView()
+                        .tabItem {
+                            Image(systemName: "doc.on.doc")
+                            Text("Templates")
+                        }
+
+                    ProfileView()
+                        .tabItem {
+                            Image(systemName: "person.crop.circle")
+                            Text("Profile")
+                        }
                 }
-
-                CreateSIFView()
-                    .tabItem {
-                        Image(systemName: "square.and.pencil")
-                        Text("Send SIF")
-                    }
-
-                TemplateGalleryView()
-                    .tabItem {
-                        Image(systemName: "doc.on.doc")
-                        Text("Templates")
-                    }
-
-                ProfileView()
-                    .tabItem {
-                        Image(systemName: "person.crop.circle")
-                        Text("Profile")
-                    }
+                .accentColor(Color.brandDarkBlue)
             }
-            .accentColor(Color.brandDarkBlue)
-        } else {
-            Text("Home requires iOS 16.0 or newer.")
-                .multilineTextAlignment(.center)
-                .padding()
-                .foregroundColor(.red)
+        }
+        .onAppear {
+            print("🏠 HomeView: View appeared")
         }
     }
 }

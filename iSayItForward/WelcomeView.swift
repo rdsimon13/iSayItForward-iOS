@@ -12,15 +12,35 @@ struct WelcomeView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.mainAppGradient.ignoresSafeArea()
+                // Add error handling for gradient
+                Group {
+                    Color.mainAppGradient
+                }
+                .onAppear {
+                    print("🎨 WelcomeView: Gradient background loaded")
+                }
+                .ignoresSafeArea()
 
-                VStack(spacing: 20) {
+                VStack(spacing: 24) {
                     Spacer()
 
-                    Image("isifLogo")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 96, height: 96)
+                    // Add error handling for logo image
+                    Group {
+                        if let _ = UIImage(named: "isifLogo") {
+                            Image("isifLogo")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 96, height: 96)
+                        } else {
+                            // Fallback icon if image is missing
+                            Image(systemName: "app.fill")
+                                .font(.system(size: 96))
+                                .foregroundColor(Color.brandDarkBlue.opacity(0.7))
+                        }
+                    }
+                    .onAppear {
+                        print("🖼️ WelcomeView: Logo loaded")
+                    }
 
                     Text("iSayItForward")
                         .font(.largeTitle)
@@ -34,22 +54,27 @@ struct WelcomeView: View {
                     Text("Sign In or Register")
                         .font(.title2)
                         .fontWeight(.semibold)
-                        .padding(.top)
+                        .padding(.top, 8)
                         .foregroundColor(Color.brandDarkBlue)
 
-                    TextField("Email or Phone Number", text: $email)
-                        .textFieldStyle(PillTextFieldStyle())
-                        .autocapitalization(.none)
-                        .keyboardType(.emailAddress)
+                    VStack(spacing: 16) {
+                        TextField("Email or Phone Number", text: $email)
+                            .textFieldStyle(PillTextFieldStyle())
+                            .autocapitalization(.none)
+                            .keyboardType(.emailAddress)
 
-                    SecureField("Enter Password", text: $password)
-                        .textFieldStyle(PillTextFieldStyle())
+                        SecureField("Enter Password", text: $password)
+                            .textFieldStyle(PillTextFieldStyle())
+                    }
+                    .padding(.top, 8)
 
                     Button("Sign In") {
+                        print("🔐 WelcomeView: Sign in button tapped")
                         currentUser = AppUser(uid: "demoUID", name: "Damon Sims", email: email)
                         isLoggedIn = true
                     }
                     .buttonStyle(SecondaryActionButtonStyle())
+                    .padding(.top, 8)
 
                     Button("Forgot Password?") {
                         alertMessage = "Password reset is unavailable in demo mode."
@@ -57,34 +82,41 @@ struct WelcomeView: View {
                     }
                     .font(.footnote)
                     .foregroundColor(.gray)
-                    .padding(.top, -10)
+                    .padding(.top, 4)
 
                     Spacer()
 
-                    Text("Sign In With")
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
+                    VStack(spacing: 16) {
+                        Text("Sign In With")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
 
-                    HStack(spacing: 25) {
-                        Image(systemName: "lock.slash")
-                            .font(.system(size: 30))
-                            .foregroundColor(.gray)
+                        HStack(spacing: 25) {
+                            Image(systemName: "lock.slash")
+                                .font(.system(size: 30))
+                                .foregroundColor(.gray)
+                        }
+                        .frame(height: 50)
+
+                        Button("Create New Account") {
+                            print("📝 WelcomeView: Create account button tapped")
+                            showingSignupSheet = true
+                        }
+                        .buttonStyle(PrimaryActionButtonStyle())
+
+                        Text("By signing up, you agree to our Terms of Service")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
                     }
-                    .frame(height: 50)
-
-                    Button("Create New Account") {
-                        showingSignupSheet = true
-                    }
-                    .buttonStyle(PrimaryActionButtonStyle())
-
-                    Text("By signing up, you agree to our Terms of Service")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
                 }
                 .padding(.horizontal, 32)
+                .onAppear {
+                    print("🚀 WelcomeView: View appeared")
+                }
                 .sheet(isPresented: $showingSignupSheet) {
                     SignupView { user in
+                        print("✅ WelcomeView: User signed up: \(user.name)")
                         currentUser = user
                         isLoggedIn = true
                         showingSignupSheet = false
@@ -93,9 +125,9 @@ struct WelcomeView: View {
                 .alert(isPresented: $showingAlert) {
                     Alert(title: Text("Notice"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
                 }
-
-                NavigationLink(destination: HomeView(), isActive: $isLoggedIn) {
-                    EmptyView()
+                .navigationDestination(isPresented: $isLoggedIn) {
+                    HomeView()
+                        .navigationBarBackButtonHidden(true)
                 }
             }
         }
