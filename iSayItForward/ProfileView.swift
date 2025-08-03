@@ -9,6 +9,10 @@ struct ProfileView: View {
     
     @State private var showingAlert = false
     @State private var alertMessage = ""
+    
+    // Signature management
+    @State private var showingSignatureView = false
+    @State private var savedSignatures: [SignatureData] = []
 
     var body: some View {
         ZStack {
@@ -55,6 +59,41 @@ struct ProfileView: View {
                 .foregroundColor(Color.brandDarkBlue)
                 .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
 
+                // Signature Management Section
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Text("Signature Management")
+                            .font(.headline)
+                            .fontWeight(.bold)
+                        Spacer()
+                        Button("Add Signature") {
+                            showingSignatureView = true
+                        }
+                        .font(.caption)
+                        .foregroundColor(Color.brandDarkBlue)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(.white.opacity(0.7))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                    
+                    if savedSignatures.isEmpty {
+                        Text("No signatures saved yet")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .italic()
+                    } else {
+                        ForEach(savedSignatures.prefix(2)) { signature in
+                            SignaturePreviewView(signatureData: signature)
+                        }
+                    }
+                }
+                .padding()
+                .background(.white.opacity(0.9))
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .foregroundColor(Color.brandDarkBlue)
+                .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
+
                 Spacer()
 
                 Button("Log Out") {
@@ -70,6 +109,11 @@ struct ProfileView: View {
             .padding()
             .alert(isPresented: $showingAlert) {
                 Alert(title: Text("Logout Error"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+            }
+            .sheet(isPresented: $showingSignatureView) {
+                SignatureView(isPresented: $showingSignatureView) { signature in
+                    savedSignatures.append(signature)
+                }
             }
             .onAppear(perform: fetchUserData) // Fetch user data when the view appears
         }
