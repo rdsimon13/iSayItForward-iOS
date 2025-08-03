@@ -19,7 +19,7 @@ private struct HomeLaunchpadView: View {
                         .shadow(color: .black.opacity(0.1), radius: 8, y: 3)
 
                     HStack(spacing: 16) {
-                        NavigationLink(destination: Text("Getting Started Screen")) {
+                        NavigationLink(destination: GettingStartedView()) {
                             HomeActionButton(iconName: "figure.walk", text: "Getting Started")
                         }
                         NavigationLink(destination: CreateSIFView()) {
@@ -30,7 +30,7 @@ private struct HomeLaunchpadView: View {
                         }
                     }
 
-                    NavigationLink(destination: Text("Browse SIF Settings")) {
+                    NavigationLink(destination: SIFSettingsView()) {
                         PromoCard(title: "Browse SIF Settings",
                                   description: "Customize your SIF preferences, notification settings, and account options.",
                                   iconName: "gearshape.fill")
