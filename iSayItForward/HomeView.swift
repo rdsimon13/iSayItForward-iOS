@@ -143,11 +143,41 @@ struct HomeView: View {
                     }
             }
             .accentColor(Color.brandDarkBlue)
+            .onAppear {
+                print("🏠 HomeView loaded successfully (iOS 16+)")
+            }
         } else {
-            Text("Home requires iOS 16.0 or newer.")
-                .multilineTextAlignment(.center)
+            // Enhanced fallback for older iOS versions
+            ZStack {
+                Color.mainAppGradient.ignoresSafeArea()
+                
+                VStack(spacing: 20) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.system(size: 60))
+                        .foregroundColor(Color.brandYellow)
+                    
+                    Text("iOS Update Required")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color.brandDarkBlue)
+                    
+                    Text("This app requires iOS 16.0 or newer for the best experience.")
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                        .foregroundColor(.secondary)
+                    
+                    Button("Learn More") {
+                        print("📱 iOS update info requested")
+                        // Could open Settings or show more info
+                    }
+                    .buttonStyle(PrimaryActionButtonStyle())
+                    .padding(.horizontal, 40)
+                }
                 .padding()
-                .foregroundColor(.red)
+            }
+            .onAppear {
+                print("⚠️ HomeView fallback displayed - iOS version < 16.0")
+            }
         }
     }
 }

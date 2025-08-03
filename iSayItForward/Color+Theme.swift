@@ -29,5 +29,10 @@ extension Color {
         let g = Double((rgb >> 8) & 0xFF) / 255
         let b = Double(rgb & 0xFF) / 255
         self.init(.sRGB, red: r, green: g, blue: b, opacity: 1)
+        
+        // Debug logging for color creation
+        #if DEBUG
+        print("🎨 Color created from hex \(hex): RGB(\(r), \(g), \(b))")
+        #endif
     }
 }
