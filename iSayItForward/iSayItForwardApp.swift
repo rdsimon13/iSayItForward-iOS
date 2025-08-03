@@ -9,12 +9,23 @@ struct iSayItForwardApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if UIDevice.current.userInterfaceIdiom == .pad {
-                iPadMainView()
-                    .environmentObject(authState)
-            } else {
-                WelcomeView() // or ContentView() if you prefer
-                    .environmentObject(authState)
+            Group {
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    iPadMainView()
+                        .environmentObject(authState)
+                        .onAppear {
+                            print("📱 App: iPad interface loaded")
+                        }
+                } else {
+                    WelcomeView()
+                        .environmentObject(authState)
+                        .onAppear {
+                            print("📱 App: iPhone interface loaded")
+                        }
+                }
+            }
+            .onAppear {
+                print("🚀 App: Main app started")
             }
         }
     }
@@ -26,8 +37,12 @@ class AuthState: ObservableObject {
     private var authHandle: AuthStateDidChangeListenerHandle?
 
     init() {
+        print("🔐 AuthState: Initializing authentication listener")
         authHandle = Auth.auth().addStateDidChangeListener { auth, user in
-            self.isUserLoggedIn = (user != nil)
+            DispatchQueue.main.async {
+                self.isUserLoggedIn = (user != nil)
+                print("🔐 AuthState: User logged in status: \(self.isUserLoggedIn)")
+            }
         }
     }
 

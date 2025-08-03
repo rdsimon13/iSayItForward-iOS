@@ -6,10 +6,15 @@ struct SecondaryActionButtonStyle: ButtonStyle {
             .font(.headline.weight(.heavy))
             .padding(.vertical, 15)
             .frame(maxWidth: .infinity)
+            .frame(minHeight: 44) // Ensure minimum touch target
             .foregroundColor(.white)
             .background(Color.brandDarkBlue) // Using our new theme color
             .clipShape(Capsule()) // Creates the pill shape
             .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
             .scaleEffect(configuration.isPressed ? 0.98 : 1.0) // Adds a nice press effect
+            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
+            .onAppear {
+                print("🔵 SecondaryButton: Style applied")
+            }
     }
 }
