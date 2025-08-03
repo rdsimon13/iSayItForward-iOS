@@ -75,16 +75,37 @@ private struct LoadingView: View {
     
     var body: some View {
         VStack(spacing: 24) {
-            Image("isifLogo")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 96, height: 96)
-                .scaleEffect(isAnimating ? 1.1 : 1.0)
-                .animation(
-                    Animation.easeInOut(duration: 1.0)
-                        .repeatForever(autoreverses: true),
-                    value: isAnimating
-                )
+            Group {
+                if UIImage(named: "isifLogo") != nil {
+                    Image("isifLogo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 96, height: 96)
+                        .scaleEffect(isAnimating ? 1.1 : 1.0)
+                        .animation(
+                            Animation.easeInOut(duration: 1.0)
+                                .repeatForever(autoreverses: true),
+                            value: isAnimating
+                        )
+                } else {
+                    // Fallback if logo is missing
+                    ZStack {
+                        Circle()
+                            .fill(Color.brandDarkBlue)
+                            .frame(width: 96, height: 96)
+                        Text("iSIF")
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                    }
+                    .scaleEffect(isAnimating ? 1.1 : 1.0)
+                    .animation(
+                        Animation.easeInOut(duration: 1.0)
+                            .repeatForever(autoreverses: true),
+                        value: isAnimating
+                    )
+                }
+            }
             
             Text("iSayItForward")
                 .font(.largeTitle)

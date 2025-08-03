@@ -20,11 +20,27 @@ struct WelcomeView: View {
                 VStack(spacing: 20) {
                     Spacer()
 
-                    // Logo with subtle animation
-                    Image("isifLogo")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 96, height: 96)
+                    // Logo with subtle animation and fallback
+                    Group {
+                        if UIImage(named: "isifLogo") != nil {
+                            Image("isifLogo")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 96, height: 96)
+                        } else {
+                            // Fallback if logo is missing
+                            ZStack {
+                                Circle()
+                                    .fill(Color.brandDarkBlue)
+                                    .frame(width: 96, height: 96)
+                                Text("iSIF")
+                                    .font(.title)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.white)
+                            }
+                        }
+                    }
+                    .accessibilityLabel("iSayItForward app logo")
 
                     Text("iSayItForward")
                         .font(.largeTitle)
@@ -44,34 +60,38 @@ struct WelcomeView: View {
                     // Email Field with Validation
                     VStack(alignment: .leading, spacing: 4) {
                         TextField("Email or Phone Number", text: $email)
-                            .textFieldStyle(PillTextFieldStyle())
+                            .textFieldStyle(EnhancedPillTextFieldStyle(isError: emailValidationError != nil))
                             .autocapitalization(.none)
                             .keyboardType(.emailAddress)
                             .onChange(of: email) { _ in
                                 validateEmail()
                             }
+                            .accessibilityLabel("Email address input")
                         
                         if let error = emailValidationError {
                             Text(error)
                                 .font(.caption)
                                 .foregroundColor(.red)
                                 .padding(.leading, 16)
+                                .accessibilityLabel("Email validation error: \(error)")
                         }
                     }
 
                     // Password Field with Validation
                     VStack(alignment: .leading, spacing: 4) {
                         SecureField("Enter Password", text: $password)
-                            .textFieldStyle(PillTextFieldStyle())
+                            .textFieldStyle(EnhancedPillTextFieldStyle(isError: passwordValidationError != nil))
                             .onChange(of: password) { _ in
                                 validatePassword()
                             }
+                            .accessibilityLabel("Password input")
                         
                         if let error = passwordValidationError {
                             Text(error)
                                 .font(.caption)
                                 .foregroundColor(.red)
                                 .padding(.leading, 16)
+                                .accessibilityLabel("Password validation error: \(error)")
                         }
                     }
 
@@ -86,8 +106,9 @@ struct WelcomeView: View {
                             Text(isLoading ? "Signing In..." : "Sign In")
                         }
                     }
-                    .buttonStyle(SecondaryActionButtonStyle())
+                    .buttonStyle(EnhancedSecondaryActionButtonStyle())
                     .disabled(isLoading || !isFormValid)
+                    .accessibilityLabel(isLoading ? "Signing in, please wait" : "Sign in to your account")
 
                     Button("Forgot Password?") {
                         alertMessage = "Password reset is unavailable in demo mode."
@@ -115,8 +136,9 @@ struct WelcomeView: View {
                         showingSignupSheet = true
                         triggerHapticFeedback()
                     }
-                    .buttonStyle(PrimaryActionButtonStyle())
+                    .buttonStyle(EnhancedPrimaryActionButtonStyle())
                     .disabled(isLoading)
+                    .accessibilityLabel("Create a new account")
 
                     Text("By signing up, you agree to our Terms of Service")
                         .font(.caption2)
@@ -127,8 +149,7 @@ struct WelcomeView: View {
                 .disabled(isLoading)
                 .sheet(isPresented: $showingSignupSheet) {
                     EnhancedSignupView { user in
-                        currentUser = user
-                        navigateToHome()
+                        authState.signInDemo(email: user.email, name: user.name)
                         showingSignupSheet = false
                     }
                 }
@@ -143,10 +164,7 @@ struct WelcomeView: View {
                 // Navigation to HomeView
                 NavigationLink(
                     destination: enhancedHomeView(),
-                    isActive: Binding(
-                        get: { authState.isUserLoggedIn && currentUser != nil },
-                        set: { _ in }
-                    )
+                    isActive: $authState.isUserLoggedIn
                 ) {
                     EmptyView()
                 }
@@ -208,18 +226,16 @@ struct WelcomeView: View {
             isLoading = false
             
             // Demo authentication - always succeeds
-            currentUser = AppUser(uid: "demoUID", name: "Damon Sims", email: email)
+            authState.signInDemo(email: email, name: "Damon Sims")
             print("✅ [WelcomeView] Demo sign in successful for: \(email)")
             
             triggerHapticFeedback(.success)
-            navigateToHome()
         }
     }
     
     private func navigateToHome() {
-        withAnimation(.easeInOut(duration: 0.3)) {
-            authState.isUserLoggedIn = true
-        }
+        // Navigation is now handled by AuthState.isUserLoggedIn binding
+        print("🏠 [WelcomeView] Navigating to home")
     }
     
     private func triggerHapticFeedback(_ type: UINotificationFeedbackGenerator.FeedbackType = .selection) {
@@ -267,8 +283,9 @@ private struct EnhancedSignupView: View {
 
                     VStack(alignment: .leading, spacing: 4) {
                         TextField("Your Name", text: $name)
-                            .textFieldStyle(PillTextFieldStyle())
+                            .textFieldStyle(EnhancedPillTextFieldStyle(isError: nameError != nil))
                             .onChange(of: name) { _ in validateName() }
+                            .accessibilityLabel("Full name input")
                         
                         if let error = nameError {
                             Text(error)
@@ -280,10 +297,11 @@ private struct EnhancedSignupView: View {
 
                     VStack(alignment: .leading, spacing: 4) {
                         TextField("Your Email", text: $email)
-                            .textFieldStyle(PillTextFieldStyle())
+                            .textFieldStyle(EnhancedPillTextFieldStyle(isError: emailError != nil))
                             .autocapitalization(.none)
                             .keyboardType(.emailAddress)
                             .onChange(of: email) { _ in validateEmail() }
+                            .accessibilityLabel("Email address input")
                         
                         if let error = emailError {
                             Text(error)
@@ -295,8 +313,9 @@ private struct EnhancedSignupView: View {
 
                     VStack(alignment: .leading, spacing: 4) {
                         SecureField("Create Password", text: $password)
-                            .textFieldStyle(PillTextFieldStyle())
+                            .textFieldStyle(EnhancedPillTextFieldStyle(isError: passwordError != nil))
                             .onChange(of: password) { _ in validatePassword() }
+                            .accessibilityLabel("Password input")
                         
                         if let error = passwordError {
                             Text(error)
@@ -318,8 +337,9 @@ private struct EnhancedSignupView: View {
                             Text(isLoading ? "Creating Account..." : "Sign Up")
                         }
                     }
-                    .buttonStyle(PrimaryActionButtonStyle())
+                    .buttonStyle(EnhancedPrimaryActionButtonStyle())
                     .disabled(isLoading || !isFormValid)
+                    .accessibilityLabel(isLoading ? "Creating account, please wait" : "Create your account")
                 }
                 .padding(.horizontal, 32)
                 .padding(.vertical)
