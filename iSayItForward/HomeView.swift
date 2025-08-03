@@ -14,9 +14,9 @@ private struct HomeLaunchpadView: View {
                     Text("Welcome to iSIF, \(userName).\nChoose an option below to get started.")
                         .padding(20)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(.white.opacity(0.85))
+                        .background(.white.opacity(0.9))
                         .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
+                        .shadow(color: .black.opacity(0.1), radius: 8, y: 3)
 
                     HStack(spacing: 16) {
                         NavigationLink(destination: Text("Getting Started Screen")) {
@@ -26,8 +26,14 @@ private struct HomeLaunchpadView: View {
                             HomeActionButton(iconName: "square.and.pencil", text: "CREATE A SIF")
                         }
                         NavigationLink(destination: MySIFsView()) {
-                            HomeActionButton(iconName: "envelope", text: "MANAGE MY SIF'S")
+                            HomeActionButton(iconName: "envelope", text: "MANAGE MY SIFS")
                         }
+                    }
+
+                    NavigationLink(destination: Text("Browse SIF Settings")) {
+                        PromoCard(title: "Browse SIF Settings",
+                                  description: "Customize your SIF preferences, notification settings, and account options.",
+                                  iconName: "gearshape.fill")
                     }
 
                     NavigationLink(destination: TemplateGalleryView()) {

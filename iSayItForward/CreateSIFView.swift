@@ -30,6 +30,10 @@ struct CreateSIFView: View {
     @State private var showingAlert = false
     @State private var alertTitle = ""
     @State private var alertMessage = ""
+    
+    // eSignature functionality
+    @State private var showingSignatureView = false
+    @State private var currentSignature: SignatureData? = nil
 
     // Placeholder data for the group picker
     let groups = ["Team", "Family", "Friends"]
@@ -96,6 +100,43 @@ struct CreateSIFView: View {
                                 .cornerRadius(16)
                         }
                         
+                        // "ENHANCE YOUR SIF!" Section
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("ENHANCE YOUR SIF!")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .foregroundColor(Color.brandDarkBlue)
+                            
+                            HStack(spacing: 12) {
+                                NavigationLink(destination: TemplateGalleryView()) {
+                                    EnhancementButton(iconName: "doc.on.doc", text: "Templates")
+                                }
+                                
+                                NavigationLink(destination: DocumentUploadView()) {
+                                    EnhancementButton(iconName: "square.and.arrow.up", text: "Upload")
+                                }
+                                
+                                Button(action: {
+                                    showingSignatureView = true
+                                }) {
+                                    EnhancementButton(
+                                        iconName: currentSignature != nil ? "checkmark.seal.fill" : "signature",
+                                        text: "Signature"
+                                    )
+                                }
+                                .foregroundColor(Color.brandDarkBlue)
+                            }
+                        }
+                        .padding()
+                        .background(.white.opacity(0.9))
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
+                        
+                        // Signature Preview
+                        if let signature = currentSignature {
+                            SignaturePreviewView(signatureData: signature)
+                        }
+                        
                         Spacer()
 
                         // Send Button
@@ -109,6 +150,11 @@ struct CreateSIFView: View {
                 }
                 .navigationTitle("Create a SIF")
                 .navigationBarTitleDisplayMode(.inline) // Smaller title style
+                .sheet(isPresented: $showingSignatureView) {
+                    SignatureView(isPresented: $showingSignatureView) { signature in
+                        currentSignature = signature
+                    }
+                }
             }
             .alert(isPresented: $showingAlert) {
                 Alert(title: Text(alertTitle), message: Text(alertMessage), dismissButton: .default(Text("OK")))
@@ -141,7 +187,7 @@ struct CreateSIFView: View {
             recipientList = [selectedGroup]
         }
 
-        let newSif = SIFItem(
+        var newSif = SIFItem(
             authorUid: authorUid,
             recipients: recipientList,
             subject: subject,
@@ -149,6 +195,12 @@ struct CreateSIFView: View {
             createdDate: Date(),
             scheduledDate: shouldSchedule ? scheduleDate : Date()
         )
+        
+        // Add signature data if available
+        if let signature = currentSignature {
+            newSif.signatureImageData = signature.signatureImageData
+            newSif.signatureTimestamp = signature.timestamp
+        }
 
         let db = Firestore.firestore()
         do {
@@ -166,6 +218,28 @@ struct CreateSIFView: View {
         self.alertTitle = title
         self.alertMessage = message
         self.showingAlert = true
+    }
+}
+
+// MARK: - Enhancement Button
+private struct EnhancementButton: View {
+    let iconName: String
+    let text: String
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            Image(systemName: iconName)
+                .font(.title2)
+                .frame(width: 40, height: 40)
+            Text(text)
+                .font(.caption)
+                .fontWeight(.medium)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
+        .background(.white.opacity(0.7))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: .black.opacity(0.1), radius: 3, y: 1)
     }
 }
 

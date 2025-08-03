@@ -37,6 +37,34 @@ struct SIFDetailView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                     .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
 
+                    // Signature Display (if available)
+                    if let signatureData = sif.signatureImageData,
+                       let signatureTimestamp = sif.signatureTimestamp {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Digital Signature")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                            
+                            if let uiImage = UIImage(data: signatureData) {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(height: 60)
+                                    .background(.white)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    .shadow(color: .black.opacity(0.1), radius: 3, y: 1)
+                            }
+                            
+                            Text("Signed on \(signatureTimestamp.formatted(date: .abbreviated, time: .shortened))")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding()
+                        .background(.white.opacity(0.85))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
+                    }
+
                     Spacer()
                 }
                 .padding()
