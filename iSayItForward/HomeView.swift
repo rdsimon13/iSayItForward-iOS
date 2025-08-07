@@ -22,7 +22,7 @@ private struct HomeLaunchpadView: View {
                         NavigationLink(destination: Text("Getting Started Screen")) {
                             HomeActionButton(iconName: "figure.walk", text: "Getting Started")
                         }
-                        NavigationLink(destination: CreateSIFView()) {
+                        NavigationLink(destination: SIFComposerView()) {
                             HomeActionButton(iconName: "square.and.pencil", text: "CREATE A SIF")
                         }
                         NavigationLink(destination: MySIFsView()) {
@@ -36,7 +36,7 @@ private struct HomeLaunchpadView: View {
                                   iconName: "photo.on.rectangle.angled")
                     }
 
-                    NavigationLink(destination: CreateSIFView()) {
+                    NavigationLink(destination: SIFComposerView()) {
                         PromoCard(title: "Schedule a SIF",
                                   description: "Never forget to send greetings on that special day ever again. Schedule your SIF for future delivery today!",
                                   iconName: "calendar")
@@ -124,7 +124,7 @@ struct HomeView: View {
                     Text("Home")
                 }
 
-                CreateSIFView()
+                SIFComposerView()
                     .tabItem {
                         Image(systemName: "square.and.pencil")
                         Text("Send SIF")
