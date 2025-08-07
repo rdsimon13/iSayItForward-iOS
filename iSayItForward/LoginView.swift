@@ -1,9 +1,14 @@
 import SwiftUI
+import AuthenticationServices
 
 struct LoginView: View {
+    @StateObject private var authManager = AuthenticationManager()
     @State private var email = ""
     @State private var password = ""
-    @State private var isLoggedIn = false
+    @State private var showSignUp = false
+    @State private var showPasswordReset = false
+    @State private var resetEmail = ""
+    @State private var showingPasswordResetAlert = false
 
     var body: some View {
         if #available(iOS 16.0, *) {
@@ -20,38 +25,189 @@ struct LoginView: View {
                             .font(.headline)
                             .foregroundColor(.secondary)
 
-                        TextField("Email or Phone Number", text: $email)
+                        // Error Message
+                        if let errorMessage = authManager.errorMessage {
+                            Text(errorMessage)
+                                .foregroundColor(.red)
+                                .font(.caption)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal)
+                        }
+
+                        TextField("Email", text: $email)
                             .textFieldStyle(PillTextFieldStyle())
                             .autocapitalization(.none)
                             .keyboardType(.emailAddress)
+                            .disabled(authManager.isLoading)
 
-                        SecureField("Enter Password", text: $password)
+                        SecureField("Password", text: $password)
                             .textFieldStyle(PillTextFieldStyle())
+                            .disabled(authManager.isLoading)
 
-                        Button("Login") {
-                            // Login action here
-                            self.isLoggedIn = true
+                        // Email/Password Login Button
+                        Button(action: {
+                            authManager.clearError()
+                            Task {
+                                await authManager.signIn(email: email, password: password)
+                            }
+                        }) {
+                            HStack {
+                                if authManager.isLoading {
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                } else {
+                                    Text("Login")
+                                }
+                            }
                         }
                         .buttonStyle(SecondaryActionButtonStyle())
+                        .disabled(authManager.isLoading || email.isEmpty || password.isEmpty)
                         .padding(.top)
 
+                        // Password Reset Link
+                        Button("Forgot Password?") {
+                            showPasswordReset = true
+                        }
+                        .font(.footnote)
+                        .foregroundColor(.blue)
+
+                        // Divider
+                        HStack {
+                            Rectangle()
+                                .frame(height: 1)
+                                .foregroundColor(.gray.opacity(0.3))
+                            Text("OR")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal, 8)
+                            Rectangle()
+                                .frame(height: 1)
+                                .foregroundColor(.gray.opacity(0.3))
+                        }
+                        .padding(.vertical)
+
+                        // Google Sign In Button
+                        Button(action: {
+                            authManager.clearError()
+                            Task {
+                                await authManager.signInWithGoogle()
+                            }
+                        }) {
+                            HStack {
+                                Image(systemName: "globe")
+                                Text("Continue with Google")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.white)
+                            .foregroundColor(.black)
+                            .cornerRadius(25)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 25)
+                                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                            )
+                        }
+                        .disabled(authManager.isLoading)
+
+                        // Apple Sign In Button
+                        AppleSignInButton(authManager: authManager)
+                            .frame(height: 50)
+                            .cornerRadius(25)
+
                         NavigationLink("Don't have an account? Sign up") {
-                            Text("Signup Screen")
+                            SignupView()
                         }
                         .font(.footnote)
                         .padding(.top)
                     }
                     .padding(.horizontal, 32)
-                    .navigationDestination(isPresented: $isLoggedIn) {
+                    .navigationDestination(isPresented: $authManager.isAuthenticated) {
                         HomeView()
                     }
                 }
+            }
+            .alert("Password Reset", isPresented: $showPasswordReset) {
+                TextField("Email", text: $resetEmail)
+                Button("Send Reset Email") {
+                    Task {
+                        await authManager.resetPassword(email: resetEmail)
+                        showingPasswordResetAlert = true
+                    }
+                }
+                Button("Cancel", role: .cancel) {
+                    resetEmail = ""
+                }
+            } message: {
+                Text("Enter your email address to receive a password reset link.")
+            }
+            .alert("Password Reset", isPresented: $showingPasswordResetAlert) {
+                Button("OK") {
+                    resetEmail = ""
+                }
+            } message: {
+                Text(authManager.errorMessage ?? "If an account with that email exists, a password reset link has been sent.")
             }
         } else {
             Text("iSayItForward requires iOS 16.0 or newer.")
                 .foregroundColor(.red)
                 .multilineTextAlignment(.center)
                 .padding()
+        }
+    }
+}
+
+// MARK: - Custom Apple Sign In Button
+struct AppleSignInButton: UIViewRepresentable {
+    @ObservedObject var authManager: AuthenticationManager
+    
+    func makeUIView(context: Context) -> ASAuthorizationAppleIDButton {
+        let button = ASAuthorizationAppleIDButton(type: .signIn, style: .black)
+        button.addTarget(context.coordinator, action: #selector(Coordinator.handleAppleSignIn), for: .touchUpInside)
+        return button
+    }
+    
+    func updateUIView(_ uiView: ASAuthorizationAppleIDButton, context: Context) {}
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    class Coordinator: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+        let parent: AppleSignInButton
+        
+        init(_ parent: AppleSignInButton) {
+            self.parent = parent
+        }
+        
+        @objc func handleAppleSignIn() {
+            let appleIDProvider = ASAuthorizationAppleIDProvider()
+            let request = appleIDProvider.createRequest()
+            request.requestedScopes = [.fullName, .email]
+            
+            let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+            authorizationController.delegate = self
+            authorizationController.presentationContextProvider = self
+            authorizationController.performRequests()
+        }
+        
+        func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let window = windowScene.windows.first else {
+                return ASPresentationAnchor()
+            }
+            return window
+        }
+        
+        func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+            if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
+                Task {
+                    await parent.authManager.signInWithAppleCredential(appleIDCredential)
+                }
+            }
+        }
+        
+        func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+            parent.authManager.errorMessage = AuthenticationError.appleSignInFailed.errorDescription
         }
     }
 }

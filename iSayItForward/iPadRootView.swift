@@ -2,10 +2,10 @@ import SwiftUI
 
 struct iPadRootView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @EnvironmentObject var authState: AuthState
+    @EnvironmentObject var authManager: AuthenticationManager
 
     var body: some View {
-        if authState.isUserLoggedIn {
+        if authManager.isAuthenticated {
             if horizontalSizeClass == .regular {
                 iPadMainView()
             } else {

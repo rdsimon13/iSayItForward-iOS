@@ -3,6 +3,7 @@ import FirebaseAuth
 import FirebaseFirestore // This was the missing line
 
 struct ProfileView: View {
+    @EnvironmentObject var authManager: AuthenticationManager
     // This now correctly gets the logged-in user's name and email
     @State private var userName: String = "User"
     @State private var userEmail: String = "No email found"
@@ -58,12 +59,7 @@ struct ProfileView: View {
                 Spacer()
 
                 Button("Log Out") {
-                    do {
-                        try Auth.auth().signOut()
-                    } catch let signOutError as NSError {
-                        self.alertMessage = "Error signing out: \(signOutError.localizedDescription)"
-                        self.showingAlert = true
-                    }
+                    authManager.signOut()
                 }
                 .buttonStyle(PrimaryActionButtonStyle())
             }
@@ -77,13 +73,17 @@ struct ProfileView: View {
     
     // Fetch user data from Firestore
     func fetchUserData() {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
+        guard let uid = authManager.user?.uid else { return }
         
         let db = Firestore.firestore()
         db.collection("users").document(uid).getDocument { snapshot, error in
             if let document = snapshot, document.exists {
                 self.userName = document.data()?["name"] as? String ?? "User"
                 self.userEmail = document.data()?["email"] as? String ?? "No email found"
+            } else if let user = authManager.user {
+                // Fallback to Firebase Auth user data
+                self.userName = user.displayName ?? "User"
+                self.userEmail = user.email ?? "No email found"
             }
         }
     }

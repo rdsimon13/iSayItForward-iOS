@@ -1,13 +1,9 @@
 import SwiftUI
 
 struct WelcomeView: View {
-    @State private var email: String = ""
-    @State private var password: String = ""
+    @EnvironmentObject var authManager: AuthenticationManager
     @State private var showingSignupSheet = false
-    @State private var showingAlert = false
-    @State private var alertMessage = ""
-    @State private var isLoggedIn = false
-    @State private var currentUser: AppUser?
+    @State private var showingLoginSheet = false
 
     var body: some View {
         NavigationStack {
@@ -31,46 +27,12 @@ struct WelcomeView: View {
                         .font(.headline)
                         .foregroundColor(.secondary)
 
-                    Text("Sign In or Register")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .padding(.top)
-                        .foregroundColor(Color.brandDarkBlue)
-
-                    TextField("Email or Phone Number", text: $email)
-                        .textFieldStyle(PillTextFieldStyle())
-                        .autocapitalization(.none)
-                        .keyboardType(.emailAddress)
-
-                    SecureField("Enter Password", text: $password)
-                        .textFieldStyle(PillTextFieldStyle())
-
-                    Button("Sign In") {
-                        currentUser = AppUser(uid: "demoUID", name: "Damon Sims", email: email)
-                        isLoggedIn = true
-                    }
-                    .buttonStyle(SecondaryActionButtonStyle())
-
-                    Button("Forgot Password?") {
-                        alertMessage = "Password reset is unavailable in demo mode."
-                        showingAlert = true
-                    }
-                    .font(.footnote)
-                    .foregroundColor(.gray)
-                    .padding(.top, -10)
-
                     Spacer()
 
-                    Text("Sign In With")
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-
-                    HStack(spacing: 25) {
-                        Image(systemName: "lock.slash")
-                            .font(.system(size: 30))
-                            .foregroundColor(.gray)
+                    Button("Sign In") {
+                        showingLoginSheet = true
                     }
-                    .frame(height: 50)
+                    .buttonStyle(SecondaryActionButtonStyle())
 
                     Button("Create New Account") {
                         showingSignupSheet = true
@@ -84,18 +46,10 @@ struct WelcomeView: View {
                 }
                 .padding(.horizontal, 32)
                 .sheet(isPresented: $showingSignupSheet) {
-                    SignupView { user in
-                        currentUser = user
-                        isLoggedIn = true
-                        showingSignupSheet = false
-                    }
+                    SignupView()
                 }
-                .alert(isPresented: $showingAlert) {
-                    Alert(title: Text("Notice"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
-                }
-
-                NavigationLink(destination: HomeView(), isActive: $isLoggedIn) {
-                    EmptyView()
+                .sheet(isPresented: $showingLoginSheet) {
+                    LoginView()
                 }
             }
         }
