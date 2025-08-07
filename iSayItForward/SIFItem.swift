@@ -18,6 +18,9 @@ struct SIFItem: Identifiable, Codable, Hashable, Equatable {
     var attachmentURL: String? = nil
     var templateName: String? = nil
     
+    // Privacy setting for profile viewing
+    var isPublic: Bool = false
+    
     // Hashable & Equatable conformance for SwiftUI lists
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)

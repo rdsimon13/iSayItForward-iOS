@@ -5,6 +5,7 @@ import FirebaseFirestore
 // MARK: - HomeLaunchpadView must be defined first
 private struct HomeLaunchpadView: View {
     @State private var userName: String = "User"
+    @State private var showingDemoProfile = false
 
     var body: some View {
         ZStack {
@@ -42,6 +43,15 @@ private struct HomeLaunchpadView: View {
                                   iconName: "calendar")
                     }
 
+                    // Demo user profile link for testing
+                    Button {
+                        showingDemoProfile = true
+                    } label: {
+                        PromoCard(title: "Community Profiles",
+                                  description: "Discover inspiring SIF creators in our community and see their impact stories.",
+                                  iconName: "person.3.fill")
+                    }
+
                     Spacer()
                 }
                 .padding()
@@ -49,6 +59,9 @@ private struct HomeLaunchpadView: View {
             .onAppear(perform: fetchUserData)
             .navigationTitle("Home")
             .navigationBarHidden(true)
+            .sheet(isPresented: $showingDemoProfile) {
+                UserProfileView(userUID: "demo-user-123")
+            }
         }
     }
 
