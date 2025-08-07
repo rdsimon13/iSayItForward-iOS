@@ -13,6 +13,10 @@
 		021BAC742E3EC11A006FE2D6 /* ReportOverlayModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021BAC6D2E3EC11A006FE2D6 /* ReportOverlayModifier.swift */; };
 		021BAC752E3EC11A006FE2D6 /* ReportContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021BAC6C2E3EC11A006FE2D6 /* ReportContentView.swift */; };
 		021BAC772E3EC1A7006FE2D6 /* ReportButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021BAC762E3EC1A7006FE2D6 /* ReportButton.swift */; };
+		022E2A782E44583100FF6129 /* GettingStartedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022E2A742E44583100FF6129 /* GettingStartedView.swift */; };
+		022E2A792E44583100FF6129 /* SIFSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022E2A752E44583100FF6129 /* SIFSettingsView.swift */; };
+		022E2A7A2E44583100FF6129 /* SignatureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022E2A762E44583100FF6129 /* SignatureView.swift */; };
+		022E2A7C2E4462D000FF6129 /* iSayItForwardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022E2A7B2E4462D000FF6129 /* iSayItForwardApp.swift */; };
 		7B14DFE52E29756D004AB2B3 /* UploadMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFDF2E29756D004AB2B3 /* UploadMediaView.swift */; };
 		7B14DFE62E29756D004AB2B3 /* SIFPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFD82E29756D004AB2B3 /* SIFPreviewView.swift */; };
 		7B14DFE72E29756D004AB2B3 /* TemplateItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFDC2E29756D004AB2B3 /* TemplateItem.swift */; };
@@ -66,6 +70,10 @@
 		021BAC6F2E3EC11A006FE2D6 /* Screenshot 2025-07-29 at 10.30.53 PM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Screenshot 2025-07-29 at 10.30.53 PM.png"; sourceTree = "<group>"; };
 		021BAC702E3EC11A006FE2D6 /* TestReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestReportView.swift; sourceTree = "<group>"; };
 		021BAC762E3EC1A7006FE2D6 /* ReportButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportButton.swift; sourceTree = "<group>"; };
+		022E2A742E44583100FF6129 /* GettingStartedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GettingStartedView.swift; sourceTree = "<group>"; };
+		022E2A752E44583100FF6129 /* SIFSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SIFSettingsView.swift; sourceTree = "<group>"; };
+		022E2A762E44583100FF6129 /* SignatureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureView.swift; sourceTree = "<group>"; };
+		022E2A7B2E4462D000FF6129 /* iSayItForwardApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iSayItForwardApp.swift; sourceTree = "<group>"; };
 		7B14DFBB2E29756D004AB2B3 /*  Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = " Color+Hex.swift"; sourceTree = "<group>"; };
 		7B14DFBC2E29756D004AB2B3 /* AdvancedComposerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedComposerView.swift; sourceTree = "<group>"; };
 		7B14DFBD2E29756D004AB2B3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -128,9 +136,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		022E2A772E44583100FF6129 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		7B4B2AD92E289CAA00F1ABCA = {
 			isa = PBXGroup;
 			children = (
+				022E2A7B2E4462D000FF6129 /* iSayItForwardApp.swift */,
+				022E2A742E44583100FF6129 /* GettingStartedView.swift */,
+				022E2A752E44583100FF6129 /* SIFSettingsView.swift */,
+				022E2A762E44583100FF6129 /* SignatureView.swift */,
+				022E2A772E44583100FF6129 /* Utilities */,
 				7B14DFBB2E29756D004AB2B3 /*  Color+Hex.swift */,
 				7B14DFBC2E29756D004AB2B3 /* AdvancedComposerView.swift */,
 				7B79AF8E2E32A06500BE0809 /* AppDelegate.swift */,
@@ -320,6 +340,7 @@
 				7B85EC6C2E29B5BA002A16F4 /* SplashView.swift in Sources */,
 				7B79AF892E324A0000BE0809 /* PillTextFieldStyle.swift in Sources */,
 				7B14DFFA2E29756D004AB2B3 /* LoginView.swift in Sources */,
+				022E2A7C2E4462D000FF6129 /* iSayItForwardApp.swift in Sources */,
 				7B14DFFB2E29756D004AB2B3 /* ProfileView.swift in Sources */,
 				7BDB06122E35BB5600339523 /* SidebarItem.swift in Sources */,
 				7B14DFFC2E29756D004AB2B3 /*  Color+Hex.swift in Sources */,
@@ -330,6 +351,9 @@
 				7B14E0022E29756D004AB2B3 /* TemplateGalleryView.swift in Sources */,
 				021BAC722E3EC11A006FE2D6 /* ReportUIDemo.swift in Sources */,
 				021BAC732E3EC11A006FE2D6 /* TestReportView.swift in Sources */,
+				022E2A782E44583100FF6129 /* GettingStartedView.swift in Sources */,
+				022E2A792E44583100FF6129 /* SIFSettingsView.swift in Sources */,
+				022E2A7A2E44583100FF6129 /* SignatureView.swift in Sources */,
 				021BAC742E3EC11A006FE2D6 /* ReportOverlayModifier.swift in Sources */,
 				021BAC752E3EC11A006FE2D6 /* ReportContentView.swift in Sources */,
 				7B14E0032E29756D004AB2B3 /* SIFConfirmationView.swift in Sources */,
@@ -489,7 +513,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 5;
-				PRODUCT_BUNDLE_IDENTIFIER = iSIF.iSayItForward;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.gds-isif.iSayItForward";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -525,7 +549,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 5;
-				PRODUCT_BUNDLE_IDENTIFIER = iSIF.iSayItForward;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.gds-isif.iSayItForward";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
