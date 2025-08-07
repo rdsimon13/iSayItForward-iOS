@@ -124,6 +124,12 @@ struct HomeView: View {
                     Text("Home")
                 }
 
+                SearchView()
+                    .tabItem {
+                        Image(systemName: "magnifyingglass")
+                        Text("Search")
+                    }
+
                 CreateSIFView()
                     .tabItem {
                         Image(systemName: "square.and.pencil")
