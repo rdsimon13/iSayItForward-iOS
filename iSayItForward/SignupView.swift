@@ -1,5 +1,5 @@
-// ✅ SignupView.swift
 import SwiftUI
+import FirebaseAuth
 
 struct SignupView: View {
     var onSignup: ((AppUser) -> Void)? = nil
@@ -58,9 +58,17 @@ struct SignupView: View {
             showingAlert = true
             return
         }
-        let newUser = AppUser(uid: "demoUID", name: name, email: email)
-        print("✅ [Demo Mode] Signed up user: \(newUser.name)")
-        onSignup?(newUser)
-        presentationMode.wrappedValue.dismiss()
+        Auth.auth().createUser(withEmail: email, password: password) { result, error in
+            if let error = error {
+                alertMessage = error.localizedDescription
+                showingAlert = true
+                return
+            }
+            if let user = result?.user {
+                let newUser = AppUser(uid: user.uid, name: name, email: email)
+                onSignup?(newUser)
+                presentationMode.wrappedValue.dismiss()
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
 import SwiftUI
+import FirebaseAuth
 
 struct WelcomeView: View {
     @State private var email: String = ""
@@ -53,8 +54,17 @@ struct WelcomeView: View {
                         .textFieldStyle(PillTextFieldStyle())
 
                     Button("Sign In") {
-                        currentUser = AppUser(uid: "demoUID", name: "Damon Sims", email: email)
-                        isLoggedIn = true
+                        Auth.auth().signIn(withEmail: email, password: password) { result, error in
+                            if let error = error {
+                                alertMessage = error.localizedDescription
+                                showingAlert = true
+                                return
+                            }
+                            if let user = result?.user {
+                                currentUser = AppUser(uid: user.uid, name: user.displayName ?? "", email: email)
+                                isLoggedIn = true
+                            }
+                        }
                     }
                     .buttonStyle(SecondaryActionButtonStyle())
 
