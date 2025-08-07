@@ -18,6 +18,10 @@ struct SIFItem: Identifiable, Codable, Hashable, Equatable {
     var attachmentURL: String? = nil
     var templateName: String? = nil
     
+    // Timeline feature properties
+    var likes: [String] = []  // Array of user IDs who liked this SIF
+    var readBy: [String] = [] // Array of user IDs who have read this SIF
+    
     // Hashable & Equatable conformance for SwiftUI lists
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
