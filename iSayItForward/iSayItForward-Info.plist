@@ -11,5 +11,14 @@
 			<string>com.googleusercontent.apps.1466798814601-sww46kscb4dfcd7ccb1t159k7f8357t8</string>
 		</dict>
 	</array>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.isayitforward.upload</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>background-processing</string>
+		<string>background-fetch</string>
+	</array>
 </dict>
 </plist>

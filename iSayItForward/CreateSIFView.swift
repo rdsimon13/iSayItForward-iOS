@@ -30,6 +30,10 @@ struct CreateSIFView: View {
     @State private var showingAlert = false
     @State private var alertTitle = ""
     @State private var alertMessage = ""
+    
+    // Send options sheet
+    @State private var showingSendOptions = false
+    @State private var currentSIF: SIFItem?
 
     // Placeholder data for the group picker
     let groups = ["Team", "Family", "Friends"]
@@ -100,7 +104,19 @@ struct CreateSIFView: View {
 
                         // Send Button
                         Button("Send SIF") {
-                            saveSIF()
+                            // Create a SIF and trigger the send options
+                            let newSif = SIFItem(
+                                authorUid: Auth.auth().currentUser?.uid ?? "",
+                                recipients: getRecipientList(),
+                                subject: subject,
+                                message: message,
+                                createdDate: Date(),
+                                scheduledDate: shouldSchedule ? scheduleDate : Date(),
+                                isScheduled: shouldSchedule
+                            )
+                            
+                            // Save first, then trigger send options
+                            saveSIFWithSendOptions(newSif)
                         }
                         .buttonStyle(PrimaryActionButtonStyle())
                         .padding(.top)
@@ -113,10 +129,59 @@ struct CreateSIFView: View {
             .alert(isPresented: $showingAlert) {
                 Alert(title: Text(alertTitle), message: Text(alertMessage), dismissButton: .default(Text("OK")))
             }
+            .sheet(isPresented: $showingSendOptions) {
+                if let sif = currentSIF {
+                    SendOptionsView(sif: .constant(sif))
+                }
+            }
         }
     }
 
     // MARK: - Firestore Logic
+    
+    func getRecipientList() -> [String] {
+        switch recipientMode {
+        case .single:
+            return singleRecipient.isEmpty ? [] : [singleRecipient]
+        case .multiple:
+            return multipleRecipients.isEmpty ? [] : multipleRecipients.split(separator: ",").map { String($0.trimmingCharacters(in: .whitespaces)) }
+        case .group:
+            return [selectedGroup]
+        }
+    }
+    
+    func saveSIFWithSendOptions(_ sif: SIFItem) {
+        guard !sif.recipients.isEmpty else {
+            showAlert(title: "Missing Information", message: "Please enter recipients.")
+            return
+        }
+        
+        guard !sif.subject.isEmpty else {
+            showAlert(title: "Missing Information", message: "Please enter a subject.")
+            return
+        }
+        
+        guard !sif.message.isEmpty else {
+            showAlert(title: "Missing Information", message: "Please enter a message.")
+            return
+        }
+        
+        let db = Firestore.firestore()
+        do {
+            var newSif = sif
+            // Save the SIF first to get an ID
+            let docRef = try db.collection("sifs").addDocument(from: newSif)
+            newSif.id = docRef.documentID
+            
+            // Update the current SIF and show send options
+            currentSIF = newSif
+            showingSendOptions = true
+            
+        } catch let error {
+            showAlert(title: "Error", message: "There was an issue saving your SIF: \(error.localizedDescription)")
+        }
+    }
+    
     func saveSIF() {
         guard let authorUid = Auth.auth().currentUser?.uid else {
             showAlert(title: "Error", message: "You must be logged in to send a SIF.")
