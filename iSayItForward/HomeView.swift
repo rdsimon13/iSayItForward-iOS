@@ -29,6 +29,18 @@ private struct HomeLaunchpadView: View {
                             HomeActionButton(iconName: "envelope", text: "MANAGE MY SIF'S")
                         }
                     }
+                    
+                    // New features section
+                    VStack(spacing: 16) {
+                        HStack(spacing: 16) {
+                            NavigationLink(destination: ResponseListView(sifId: nil)) {
+                                HomeActionButton(iconName: "bubble.left.and.bubble.right", text: "MY RESPONSES")
+                            }
+                            NavigationLink(destination: ImpactMetricsView()) {
+                                HomeActionButton(iconName: "chart.bar.doc.horizontal", text: "IMPACT ANALYTICS")
+                            }
+                        }
+                    }
 
                     NavigationLink(destination: TemplateGalleryView()) {
                         PromoCard(title: "SIF Template Gallery",
@@ -40,6 +52,19 @@ private struct HomeLaunchpadView: View {
                         PromoCard(title: "Schedule a SIF",
                                   description: "Never forget to send greetings on that special day ever again. Schedule your SIF for future delivery today!",
                                   iconName: "calendar")
+                    }
+                    
+                    // Enhanced features promo cards
+                    NavigationLink(destination: SignaturePadView(onSignatureComplete: { _ in }, onCancel: {})) {
+                        PromoCard(title: "Digital Signatures",
+                                  description: "Sign documents and responses with official eSignatures. Add authenticity and legal validity to your communications.",
+                                  iconName: "signature")
+                    }
+                    
+                    NavigationLink(destination: ResponseSignatureIntegrationView()) {
+                        PromoCard(title: "Response & Signature System",
+                                  description: "Experience the complete response management system with signature integration and impact tracking.",
+                                  iconName: "sparkles")
                     }
 
                     Spacer()
