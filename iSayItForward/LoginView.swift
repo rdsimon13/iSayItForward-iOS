@@ -9,7 +9,7 @@ struct LoginView: View {
         if #available(iOS 16.0, *) {
             NavigationStack {
                 ZStack {
-                    Color.mainAppGradient.ignoresSafeArea()
+                    self.appGradientTopOnly()
 
                     VStack(spacing: 20) {
                         Text("iSayItForward")

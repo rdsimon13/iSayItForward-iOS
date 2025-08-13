@@ -9,7 +9,7 @@ struct MySIFsView: View {
         if #available(iOS 16.0, *) {
             NavigationStack {
                 ZStack {
-                    Color.mainAppGradient.ignoresSafeArea()
+                    self.appGradientTopOnly()
 
                     VStack {
                         if sifs.isEmpty {

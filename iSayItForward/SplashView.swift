@@ -4,7 +4,7 @@ struct SplashView: View {
     var body: some View {
         ZStack {
             // Replaced the old gradient with our new app-wide theme gradient
-            Color.mainAppGradient.ignoresSafeArea()
+            self.appGradientTopOnly()
 
             Image("isifLogo") // This must match the name in your Assets catalog
                 .resizable()

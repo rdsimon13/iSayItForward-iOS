@@ -11,7 +11,7 @@ struct TemplateGalleryView: View {
 
     var body: some View {
         ZStack {
-            Color.mainAppGradient.ignoresSafeArea()
+            self.appGradientTopOnly()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {

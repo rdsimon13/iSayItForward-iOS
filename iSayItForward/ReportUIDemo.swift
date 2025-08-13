@@ -8,7 +8,7 @@ struct ReportUIDemo: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.mainAppGradient.ignoresSafeArea()
+                self.appGradientTopOnly()
                 
                 ScrollView {
                     VStack(spacing: 24) {

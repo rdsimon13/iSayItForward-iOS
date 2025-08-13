@@ -14,7 +14,7 @@ struct SignupView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                Color.mainAppGradient.ignoresSafeArea()
+                self.appGradientTopOnly()
 
                 VStack(spacing: 20) {
                     Text("Create Account")
