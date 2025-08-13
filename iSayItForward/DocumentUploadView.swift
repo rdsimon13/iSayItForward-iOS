@@ -8,7 +8,7 @@ struct DocumentUploadView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.mainAppGradient.ignoresSafeArea()
+                self.appGradientTopOnly()
                 
                 VStack(spacing: 24) {
                     Text("Upload Document")

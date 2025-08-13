@@ -8,7 +8,7 @@ private struct HomeLaunchpadView: View {
 
     var body: some View {
         ZStack {
-            Color.mainAppGradient.ignoresSafeArea()
+            self.appGradientTopOnly()
             ScrollView {
                 VStack(spacing: 24) {
                     Text("Welcome to iSIF, \(userName).\nChoose an option below to get started.")

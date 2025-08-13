@@ -77,7 +77,7 @@ struct SignatureView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.mainAppGradient.ignoresSafeArea()
+                self.appGradientTopOnly()
                 
                 VStack(spacing: 20) {
                     Text("Please sign below")

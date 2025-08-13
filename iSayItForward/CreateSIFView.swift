@@ -42,7 +42,7 @@ struct CreateSIFView: View {
         // Use a NavigationStack to provide a title bar
         NavigationStack {
             ZStack {
-                Color.mainAppGradient.ignoresSafeArea()
+                self.appGradientTopOnly()
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 18) {
