@@ -1,0 +1,1259 @@
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..96d218a
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,7 @@
++.DS_Store
++**/*.xcuserstate
++**/*.xcuserdatad/
++**/*.xcworkspace/xcuserdata/
++**/*.xcodeproj/xcuserdata/
++
++iSayItForward/GoogleService-Info.plist
+diff --git a/iSayItForward/.DS_Store b/iSayItForward/.DS_Store
+index ef70d45..794a23b 100644
+Binary files a/iSayItForward/.DS_Store and b/iSayItForward/.DS_Store differ
+diff --git a/iSayItForward/AppAppearance.swift b/iSayItForward/AppAppearance.swift
+new file mode 100644
+index 0000000..97eec4c
+--- /dev/null
++++ b/iSayItForward/AppAppearance.swift
+@@ -0,0 +1,40 @@
++import SwiftUI
++import UIKit
++
++enum AppAppearance {
++    static func configure() {
++        configureTabBarOpaque()
++        configureNavBar()
++    }
++
++    private static func configureTabBarOpaque() {
++        let appearance = UITabBarAppearance()
++        appearance.configureWithOpaqueBackground()
++        appearance.backgroundColor = UIColor.systemBackground   // light/blurred white look
++        appearance.shadowColor = .clear                          // clean edge; set a color for a divider line if desired
++
++        let tabBar = UITabBar.appearance()
++        tabBar.standardAppearance = appearance
++        if #available(iOS 15.0, *) {
++            tabBar.scrollEdgeAppearance = appearance
++        }
++        tabBar.isTranslucent = false
++        tabBar.unselectedItemTintColor = UIColor.secondaryLabel
++        tabBar.tintColor = UIColor.label
++    }
++
++    private static func configureNavBar() {
++        let appearance = UINavigationBarAppearance()
++        appearance.configureWithOpaqueBackground()
++        appearance.backgroundColor = UIColor.systemBackground
++        appearance.shadowColor = .clear
++        appearance.titleTextAttributes = [.foregroundColor: UIColor.label]
++        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
++
++        let navBar = UINavigationBar.appearance()
++        navBar.standardAppearance = appearance
++        navBar.compactAppearance = appearance
++        navBar.scrollEdgeAppearance = appearance
++        navBar.tintColor = UIColor.label
++    }
++}
+diff --git a/iSayItForward/AppDelegate.disabled.swift b/iSayItForward/AppDelegate.disabled.swift
+new file mode 100644
+index 0000000..f9d2cdb
+--- /dev/null
++++ b/iSayItForward/AppDelegate.disabled.swift
+@@ -0,0 +1,34 @@
++import UIKit
++import FirebaseCore
++#if canImport(GoogleSignIn)
++import GoogleSignIn
++#endif
++
++/// UIKit delegate used by the SwiftUI lifecycle.
++class AppDelegate: UIResponder, UIApplicationDelegate {
++
++    func application(
++        _ application: UIApplication,
++        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
++    ) -> Bool {
++        // Configure Firebase once, as early as possible.
++        if FirebaseApp.app() == nil {
++            FirebaseApp.configure()
++        }
++        return true
++    }
++
++    // Keep only if you use Google Sign-In.
++    @available(iOS 9.0, *)
++    func application(
++        _ app: UIApplication,
++        open url: URL,
++        options: [UIApplication.OpenURLOptionsKey : Any] = [:]
++    ) -> Bool {
++        #if canImport(GoogleSignIn)
++        return GIDSignIn.sharedInstance.handle(url)
++        #else
++        return false
++        #endif
++    }
++}
+diff --git a/iSayItForward/AppDelegate.swift b/iSayItForward/AppDelegate.swift
+deleted file mode 100644
+index a8f8302..0000000
+--- a/iSayItForward/AppDelegate.swift
++++ /dev/null
+@@ -1,56 +0,0 @@
+-import FirebaseCore
+-import GoogleSignIn
+-import UIKit
+-import UserNotifications
+-
+-class AppDelegate: NSObject, UIApplicationDelegate {
+-    func application(
+-        _ application: UIApplication,
+-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+-    ) -> Bool {
+-        FirebaseApp.configure()
+-        
+-        // Request notification permissions
+-        requestNotificationPermissions()
+-        
+-        return true
+-    }
+-
+-    // Google Sign-In redirect handler
+-    func application(
+-        _ app: UIApplication,
+-        open url: URL,
+-        options: [UIApplication.OpenURLOptionsKey : Any] = [:]
+-    ) -> Bool {
+-        return GIDSignIn.sharedInstance.handle(url)
+-    }
+-    
+-    // MARK: - Notification Setup
+-    private func requestNotificationPermissions() {
+-        let center = UNUserNotificationCenter.current()
+-        center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+-            if let error = error {
+-                print("Notification permission error: \(error.localizedDescription)")
+-            }
+-            
+-            DispatchQueue.main.async {
+-                if granted {
+-                    UIApplication.shared.registerForRemoteNotifications()
+-                }
+-            }
+-        }
+-    }
+-    
+-    // Handle remote notification registration
+-    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+-        // Convert device token to string
+-        let tokenString = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
+-        print("Device token: \(tokenString)")
+-        
+-        // In a real app, send this token to your server
+-    }
+-    
+-    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+-        print("Failed to register for remote notifications: \(error.localizedDescription)")
+-    }
+-}
+diff --git a/iSayItForward/Assets.xcassets/.DS_Store b/iSayItForward/Assets.xcassets/.DS_Store
+index 2be55c0..b494140 100644
+Binary files a/iSayItForward/Assets.xcassets/.DS_Store and b/iSayItForward/Assets.xcassets/.DS_Store differ
+diff --git a/iSayItForward/AuthState.swift b/iSayItForward/AuthState.swift
+new file mode 100644
+index 0000000..7436a50
+--- /dev/null
++++ b/iSayItForward/AuthState.swift
+@@ -0,0 +1,30 @@
++import SwiftUI
++import FirebaseAuth
++
++@MainActor
++final class AuthState: ObservableObject {
++    @Published var isLoggedIn: Bool = false
++    private var handle: AuthStateDidChangeListenerHandle?
++
++    init() {
++        // Listen for Firebase auth state changes
++        handle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
++            guard let self = self else { return }
++            self.isLoggedIn = (user != nil)
++            #if DEBUG
++            print("DEBUG AuthState: isLoggedIn=\(self.isLoggedIn)")
++            #endif
++        }
++    }
++
++    deinit {
++        if let handle { Auth.auth().removeStateDidChangeListener(handle) }
++    }
++
++    // Optional helpers
++    func signOut() {
++        do { try Auth.auth().signOut() } catch {
++            print("Sign out error: \(error.localizedDescription)")
++        }
++    }
++}
+diff --git a/iSayItForward/Color+Theme.swift b/iSayItForward/Color+Theme.swift
+index 4120043..2cdf30b 100644
+--- a/iSayItForward/Color+Theme.swift
++++ b/iSayItForward/Color+Theme.swift
+@@ -1,33 +1,55 @@
++// iSayItForward/Color+Theme.swift
+ import SwiftUI
+ 
+-// This is the new, correct code for the theme.
+ extension Color {
+-    // MARK: - Brand Colors
++    // MARK: - Brand Colors (kept from your project; adjust as needed)
+     static let brandDarkBlue = Color(hex: "#2e385c")
+-    static let brandYellow = Color(hex: "#ffac04")
++    static let brandYellow   = Color(hex: "#ffac04")
+ 
+-    // MARK: - Gradient Colors
+-    private static let gradientStart = Color(hex: "#eefcff")
+-    private static let gradientEnd = Color(hex: "#89e9ff")
+-    
+-    // MARK: - Main App Gradient
++    // MARK: - Gradient Colors (UPDATED to match ProfileView’s look)
++    // Old: #eefcff → #89e9ff (very light)
++    // New: brighter, modern blue/cyan sweep
++    private static let gradientTop    = Color(hex: "#1FA2FF") // sky blue
++    private static let gradientMiddle = Color(hex: "#12D8FA") // cyan
++    private static let gradientBottom = Color(hex: "#1FA2FF") // subtle loop
++
++    // MARK: - App-wide gradient (source of truth)
+     static let mainAppGradient = LinearGradient(
+-        gradient: Gradient(colors: [gradientStart, gradientEnd]),
++        gradient: Gradient(colors: [gradientTop, gradientMiddle, gradientBottom]),
+         startPoint: .top,
+         endPoint: .bottom
+     )
+ }
+ 
+-// This helper function converts the hex codes to colors.
++// MARK: - Hex init convenience (kept)
+ extension Color {
+     init(hex: String) {
+-        let scanner = Scanner(string: hex.trimmingCharacters(in: .whitespacesAndNewlines))
+-        if hex.hasPrefix("#") { _ = scanner.scanString("#") }
+-        var rgb: UInt64 = 0
+-        scanner.scanHexInt64(&rgb)
+-        let r = Double((rgb >> 16) & 0xFF) / 255
+-        let g = Double((rgb >> 8) & 0xFF) / 255
+-        let b = Double(rgb & 0xFF) / 255
+-        self.init(.sRGB, red: r, green: g, blue: b, opacity: 1)
++        let s = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
++        var n: UInt64 = 0; Scanner(string: s).scanHexInt64(&n)
++        let r, g, b, a: UInt64
++        switch s.count {
++        case 3: (r,g,b,a) = ((n>>8)*17, (n>>4 & 0xF)*17, (n & 0xF)*17, 255)
++        case 6: (r,g,b,a) = (n>>16, n>>8 & 0xFF, n & 0xFF, 255)
++        case 8: (r,g,b,a) = (n>>24, n>>16 & 0xFF, n>>8 & 0xFF, n & 0xFF)
++        default: (r,g,b,a) = (0,0,0,255)
++        }
++        self.init(.sRGB,
++                  red:   Double(r)/255,
++                  green: Double(g)/255,
++                  blue:  Double(b)/255,
++                  opacity: Double(a)/255)
+     }
+ }
++// Add at the bottom of Color+Theme.swift (after the hex initializer)
++extension Color {
++    /// Slightly different blue used on Profile to give that intentional identity
++    static let profileGradient = LinearGradient(
++        gradient: Gradient(colors: [
++            Color(hex: "#1DA1F2"), // a touch darker than main
++            Color(hex: "#12D8FA"),
++            Color(hex: "#1FA2FF")
++        ]),
++        startPoint: .top,
++        endPoint: .bottom
++    )
++}
+diff --git a/iSayItForward/CreateSIFView.swift b/iSayItForward/CreateSIFView.swift
+index 4884e95..63db7b1 100644
+--- a/iSayItForward/CreateSIFView.swift
++++ b/iSayItForward/CreateSIFView.swift
+@@ -42,7 +42,7 @@ struct CreateSIFView: View {
+         // Use a NavigationStack to provide a title bar
+         NavigationStack {
+             ZStack {
+-                Color.mainAppGradient.ignoresSafeArea()
++                self.appGradientTopOnly()
+ 
+                 ScrollView {
+                     VStack(alignment: .leading, spacing: 18) {
+diff --git a/iSayItForward/DocumentUploadView.swift b/iSayItForward/DocumentUploadView.swift
+index 4a5ffe6..9029871 100644
+--- a/iSayItForward/DocumentUploadView.swift
++++ b/iSayItForward/DocumentUploadView.swift
+@@ -8,7 +8,7 @@ struct DocumentUploadView: View {
+     var body: some View {
+         NavigationStack {
+             ZStack {
+-                Color.mainAppGradient.ignoresSafeArea()
++                self.appGradientTopOnly()
+                 
+                 VStack(spacing: 24) {
+                     Text("Upload Document")
+diff --git a/iSayItForward/GettingStartedView.swift b/iSayItForward/GettingStartedView.swift
+index be14d19..5a07e4e 100644
+--- a/iSayItForward/GettingStartedView.swift
++++ b/iSayItForward/GettingStartedView.swift
+@@ -4,7 +4,7 @@ struct GettingStartedView: View {
+     var body: some View {
+         NavigationStack {
+             ZStack {
+-                Color.mainAppGradient.ignoresSafeArea()
++                self.appGradientTopOnly()
+                 
+                 ScrollView {
+                     VStack(alignment: .leading, spacing: 24) {
+@@ -166,4 +166,4 @@ struct GettingStartedView_Previews: PreviewProvider {
+     static var previews: some View {
+         GettingStartedView()
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/iSayItForward/GoogleService-Info.plist.sample b/iSayItForward/GoogleService-Info.plist.sample
+new file mode 100644
+index 0000000..b3d0607
+--- /dev/null
++++ b/iSayItForward/GoogleService-Info.plist.sample
+@@ -0,0 +1,30 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
++<plist version="1.0">
++<dict>
++	<key>API_KEY</key>
++	<string>AIzaSyAARI_9j2_Tl9SqS2JaSxVnbZX9GcDO-qA</string>
++	<key>GCM_SENDER_ID</key>
++	<string>469790814601</string>
++	<key>PLIST_VERSION</key>
++	<string>1</string>
++	<key>BUNDLE_ID</key>
++	<string>com.gds-isif.iSayItForward</string>
++	<key>PROJECT_ID</key>
++	<string>isayitforward-4c2f7</string>
++	<key>STORAGE_BUCKET</key>
++	<string>isayitforward-4c2f7.firebasestorage.app</string>
++	<key>IS_ADS_ENABLED</key>
++	<false></false>
++	<key>IS_ANALYTICS_ENABLED</key>
++	<false></false>
++	<key>IS_APPINVITE_ENABLED</key>
++	<true></true>
++	<key>IS_GCM_ENABLED</key>
++	<true></true>
++	<key>IS_SIGNIN_ENABLED</key>
++	<true></true>
++	<key>GOOGLE_APP_ID</key>
++	<string>1:469790814601:ios:c89ac64bd5cfccd73b3158</string>
++</dict>
++</plist>
+\ No newline at end of file
+diff --git a/iSayItForward/HomeView.swift b/iSayItForward/HomeView.swift
+index 1395ab4..b08510a 100644
+--- a/iSayItForward/HomeView.swift
++++ b/iSayItForward/HomeView.swift
+@@ -8,7 +8,7 @@ private struct HomeLaunchpadView: View {
+ 
+     var body: some View {
+         ZStack {
+-            Color.mainAppGradient.ignoresSafeArea()
++            self.appGradientTopOnly()
+             ScrollView {
+                 VStack(spacing: 24) {
+                     Text("Welcome to iSIF, \(userName).\nChoose an option below to get started.")
+diff --git a/iSayItForward/LoginView.swift b/iSayItForward/LoginView.swift
+index 0bb48f6..9b8fc51 100644
+--- a/iSayItForward/LoginView.swift
++++ b/iSayItForward/LoginView.swift
+@@ -9,7 +9,7 @@ struct LoginView: View {
+         if #available(iOS 16.0, *) {
+             NavigationStack {
+                 ZStack {
+-                    Color.mainAppGradient.ignoresSafeArea()
++                    self.appGradientTopOnly()
+ 
+                     VStack(spacing: 20) {
+                         Text("iSayItForward")
+diff --git a/iSayItForward/MySIFsView.swift b/iSayItForward/MySIFsView.swift
+index e1786fa..2f8f3dc 100644
+--- a/iSayItForward/MySIFsView.swift
++++ b/iSayItForward/MySIFsView.swift
+@@ -9,7 +9,7 @@ struct MySIFsView: View {
+         if #available(iOS 16.0, *) {
+             NavigationStack {
+                 ZStack {
+-                    Color.mainAppGradient.ignoresSafeArea()
++                    self.appGradientTopOnly()
+ 
+                     VStack {
+                         if sifs.isEmpty {
+diff --git a/iSayItForward/ProfileView.swift b/iSayItForward/ProfileView.swift
+index ed3f0c7..a655f72 100644
+--- a/iSayItForward/ProfileView.swift
++++ b/iSayItForward/ProfileView.swift
+@@ -1,134 +1,161 @@
+ import SwiftUI
+ import FirebaseAuth
+-import FirebaseFirestore // This was the missing line
++import FirebaseFirestore
+ 
+ struct ProfileView: View {
+-    // This now correctly gets the logged-in user's name and email
++    // MARK: - User Info
+     @State private var userName: String = "User"
+     @State private var userEmail: String = "No email found"
+-    
++
++    // MARK: - Alerts
+     @State private var showingAlert = false
+     @State private var alertMessage = ""
+-    
+-    // Signature management
++
++    // MARK: - Signatures
+     @State private var showingSignatureView = false
+-    @State private var savedSignatures: [SignatureData] = []
++    @State private var savedSignatures: [SignatureData] = []   // Uses your existing type
+ 
+     var body: some View {
+         ZStack {
+-            Color.mainAppGradient.ignoresSafeArea()
+-
+-            VStack(spacing: 20) {
+-                Text("Profile")
+-                    .font(.largeTitle.weight(.bold))
+-                    .foregroundColor(.white)
+-                    .padding(.top)
+-
+-                // --- CHANGE IS HERE ---
+-                // I've wrapped the avatar in a ZStack and added a background
+-                // and border to make it pop.
+-                ZStack {
+-                    Circle()
+-                        .fill(.white.opacity(0.15))
+-                        .shadow(radius: 5)
+-                    
+-                    Image(systemName: "person.crop.circle.fill")
+-                        .resizable()
+-                        .scaledToFit()
+-                        .foregroundColor(.white.opacity(0.8))
+-                        .padding(15) // Give it some space from the edge
+-                }
+-                .frame(width: 130, height: 130)
+-                .padding(.top, 20)
+-
+-                VStack(alignment: .leading, spacing: 12) {
+-                    HStack {
+-                        Image(systemName: "person.fill")
+-                        Text(userName)
+-                    }
+-                    Divider()
+-                    HStack {
+-                        Image(systemName: "envelope.fill")
+-                        Text(userEmail)
+-                    }
+-                }
+-                .font(.headline)
+-                .padding()
+-                .background(.white.opacity(0.85))
+-                .clipShape(RoundedRectangle(cornerRadius: 16))
+-                .foregroundColor(Color.brandDarkBlue)
+-                .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
+-
+-                // Signature Management Section
+-                VStack(alignment: .leading, spacing: 12) {
+-                    HStack {
+-                        Text("Signature Management")
+-                            .font(.headline)
+-                            .fontWeight(.bold)
+-                        Spacer()
+-                        Button("Add Signature") {
+-                            showingSignatureView = true
+-                        }
+-                        .font(.caption)
+-                        .foregroundColor(Color.brandDarkBlue)
+-                        .padding(.horizontal, 12)
+-                        .padding(.vertical, 6)
+-                        .background(.white.opacity(0.7))
+-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+-                    }
+-                    
+-                    if savedSignatures.isEmpty {
+-                        Text("No signatures saved yet")
+-                            .font(.subheadline)
+-                            .foregroundColor(.secondary)
+-                            .italic()
+-                    } else {
+-                        ForEach(savedSignatures.prefix(2)) { signature in
+-                            SignaturePreviewView(signatureData: signature)
+-                        }
+-                    }
++            // Official profile variant — top only so the tab bar remains opaque white
++            Color.profileGradient.ignoresSafeArea(edges: .top)
++
++            ScrollView {
++                VStack(spacing: 20) {
++                    header
++                    userCard
++                    signatureManagement
++                    logoutButton
+                 }
+-                .padding()
+-                .background(.white.opacity(0.9))
+-                .clipShape(RoundedRectangle(cornerRadius: 16))
+-                .foregroundColor(Color.brandDarkBlue)
+-                .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
++                .padding(.horizontal)
++                .padding(.bottom, 24)
++            }
++        }
++        .sheet(isPresented: $showingSignatureView) {
++            SignatureView(isPresented: $showingSignatureView) { signature in
++                savedSignatures.append(signature)
++            }
++        }
++        .alert(isPresented: $showingAlert) {
++            Alert(
++                title: Text("Logout Error"),
++                message: Text(alertMessage),
++                dismissButton: .default(Text("OK"))
++            )
++        }
++        .onAppear(perform: fetchUserData)
++        .navigationBarTitleDisplayMode(.inline)
++    }
++
++    // MARK: - Sections
++
++    private var header: some View {
++        VStack(spacing: 20) {
++            Text("Profile")
++                .font(.largeTitle.weight(.bold))
++                .foregroundColor(.white)
++                .padding(.top)
++
++            ZStack {
++                Circle()
++                    .fill(Color.white.opacity(0.15))
++                    .shadow(radius: 5)
++
++                Image(systemName: "person.crop.circle.fill")
++                    .resizable()
++                    .scaledToFit()
++                    .foregroundColor(.white.opacity(0.85))
++                    .padding(15)
++            }
++            .frame(width: 138, height: 138)
++        }
++        .padding(.top, 12)
++    }
++
++    private var userCard: some View {
++        VStack(spacing: 8) {
++            Text(userName)
++                .font(.title2.weight(.semibold))
++                .foregroundColor(.white)
++
++            Text(userEmail)
++                .font(.subheadline)
++                .foregroundColor(.white.opacity(0.85))
++        }
++    }
++
++    private var signatureManagement: some View {
++        VStack(alignment: .leading, spacing: 12) {
++            HStack {
++                Text("Signature Management")
++                    .font(.headline)
++                    .fontWeight(.bold)
++                    .foregroundColor(.primary)
+ 
+                 Spacer()
+ 
+-                Button("Log Out") {
+-                    do {
+-                        try Auth.auth().signOut()
+-                    } catch let signOutError as NSError {
+-                        self.alertMessage = "Error signing out: \(signOutError.localizedDescription)"
+-                        self.showingAlert = true
+-                    }
++                Button("Add Signature") {
++                    showingSignatureView = true
+                 }
+-                .buttonStyle(PrimaryActionButtonStyle())
+-            }
+-            .padding()
+-            .alert(isPresented: $showingAlert) {
+-                Alert(title: Text("Logout Error"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
++                .font(.caption)
++                .foregroundColor(.white)
++                .padding(.horizontal, 12)
++                .padding(.vertical, 6)
++                .background(Color.accentColor)
++                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+             }
+-            .sheet(isPresented: $showingSignatureView) {
+-                SignatureView(isPresented: $showingSignatureView) { signature in
+-                    savedSignatures.append(signature)
++
++            if savedSignatures.isEmpty {
++                Text("No signatures saved yet")
++                    .font(.subheadline)
++                    .foregroundColor(.secondary)
++                    .italic()
++            } else {
++                ForEach(savedSignatures.prefix(2)) { signature in
++                    SignaturePreviewView(signatureData: signature)
+                 }
+             }
+-            .onAppear(perform: fetchUserData) // Fetch user data when the view appears
+         }
++        .padding()
++        .background(Color.white.opacity(0.95))
++        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
++        .shadow(color: Color.black.opacity(0.1), radius: 5, y: 2)
+     }
+-    
+-    // Fetch user data from Firestore
+-    func fetchUserData() {
+-        guard let uid = Auth.auth().currentUser?.uid else { return }
+-        
+-        let db = Firestore.firestore()
+-        db.collection("users").document(uid).getDocument { snapshot, error in
+-            if let document = snapshot, document.exists {
+-                self.userName = document.data()?["name"] as? String ?? "User"
+-                self.userEmail = document.data()?["email"] as? String ?? "No email found"
++
++    private var logoutButton: some View {
++        Button {
++            do {
++                try Auth.auth().signOut()
++                // AuthState will flip and root will show WelcomeView automatically.
++            } catch {
++                alertMessage = "Error signing out: \(error.localizedDescription)"
++                showingAlert = true
+             }
++        } label: {
++            Label("Log Out", systemImage: "rectangle.portrait.and.arrow.right")
++                .font(.headline)
++                .frame(maxWidth: .infinity)
++                .padding()
++                .background(Color.red.opacity(0.12))
++                .foregroundColor(.red)
++                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+         }
++        .padding(.top, 8)
++    }
++
++    // MARK: - Data
++
++    private func fetchUserData() {
++        if let user = Auth.auth().currentUser {
++            userEmail = user.email ?? userEmail
++            userName  = user.displayName ?? userName
++        }
++    }
++}
++
++struct ProfileView_Previews: PreviewProvider {
++    static var previews: some View {
++        ProfileView()
++            .previewDisplayName("Profile")
+     }
+ }
+diff --git a/iSayItForward/ReportContentView.swift b/iSayItForward/ReportContentView.swift
+index 54e25a8..f0077e8 100644
+--- a/iSayItForward/ReportContentView.swift
++++ b/iSayItForward/ReportContentView.swift
+@@ -270,9 +270,8 @@ private struct ReportReasonRow: View {
+ struct ReportContentView_Previews: PreviewProvider {
+     static var previews: some View {
+         ZStack {
+-            Color.mainAppGradient.ignoresSafeArea()
+-            
+             ReportContentView(isPresented: .constant(true))
+         }
++        .appGradientTopOnly()   // ⬅️ apply the modifier to the ZStack (after the brace)
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/iSayItForward/ReportUIDemo.swift b/iSayItForward/ReportUIDemo.swift
+index 2496717..180b70f 100644
+--- a/iSayItForward/ReportUIDemo.swift
++++ b/iSayItForward/ReportUIDemo.swift
+@@ -8,7 +8,7 @@ struct ReportUIDemo: View {
+     var body: some View {
+         NavigationStack {
+             ZStack {
+-                Color.mainAppGradient.ignoresSafeArea()
++                self.appGradientTopOnly()
+                 
+                 ScrollView {
+                     VStack(spacing: 24) {
+diff --git a/iSayItForward/SIFDetailView.swift b/iSayItForward/SIFDetailView.swift
+index a66e641..cb63af7 100644
+--- a/iSayItForward/SIFDetailView.swift
++++ b/iSayItForward/SIFDetailView.swift
+@@ -5,7 +5,7 @@ struct SIFDetailView: View {
+ 
+     var body: some View {
+         ZStack {
+-            Color.mainAppGradient.ignoresSafeArea()
++            self.appGradientTopOnly()
+ 
+             ScrollView {
+                 VStack(alignment: .leading, spacing: 20) {
+diff --git a/iSayItForward/SIFSettingsView.swift b/iSayItForward/SIFSettingsView.swift
+index 92c8e87..3cd6dec 100644
+--- a/iSayItForward/SIFSettingsView.swift
++++ b/iSayItForward/SIFSettingsView.swift
+@@ -11,7 +11,7 @@ struct SIFSettingsView: View {
+     var body: some View {
+         NavigationStack {
+             ZStack {
+-                Color.mainAppGradient.ignoresSafeArea()
++                self.appGradientTopOnly()
+                 
+                 ScrollView {
+                     VStack(alignment: .leading, spacing: 24) {
+@@ -175,4 +175,4 @@ struct SIFSettingsView_Previews: PreviewProvider {
+     static var previews: some View {
+         SIFSettingsView()
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/iSayItForward/SignatureView.swift b/iSayItForward/SignatureView.swift
+index 329ea7f..1577dc1 100644
+--- a/iSayItForward/SignatureView.swift
++++ b/iSayItForward/SignatureView.swift
+@@ -77,7 +77,7 @@ struct SignatureView: View {
+     var body: some View {
+         NavigationStack {
+             ZStack {
+-                Color.mainAppGradient.ignoresSafeArea()
++                self.appGradientTopOnly()
+                 
+                 VStack(spacing: 20) {
+                     Text("Please sign below")
+@@ -220,4 +220,4 @@ struct SignatureView_Previews: PreviewProvider {
+             print("Signature saved")
+         }
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/iSayItForward/SignupView.swift b/iSayItForward/SignupView.swift
+index 214bb52..9ae7224 100644
+--- a/iSayItForward/SignupView.swift
++++ b/iSayItForward/SignupView.swift
+@@ -14,7 +14,7 @@ struct SignupView: View {
+     var body: some View {
+         NavigationView {
+             ZStack {
+-                Color.mainAppGradient.ignoresSafeArea()
++                self.appGradientTopOnly()
+ 
+                 VStack(spacing: 20) {
+                     Text("Create Account")
+diff --git a/iSayItForward/SplashView.swift b/iSayItForward/SplashView.swift
+index 5efcb39..99ef51d 100644
+--- a/iSayItForward/SplashView.swift
++++ b/iSayItForward/SplashView.swift
+@@ -4,7 +4,7 @@ struct SplashView: View {
+     var body: some View {
+         ZStack {
+             // Replaced the old gradient with our new app-wide theme gradient
+-            Color.mainAppGradient.ignoresSafeArea()
++            self.appGradientTopOnly()
+ 
+             Image("isifLogo") // This must match the name in your Assets catalog
+                 .resizable()
+diff --git a/iSayItForward/TemplateGalleryView.swift b/iSayItForward/TemplateGalleryView.swift
+index 2314806..cdcf56b 100644
+--- a/iSayItForward/TemplateGalleryView.swift
++++ b/iSayItForward/TemplateGalleryView.swift
+@@ -11,7 +11,7 @@ struct TemplateGalleryView: View {
+ 
+     var body: some View {
+         ZStack {
+-            Color.mainAppGradient.ignoresSafeArea()
++            self.appGradientTopOnly()
+ 
+             ScrollView {
+                 VStack(alignment: .leading, spacing: 24) {
+diff --git a/iSayItForward/TestReportView.swift b/iSayItForward/TestReportView.swift
+index 00cc537..c8654cc 100644
+--- a/iSayItForward/TestReportView.swift
++++ b/iSayItForward/TestReportView.swift
+@@ -7,7 +7,7 @@ struct TestReportView: View {
+     var body: some View {
+         NavigationStack {
+             ZStack {
+-                Color.mainAppGradient.ignoresSafeArea()
++                self.appGradientTopOnly()
+                 
+                 VStack(spacing: 30) {
+                     Text("Report UI Test")
+diff --git a/iSayItForward/View+AppBackground.swift b/iSayItForward/View+AppBackground.swift
+new file mode 100644
+index 0000000..1873ccc
+--- /dev/null
++++ b/iSayItForward/View+AppBackground.swift
+@@ -0,0 +1,13 @@
++import SwiftUI
++
++extension View {
++    /// Use the app gradient but only behind content (not under the Tab Bar) for Option A.
++    func appGradientTopOnly() -> some View {
++        self.background(Color.mainAppGradient.ignoresSafeArea(edges: .top))
++    }
++
++    /// Profile’s identity gradient (top only) to keep the white tab bar visible.
++    func profileGradientTopOnly() -> some View {
++        self.background(Color.profileGradient.ignoresSafeArea(edges: .top))
++    }
++}
+diff --git a/iSayItForward/WelcomeView.swift b/iSayItForward/WelcomeView.swift
+index b1e369a..b27183b 100644
+--- a/iSayItForward/WelcomeView.swift
++++ b/iSayItForward/WelcomeView.swift
+@@ -13,7 +13,7 @@ struct WelcomeView: View {
+     var body: some View {
+         NavigationStack {
+             ZStack {
+-                Color.mainAppGradient.ignoresSafeArea()
++                self.appGradientTopOnly()
+ 
+                 VStack(spacing: 20) {
+                     Spacer()
+diff --git a/iSayItForward/iPadRootView.swift b/iSayItForward/iPadRootView.swift
+index dd2fa6e..37616be 100644
+--- a/iSayItForward/iPadRootView.swift
++++ b/iSayItForward/iPadRootView.swift
+@@ -5,14 +5,24 @@ struct iPadRootView: View {
+     @EnvironmentObject var authState: AuthState
+ 
+     var body: some View {
+-        if authState.isUserLoggedIn {
+-            if horizontalSizeClass == .regular {
+-                iPadMainView()
++        Group {
++            if authState.isLoggedIn {
++                if horizontalSizeClass == .regular {
++                    iPadMainView()      // your iPad layout
++                } else {
++                    HomeView()          // your phone/home layout
++                }
+             } else {
+-                HomeView()
++                WelcomeView()
+             }
+-        } else {
+-            WelcomeView()
+         }
+     }
+ }
++
++struct iPadRootView_Previews: PreviewProvider {
++    static var previews: some View {
++        iPadRootView()
++            .environmentObject(AuthState()) // <- supply for preview
++            .previewInterfaceOrientation(.landscapeLeft)
++    }
++}
+diff --git a/iSayItForward/iSayItForward.xcodeproj/project.pbxproj b/iSayItForward/iSayItForward.xcodeproj/project.pbxproj
+index 9e54709..bc99d26 100644
+--- a/iSayItForward/iSayItForward.xcodeproj/project.pbxproj
++++ b/iSayItForward/iSayItForward.xcodeproj/project.pbxproj
+@@ -51,12 +51,15 @@
+ 		7B79AF892E324A0000BE0809 /* PillTextFieldStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B79AF882E324A0000BE0809 /* PillTextFieldStyle.swift */; };
+ 		7B79AF8B2E32523E00BE0809 /* SecondaryActionButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B79AF8A2E32523E00BE0809 /* SecondaryActionButtonStyle.swift */; };
+ 		7B79AF8D2E32529100BE0809 /* PrimaryActionButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B79AF8C2E32529100BE0809 /* PrimaryActionButtonStyle.swift */; };
+-		7B79AF8F2E32A06500BE0809 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B79AF8E2E32A06500BE0809 /* AppDelegate.swift */; };
+ 		7B79AF932E32B08F00BE0809 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B79AF922E32B08F00BE0809 /* User.swift */; };
+ 		7B85EC6C2E29B5BA002A16F4 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B85EC6B2E29B5BA002A16F4 /* SplashView.swift */; };
+ 		7B85EC792E2A4AB3002A16F4 /* TemplateCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B85EC782E2A4AB3002A16F4 /* TemplateCategory.swift */; };
+ 		7BC81CE22E32DD0000A56540 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 7BC81CE12E32DD0000A56540 /* FirebaseAuth */; };
+ 		7BC81CE42E32DD0000A56540 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 7BC81CE32E32DD0000A56540 /* FirebaseFirestore */; };
++		7BCD3FDE2E4CD8AF007C908B /* AppAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BCD3FDD2E4CD8AF007C908B /* AppAppearance.swift */; };
++		7BCD3FE02E4CD93C007C908B /* View+AppBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BCD3FDF2E4CD93C007C908B /* View+AppBackground.swift */; };
++		7BCD3FE22E4CFCE8007C908B /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 7BCD3FE12E4CFCE8007C908B /* FirebaseCore */; };
++		7BCD3FE42E4CFE9D007C908B /* AuthState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BCD3FE32E4CFE9D007C908B /* AuthState.swift */; };
+ 		7BDB06102E35BAFC00339523 /* iPadMain16View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDB060F2E35BAFC00339523 /* iPadMain16View.swift */; };
+ 		7BDB06122E35BB5600339523 /* SidebarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDB06112E35BB5600339523 /* SidebarItem.swift */; };
+ 		7BDB06142E36094700339523 /* AppUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDB06132E36094700339523 /* AppUser.swift */; };
+@@ -113,10 +116,13 @@
+ 		7B79AF882E324A0000BE0809 /* PillTextFieldStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillTextFieldStyle.swift; sourceTree = "<group>"; };
+ 		7B79AF8A2E32523E00BE0809 /* SecondaryActionButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryActionButtonStyle.swift; sourceTree = "<group>"; };
+ 		7B79AF8C2E32529100BE0809 /* PrimaryActionButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryActionButtonStyle.swift; sourceTree = "<group>"; };
+-		7B79AF8E2E32A06500BE0809 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
++		7B79AF8E2E32A06500BE0809 /* AppDelegate.disabled.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.disabled.swift; sourceTree = "<group>"; };
+ 		7B79AF922E32B08F00BE0809 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+ 		7B85EC6B2E29B5BA002A16F4 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
+ 		7B85EC782E2A4AB3002A16F4 /* TemplateCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateCategory.swift; sourceTree = "<group>"; };
++		7BCD3FDD2E4CD8AF007C908B /* AppAppearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAppearance.swift; sourceTree = "<group>"; };
++		7BCD3FDF2E4CD93C007C908B /* View+AppBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+AppBackground.swift"; sourceTree = "<group>"; };
++		7BCD3FE32E4CFE9D007C908B /* AuthState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthState.swift; sourceTree = "<group>"; };
+ 		7BDB060F2E35BAFC00339523 /* iPadMain16View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPadMain16View.swift; sourceTree = "<group>"; };
+ 		7BDB06112E35BB5600339523 /* SidebarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarItem.swift; sourceTree = "<group>"; };
+ 		7BDB06132E36094700339523 /* AppUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUser.swift; sourceTree = "<group>"; };
+@@ -129,6 +135,7 @@
+ 			files = (
+ 				7BC81CE22E32DD0000A56540 /* FirebaseAuth in Frameworks */,
+ 				7BC81CE42E32DD0000A56540 /* FirebaseFirestore in Frameworks */,
++				7BCD3FE22E4CFCE8007C908B /* FirebaseCore in Frameworks */,
+ 				7BDF693E2E33F7360035F0B5 /* GoogleSignIn in Frameworks */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+@@ -146,6 +153,9 @@
+ 		7B4B2AD92E289CAA00F1ABCA = {
+ 			isa = PBXGroup;
+ 			children = (
++				7BCD3FE32E4CFE9D007C908B /* AuthState.swift */,
++				7BCD3FDF2E4CD93C007C908B /* View+AppBackground.swift */,
++				7BCD3FDD2E4CD8AF007C908B /* AppAppearance.swift */,
+ 				022E2A7B2E4462D000FF6129 /* iSayItForwardApp.swift */,
+ 				022E2A742E44583100FF6129 /* GettingStartedView.swift */,
+ 				022E2A752E44583100FF6129 /* SIFSettingsView.swift */,
+@@ -153,7 +163,7 @@
+ 				022E2A772E44583100FF6129 /* Utilities */,
+ 				7B14DFBB2E29756D004AB2B3 /*  Color+Hex.swift */,
+ 				7B14DFBC2E29756D004AB2B3 /* AdvancedComposerView.swift */,
+-				7B79AF8E2E32A06500BE0809 /* AppDelegate.swift */,
++				7B79AF8E2E32A06500BE0809 /* AppDelegate.disabled.swift */,
+ 				7BDB06132E36094700339523 /* AppUser.swift */,
+ 				7B14DFBD2E29756D004AB2B3 /* Assets.xcassets */,
+ 				7B14DFBE2E29756D004AB2B3 /* Color+Theme.swift */,
+@@ -247,6 +257,7 @@
+ 				7BC81CE12E32DD0000A56540 /* FirebaseAuth */,
+ 				7BC81CE32E32DD0000A56540 /* FirebaseFirestore */,
+ 				7BDF693D2E33F7360035F0B5 /* GoogleSignIn */,
++				7BCD3FE12E4CFCE8007C908B /* FirebaseCore */,
+ 			);
+ 			productName = iSayItForward;
+ 			productReference = 7B4B2AE22E289CAA00F1ABCA /* iSayItForward.app */;
+@@ -319,6 +330,7 @@
+ 				7BDB06142E36094700339523 /* AppUser.swift in Sources */,
+ 				7B14DFE62E29756D004AB2B3 /* SIFPreviewView.swift in Sources */,
+ 				7BDB06102E35BAFC00339523 /* iPadMain16View.swift in Sources */,
++				7BCD3FDE2E4CD8AF007C908B /* AppAppearance.swift in Sources */,
+ 				7B14DFE72E29756D004AB2B3 /* TemplateItem.swift in Sources */,
+ 				7B14DFE92E29756D004AB2B3 /* TemplateLibrary.swift in Sources */,
+ 				7B14DFEB2E29756D004AB2B3 /* DocumentUploadView.swift in Sources */,
+@@ -329,7 +341,6 @@
+ 				7B14DFEF2E29756D004AB2B3 /* AdvancedComposerView.swift in Sources */,
+ 				7B14DFF02E29756D004AB2B3 /* Color+Theme.swift in Sources */,
+ 				7B14DFF32E29756D004AB2B3 /* WelcomeView.swift in Sources */,
+-				7B79AF8F2E32A06500BE0809 /* AppDelegate.swift in Sources */,
+ 				7B14DFF42E29756D004AB2B3 /* SIFDetailView.swift in Sources */,
+ 				7B6601DB2E33D57E0097D647 /* iPadRootView.swift in Sources */,
+ 				7B6601DD2E33D7CD0097D647 /* iPadMainView.swift in Sources */,
+@@ -339,6 +350,7 @@
+ 				7B79AF8B2E32523E00BE0809 /* SecondaryActionButtonStyle.swift in Sources */,
+ 				7B85EC6C2E29B5BA002A16F4 /* SplashView.swift in Sources */,
+ 				7B79AF892E324A0000BE0809 /* PillTextFieldStyle.swift in Sources */,
++				7BCD3FE02E4CD93C007C908B /* View+AppBackground.swift in Sources */,
+ 				7B14DFFA2E29756D004AB2B3 /* LoginView.swift in Sources */,
+ 				022E2A7C2E4462D000FF6129 /* iSayItForwardApp.swift in Sources */,
+ 				7B14DFFB2E29756D004AB2B3 /* ProfileView.swift in Sources */,
+@@ -360,6 +372,7 @@
+ 				7B6601D92E3399E30097D647 /* CreateSIFView.swift in Sources */,
+ 				7B85EC792E2A4AB3002A16F4 /* TemplateCategory.swift in Sources */,
+ 				7B79AF932E32B08F00BE0809 /* User.swift in Sources */,
++				7BCD3FE42E4CFE9D007C908B /* AuthState.swift in Sources */,
+ 				7B14E0042E29756D004AB2B3 /* SendSIFView.swift in Sources */,
+ 				7B14E0052E29756D004AB2B3 /* IOSCardModifier.swift in Sources */,
+ 			);
+@@ -495,7 +508,7 @@
+ 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+ 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+ 				CODE_SIGN_STYLE = Automatic;
+-				CURRENT_PROJECT_VERSION = 12;
++				CURRENT_PROJECT_VERSION = 28;
+ 				DEVELOPMENT_TEAM = FL6TX5N96G;
+ 				ENABLE_PREVIEWS = YES;
+ 				GENERATE_INFOPLIST_FILE = YES;
+@@ -512,7 +525,7 @@
+ 					"$(inherited)",
+ 					"@executable_path/Frameworks",
+ 				);
+-				MARKETING_VERSION = 5;
++				MARKETING_VERSION = 2;
+ 				PRODUCT_BUNDLE_IDENTIFIER = "com.gds-isif.iSayItForward";
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+@@ -531,7 +544,7 @@
+ 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+ 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+ 				CODE_SIGN_STYLE = Automatic;
+-				CURRENT_PROJECT_VERSION = 12;
++				CURRENT_PROJECT_VERSION = 28;
+ 				DEVELOPMENT_TEAM = FL6TX5N96G;
+ 				ENABLE_PREVIEWS = YES;
+ 				GENERATE_INFOPLIST_FILE = YES;
+@@ -548,7 +561,7 @@
+ 					"$(inherited)",
+ 					"@executable_path/Frameworks",
+ 				);
+-				MARKETING_VERSION = 5;
++				MARKETING_VERSION = 2;
+ 				PRODUCT_BUNDLE_IDENTIFIER = "com.gds-isif.iSayItForward";
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+@@ -614,6 +627,11 @@
+ 			package = 7BC81CE02E32DD0000A56540 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+ 			productName = FirebaseFirestore;
+ 		};
++		7BCD3FE12E4CFCE8007C908B /* FirebaseCore */ = {
++			isa = XCSwiftPackageProductDependency;
++			package = 7BC81CE02E32DD0000A56540 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
++			productName = FirebaseCore;
++		};
+ 		7BDF693D2E33F7360035F0B5 /* GoogleSignIn */ = {
+ 			isa = XCSwiftPackageProductDependency;
+ 			package = 7BDF693C2E33F7360035F0B5 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+diff --git a/iSayItForward/iSayItForward.xcodeproj/project.xcworkspace/xcuserdata/rds.development.mqc.xcuserdatad/UserInterfaceState.xcuserstate b/iSayItForward/iSayItForward.xcodeproj/project.xcworkspace/xcuserdata/rds.development.mqc.xcuserdatad/UserInterfaceState.xcuserstate
+deleted file mode 100644
+index 1f84db5..0000000
+Binary files a/iSayItForward/iSayItForward.xcodeproj/project.xcworkspace/xcuserdata/rds.development.mqc.xcuserdatad/UserInterfaceState.xcuserstate and /dev/null differ
+diff --git a/iSayItForward/iSayItForward.xcodeproj/project.xcworkspace/xcuserdata/reggie.xcuserdatad/UserInterfaceState.xcuserstate b/iSayItForward/iSayItForward.xcodeproj/project.xcworkspace/xcuserdata/reggie.xcuserdatad/UserInterfaceState.xcuserstate
+deleted file mode 100644
+index 4a725aa..0000000
+Binary files a/iSayItForward/iSayItForward.xcodeproj/project.xcworkspace/xcuserdata/reggie.xcuserdatad/UserInterfaceState.xcuserstate and /dev/null differ
+diff --git a/iSayItForward/iSayItForward.xcodeproj/xcuserdata/rds.development.mqc.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist b/iSayItForward/iSayItForward.xcodeproj/xcuserdata/rds.development.mqc.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
+deleted file mode 100644
+index 8b2abe2..0000000
+--- a/iSayItForward/iSayItForward.xcodeproj/xcuserdata/rds.development.mqc.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
++++ /dev/null
+@@ -1,24 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<Bucket
+-   uuid = "3B8A217D-C104-4652-9C06-1248D8930792"
+-   type = "1"
+-   version = "2.0">
+-   <Breakpoints>
+-      <BreakpointProxy
+-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+-         <BreakpointContent
+-            uuid = "A3643B22-8F4B-42BE-A518-D0541B4770D9"
+-            shouldBeEnabled = "Yes"
+-            ignoreCount = "0"
+-            continueAfterRunningActions = "No"
+-            filePath = "WelcomeView.swift"
+-            startingColumnNumber = "9223372036854775807"
+-            endingColumnNumber = "9223372036854775807"
+-            startingLineNumber = "1"
+-            endingLineNumber = "1"
+-            landmarkName = "unknown"
+-            landmarkType = "0">
+-         </BreakpointContent>
+-      </BreakpointProxy>
+-   </Breakpoints>
+-</Bucket>
+diff --git a/iSayItForward/iSayItForward.xcodeproj/xcuserdata/rds.development.mqc.xcuserdatad/xcschemes/xcschememanagement.plist b/iSayItForward/iSayItForward.xcodeproj/xcuserdata/rds.development.mqc.xcuserdatad/xcschemes/xcschememanagement.plist
+deleted file mode 100644
+index 221c347..0000000
+--- a/iSayItForward/iSayItForward.xcodeproj/xcuserdata/rds.development.mqc.xcuserdatad/xcschemes/xcschememanagement.plist
++++ /dev/null
+@@ -1,14 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+-<plist version="1.0">
+-<dict>
+-	<key>SchemeUserState</key>
+-	<dict>
+-		<key>iSayItForward.xcscheme_^#shared#^_</key>
+-		<dict>
+-			<key>orderHint</key>
+-			<integer>0</integer>
+-		</dict>
+-	</dict>
+-</dict>
+-</plist>
+diff --git a/iSayItForward/iSayItForward.xcodeproj/xcuserdata/reggie.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist b/iSayItForward/iSayItForward.xcodeproj/xcuserdata/reggie.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
+deleted file mode 100644
+index ceaf0ea..0000000
+--- a/iSayItForward/iSayItForward.xcodeproj/xcuserdata/reggie.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
++++ /dev/null
+@@ -1,24 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<Bucket
+-   uuid = "AB76EEBC-A3D0-41EF-BFE2-ECB9620C4B7A"
+-   type = "1"
+-   version = "2.0">
+-   <Breakpoints>
+-      <BreakpointProxy
+-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+-         <BreakpointContent
+-            uuid = "C65D8C30-84AE-44CD-9968-6E1E0635ECD4"
+-            shouldBeEnabled = "Yes"
+-            ignoreCount = "0"
+-            continueAfterRunningActions = "No"
+-            filePath = "AppUser.swift"
+-            startingColumnNumber = "9223372036854775807"
+-            endingColumnNumber = "9223372036854775807"
+-            startingLineNumber = "2"
+-            endingLineNumber = "2"
+-            landmarkName = "AppUser"
+-            landmarkType = "14">
+-         </BreakpointContent>
+-      </BreakpointProxy>
+-   </Breakpoints>
+-</Bucket>
+diff --git a/iSayItForward/iSayItForward.xcodeproj/xcuserdata/reggie.xcuserdatad/xcschemes/xcschememanagement.plist b/iSayItForward/iSayItForward.xcodeproj/xcuserdata/reggie.xcuserdatad/xcschemes/xcschememanagement.plist
+deleted file mode 100644
+index 221c347..0000000
+--- a/iSayItForward/iSayItForward.xcodeproj/xcuserdata/reggie.xcuserdatad/xcschemes/xcschememanagement.plist
++++ /dev/null
+@@ -1,14 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+-<plist version="1.0">
+-<dict>
+-	<key>SchemeUserState</key>
+-	<dict>
+-		<key>iSayItForward.xcscheme_^#shared#^_</key>
+-		<dict>
+-			<key>orderHint</key>
+-			<integer>0</integer>
+-		</dict>
+-	</dict>
+-</dict>
+-</plist>
+diff --git a/iSayItForward/iSayItForwardApp.swift b/iSayItForward/iSayItForwardApp.swift
+index 4449631..734e60d 100644
+--- a/iSayItForward/iSayItForwardApp.swift
++++ b/iSayItForward/iSayItForwardApp.swift
+@@ -1,44 +1,92 @@
+ import SwiftUI
+-import FirebaseAuth
+ import FirebaseCore
+ 
++// Keep the tiny delegate so GoogleUtilities/AppDelegateSwizzler is satisfied.
++final class BasicAppDelegate: NSObject, UIApplicationDelegate {}
++
+ @main
+ struct iSayItForwardApp: App {
+-    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
++    @UIApplicationDelegateAdaptor(BasicAppDelegate.self) var basicDelegate
+     @StateObject private var authState = AuthState()
+ 
++    init() {
++        if FirebaseApp.app() == nil { FirebaseApp.configure() }
++        print("✅ Firebase configured? \(FirebaseApp.app() != nil)")
++    }
++
+     var body: some Scene {
+         WindowGroup {
+-            ZStack {
+-                if UIDevice.current.userInterfaceIdiom == .pad {
+-                    iPadMainView()
+-                        .environmentObject(authState)
+-                } else {
+-                    WelcomeView() // or ContentView() if you prefer
+-                        .environmentObject(authState)
+-                }
+-                
+-                // Global report overlay for system-wide access
+-                GlobalReportOverlay()
+-            }
++            RootHost()
++                .environmentObject(authState)
+         }
+     }
+ }
+ 
+-// MARK: - Auth State Observable Object
+-class AuthState: ObservableObject {
+-    @Published var isUserLoggedIn = false
+-    private var authHandle: AuthStateDidChangeListenerHandle?
++/// A safe wrapper that shows your real root when it successfully appears,
++/// but gives you clear diagnostics (and a fallback) if it doesn’t.
++struct RootHost: View {
++    @EnvironmentObject var authState: AuthState
+ 
+-    init() {
+-        authHandle = Auth.auth().addStateDidChangeListener { auth, user in
+-            self.isUserLoggedIn = (user != nil)
++    @State private var didRenderGettingStarted = false
++    @State private var timedOutFallback = false
++
++    var body: some View {
++        ZStack {
++            // Underlay so you never see pure white if the child view fails early
++            Color.black.opacity(0.02).ignoresSafeArea()
++
++            if timedOutFallback {
++                // If GettingStartedView never renders, show a known-safe screen
++                FallbackHome()
++                    .transition(.opacity)
++            } else {
++                // Your intended root
++                GettingStartedView()
++                    .onAppear {
++                        didRenderGettingStarted = true
++                        print("🟢 GettingStartedView didAppear")
++                    }
++                    .transition(.opacity)
++            }
++
++            // Visible overlay while we wait
++            if !didRenderGettingStarted && !timedOutFallback {
++                VStack(spacing: 12) {
++                    ProgressView()
++                    Text("Loading UI…").font(.callout)
++                }
++                .padding()
++                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
++                .shadow(radius: 6)
++            }
++        }
++        // If the root hasn't rendered after 2s, assume it's blocked by a crash/missing env object
++        .task {
++            try? await Task.sleep(nanoseconds: 2_000_000_000)
++            if !didRenderGettingStarted {
++                print("⚠️ GettingStartedView did not render in time — showing fallback.")
++                timedOutFallback = true
++            }
+         }
+     }
++}
+ 
+-    deinit {
+-        if let authHandle = authHandle {
+-            Auth.auth().removeStateDidChangeListener(authHandle)
++/// A minimal, known-safe screen to prove the app UI still renders
++struct FallbackHome: View {
++    var body: some View {
++        ZStack {
++            LinearGradient(colors: [.blue.opacity(0.9), .cyan], startPoint: .top, endPoint: .bottom)
++                .ignoresSafeArea()
++            VStack(spacing: 16) {
++                Image(systemName: "house.fill").font(.system(size: 42)).foregroundStyle(.white)
++                Text("Fallback Home")
++                    .font(.title.bold()).foregroundStyle(.white)
++                Text("Your GettingStartedView didn't render. See Xcode console for hints.")
++                    .multilineTextAlignment(.center)
++                    .foregroundStyle(.white.opacity(0.9))
++            }
++            .padding()
+         }
++        .onAppear { print("🟢 FallbackHome appeared") }
+     }
+ }
