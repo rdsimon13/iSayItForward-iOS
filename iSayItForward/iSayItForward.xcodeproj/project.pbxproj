@@ -29,7 +29,6 @@
 		7B14DFF02E29756D004AB2B3 /* Color+Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFBE2E29756D004AB2B3 /* Color+Theme.swift */; };
 		7B14DFF32E29756D004AB2B3 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFE22E29756D004AB2B3 /* WelcomeView.swift */; };
 		7B14DFF42E29756D004AB2B3 /* SIFDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFD62E29756D004AB2B3 /* SIFDetailView.swift */; };
-		7B14DFF52E29756D004AB2B3 /* iSayItForwardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFCA2E29756D004AB2B3 /* iSayItForwardApp.swift */; };
 		7B14DFF72E29756D004AB2B3 /* MySIFsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFD12E29756D004AB2B3 /* MySIFsView.swift */; };
 		7B14DFFA2E29756D004AB2B3 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFD02E29756D004AB2B3 /* LoginView.swift */; };
 		7B14DFFB2E29756D004AB2B3 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFD22E29756D004AB2B3 /* ProfileView.swift */; };
@@ -44,6 +43,9 @@
 		7B14E0052E29756D004AB2B3 /* IOSCardModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFC72E29756D004AB2B3 /* IOSCardModifier.swift */; };
 		7B14E0072E29756D004AB2B3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7B14DFBD2E29756D004AB2B3 /* Assets.xcassets */; };
 		7B14E0082E29756D004AB2B3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7B14DFC42E29756D004AB2B3 /* GoogleService-Info.plist */; };
+		7B642F9D2E4E0E0800E26206 /* AppBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B642F9C2E4E0E0800E26206 /* AppBackground.swift */; };
+		7B642F9F2E4E0EBF00E26206 /* MatchDataState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B642F9E2E4E0EBF00E26206 /* MatchDataState.swift */; };
+		7B642FA32E4E175F00E26206 /* MinimalAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B642FA22E4E175F00E26206 /* MinimalAppDelegate.swift */; };
 		7B6601D72E3399A20097D647 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6601D62E3399A20097D647 /* HomeView.swift */; };
 		7B6601D92E3399E30097D647 /* CreateSIFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6601D82E3399E30097D647 /* CreateSIFView.swift */; };
 		7B6601DB2E33D57E0097D647 /* iPadRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6601DA2E33D57E0097D647 /* iPadRootView.swift */; };
@@ -56,6 +58,7 @@
 		7B85EC792E2A4AB3002A16F4 /* TemplateCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B85EC782E2A4AB3002A16F4 /* TemplateCategory.swift */; };
 		7BC81CE22E32DD0000A56540 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 7BC81CE12E32DD0000A56540 /* FirebaseAuth */; };
 		7BC81CE42E32DD0000A56540 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 7BC81CE32E32DD0000A56540 /* FirebaseFirestore */; };
+		7BCA5F582E4DFDCF00450B0A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B79AF8E2E32A06500BE0809 /* AppDelegate.swift */; };
 		7BCD3FDE2E4CD8AF007C908B /* AppAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BCD3FDD2E4CD8AF007C908B /* AppAppearance.swift */; };
 		7BCD3FE02E4CD93C007C908B /* View+AppBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BCD3FDF2E4CD93C007C908B /* View+AppBackground.swift */; };
 		7BCD3FE22E4CFCE8007C908B /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 7BCD3FE12E4CFCE8007C908B /* FirebaseCore */; };
@@ -89,7 +92,6 @@
 		7B14DFC72E29756D004AB2B3 /* IOSCardModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSCardModifier.swift; sourceTree = "<group>"; };
 		7B14DFC82E29756D004AB2B3 /* iSayItForward.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iSayItForward.entitlements; sourceTree = "<group>"; };
 		7B14DFC92E29756D004AB2B3 /* iSayItForward.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = iSayItForward.xcodeproj; sourceTree = "<group>"; };
-		7B14DFCA2E29756D004AB2B3 /* iSayItForwardApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iSayItForwardApp.swift; sourceTree = "<group>"; };
 		7B14DFD02E29756D004AB2B3 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		7B14DFD12E29756D004AB2B3 /* MySIFsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MySIFsView.swift; sourceTree = "<group>"; };
 		7B14DFD22E29756D004AB2B3 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
@@ -107,6 +109,10 @@
 		7B14DFE12E29756D004AB2B3 /* VoiceNoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceNoteView.swift; sourceTree = "<group>"; };
 		7B14DFE22E29756D004AB2B3 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		7B4B2AE22E289CAA00F1ABCA /* iSayItForward.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iSayItForward.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7B642F9C2E4E0E0800E26206 /* AppBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppBackground.swift; sourceTree = "<group>"; };
+		7B642F9E2E4E0EBF00E26206 /* MatchDataState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchDataState.swift; sourceTree = "<group>"; };
+		7B642FA02E4E136D00E26206 /* SafeFirebaseProvider.disabled.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeFirebaseProvider.disabled.swift; sourceTree = "<group>"; };
+		7B642FA22E4E175F00E26206 /* MinimalAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinimalAppDelegate.swift; sourceTree = "<group>"; };
 		7B6601D62E3399A20097D647 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		7B6601D82E3399E30097D647 /* CreateSIFView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateSIFView.swift; sourceTree = "<group>"; };
 		7B6601DA2E33D57E0097D647 /* iPadRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPadRootView.swift; sourceTree = "<group>"; };
@@ -116,7 +122,7 @@
 		7B79AF882E324A0000BE0809 /* PillTextFieldStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillTextFieldStyle.swift; sourceTree = "<group>"; };
 		7B79AF8A2E32523E00BE0809 /* SecondaryActionButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryActionButtonStyle.swift; sourceTree = "<group>"; };
 		7B79AF8C2E32529100BE0809 /* PrimaryActionButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryActionButtonStyle.swift; sourceTree = "<group>"; };
-		7B79AF8E2E32A06500BE0809 /* AppDelegate.disabled.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.disabled.swift; sourceTree = "<group>"; };
+		7B79AF8E2E32A06500BE0809 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7B79AF922E32B08F00BE0809 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		7B85EC6B2E29B5BA002A16F4 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		7B85EC782E2A4AB3002A16F4 /* TemplateCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateCategory.swift; sourceTree = "<group>"; };
@@ -153,19 +159,14 @@
 		7B4B2AD92E289CAA00F1ABCA = {
 			isa = PBXGroup;
 			children = (
-				7BCD3FE32E4CFE9D007C908B /* AuthState.swift */,
-				7BCD3FDF2E4CD93C007C908B /* View+AppBackground.swift */,
-				7BCD3FDD2E4CD8AF007C908B /* AppAppearance.swift */,
-				022E2A7B2E4462D000FF6129 /* iSayItForwardApp.swift */,
-				022E2A742E44583100FF6129 /* GettingStartedView.swift */,
-				022E2A752E44583100FF6129 /* SIFSettingsView.swift */,
-				022E2A762E44583100FF6129 /* SignatureView.swift */,
-				022E2A772E44583100FF6129 /* Utilities */,
 				7B14DFBB2E29756D004AB2B3 /*  Color+Hex.swift */,
 				7B14DFBC2E29756D004AB2B3 /* AdvancedComposerView.swift */,
-				7B79AF8E2E32A06500BE0809 /* AppDelegate.disabled.swift */,
+				7BCD3FDD2E4CD8AF007C908B /* AppAppearance.swift */,
+				7B642F9C2E4E0E0800E26206 /* AppBackground.swift */,
+				7B79AF8E2E32A06500BE0809 /* AppDelegate.swift */,
 				7BDB06132E36094700339523 /* AppUser.swift */,
 				7B14DFBD2E29756D004AB2B3 /* Assets.xcassets */,
+				7BCD3FE32E4CFE9D007C908B /* AuthState.swift */,
 				7B14DFBE2E29756D004AB2B3 /* Color+Theme.swift */,
 				7B14DFBF2E29756D004AB2B3 /* ComposeSIFView.swift */,
 				7B14DFC02E29756D004AB2B3 /* ContentView.swift */,
@@ -173,6 +174,7 @@
 				7B14DFC22E29756D004AB2B3 /* DocumentUploadView.swift */,
 				7B14DFC32E29756D004AB2B3 /* Font+Theme.swift */,
 				7B6601E42E33F38B0097D647 /* Frameworks */,
+				022E2A742E44583100FF6129 /* GettingStartedView.swift */,
 				7B14DFC42E29756D004AB2B3 /* GoogleService-Info.plist */,
 				7B6601D62E3399A20097D647 /* HomeView.swift */,
 				7B14DFC72E29756D004AB2B3 /* IOSCardModifier.swift */,
@@ -182,8 +184,10 @@
 				7B14DFC82E29756D004AB2B3 /* iSayItForward.entitlements */,
 				7B14DFC92E29756D004AB2B3 /* iSayItForward.xcodeproj */,
 				7B6601E12E33E3A10097D647 /* iSayItForward-Info.plist */,
-				7B14DFCA2E29756D004AB2B3 /* iSayItForwardApp.swift */,
+				022E2A7B2E4462D000FF6129 /* iSayItForwardApp.swift */,
 				7B14DFD02E29756D004AB2B3 /* LoginView.swift */,
+				7B642F9E2E4E0EBF00E26206 /* MatchDataState.swift */,
+				7B642FA22E4E175F00E26206 /* MinimalAppDelegate.swift */,
 				7B14DFD12E29756D004AB2B3 /* MySIFsView.swift */,
 				7B79AF882E324A0000BE0809 /* PillTextFieldStyle.swift */,
 				7B79AF8C2E32529100BE0809 /* PrimaryActionButtonStyle.swift */,
@@ -193,6 +197,7 @@
 				021BAC6C2E3EC11A006FE2D6 /* ReportContentView.swift */,
 				021BAC6D2E3EC11A006FE2D6 /* ReportOverlayModifier.swift */,
 				021BAC6E2E3EC11A006FE2D6 /* ReportUIDemo.swift */,
+				7B642FA02E4E136D00E26206 /* SafeFirebaseProvider.disabled.swift */,
 				7B14DFD32E29756D004AB2B3 /* ScheduleSIFView.swift */,
 				021BAC6F2E3EC11A006FE2D6 /* Screenshot 2025-07-29 at 10.30.53 PM.png */,
 				7B79AF8A2E32523E00BE0809 /* SecondaryActionButtonStyle.swift */,
@@ -202,6 +207,8 @@
 				7B14DFD62E29756D004AB2B3 /* SIFDetailView.swift */,
 				7B14DFD72E29756D004AB2B3 /* SIFItem.swift */,
 				7B14DFD82E29756D004AB2B3 /* SIFPreviewView.swift */,
+				022E2A752E44583100FF6129 /* SIFSettingsView.swift */,
+				022E2A762E44583100FF6129 /* SignatureView.swift */,
 				7B14DFD92E29756D004AB2B3 /* SignupView.swift */,
 				7B85EC6B2E29B5BA002A16F4 /* SplashView.swift */,
 				7B85EC782E2A4AB3002A16F4 /* TemplateCategory.swift */,
@@ -211,6 +218,8 @@
 				021BAC702E3EC11A006FE2D6 /* TestReportView.swift */,
 				7B14DFDF2E29756D004AB2B3 /* UploadMediaView.swift */,
 				7B79AF922E32B08F00BE0809 /* User.swift */,
+				022E2A772E44583100FF6129 /* Utilities */,
+				7BCD3FDF2E4CD93C007C908B /* View+AppBackground.swift */,
 				7B14DFE12E29756D004AB2B3 /* VoiceNoteView.swift */,
 				7B14DFE22E29756D004AB2B3 /* WelcomeView.swift */,
 			);
@@ -340,11 +349,11 @@
 				7B14DFEE2E29756D004AB2B3 /* SignupView.swift in Sources */,
 				7B14DFEF2E29756D004AB2B3 /* AdvancedComposerView.swift in Sources */,
 				7B14DFF02E29756D004AB2B3 /* Color+Theme.swift in Sources */,
+				7BCA5F582E4DFDCF00450B0A /* AppDelegate.swift in Sources */,
 				7B14DFF32E29756D004AB2B3 /* WelcomeView.swift in Sources */,
 				7B14DFF42E29756D004AB2B3 /* SIFDetailView.swift in Sources */,
 				7B6601DB2E33D57E0097D647 /* iPadRootView.swift in Sources */,
 				7B6601DD2E33D7CD0097D647 /* iPadMainView.swift in Sources */,
-				7B14DFF52E29756D004AB2B3 /* iSayItForwardApp.swift in Sources */,
 				7B14DFF72E29756D004AB2B3 /* MySIFsView.swift in Sources */,
 				7B79AF8D2E32529100BE0809 /* PrimaryActionButtonStyle.swift in Sources */,
 				7B79AF8B2E32523E00BE0809 /* SecondaryActionButtonStyle.swift in Sources */,
@@ -362,6 +371,7 @@
 				7B14E0012E29756D004AB2B3 /* Font+Theme.swift in Sources */,
 				7B14E0022E29756D004AB2B3 /* TemplateGalleryView.swift in Sources */,
 				021BAC722E3EC11A006FE2D6 /* ReportUIDemo.swift in Sources */,
+				7B642F9D2E4E0E0800E26206 /* AppBackground.swift in Sources */,
 				021BAC732E3EC11A006FE2D6 /* TestReportView.swift in Sources */,
 				022E2A782E44583100FF6129 /* GettingStartedView.swift in Sources */,
 				022E2A792E44583100FF6129 /* SIFSettingsView.swift in Sources */,
@@ -371,10 +381,12 @@
 				7B14E0032E29756D004AB2B3 /* SIFConfirmationView.swift in Sources */,
 				7B6601D92E3399E30097D647 /* CreateSIFView.swift in Sources */,
 				7B85EC792E2A4AB3002A16F4 /* TemplateCategory.swift in Sources */,
+				7B642FA32E4E175F00E26206 /* MinimalAppDelegate.swift in Sources */,
 				7B79AF932E32B08F00BE0809 /* User.swift in Sources */,
 				7BCD3FE42E4CFE9D007C908B /* AuthState.swift in Sources */,
 				7B14E0042E29756D004AB2B3 /* SendSIFView.swift in Sources */,
 				7B14E0052E29756D004AB2B3 /* IOSCardModifier.swift in Sources */,
+				7B642F9F2E4E0EBF00E26206 /* MatchDataState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

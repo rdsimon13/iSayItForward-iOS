@@ -1,92 +1,83 @@
 import SwiftUI
-import FirebaseCore
-
-// Keep the tiny delegate so GoogleUtilities/AppDelegateSwizzler is satisfied.
-final class BasicAppDelegate: NSObject, UIApplicationDelegate {}
+import Firebase
 
 @main
 struct iSayItForwardApp: App {
-    @UIApplicationDelegateAdaptor(BasicAppDelegate.self) var basicDelegate
+    // Register the minimal app delegate
+    @UIApplicationDelegateAdaptor(MinimalAppDelegate.self) var delegate
+    
+    // Track Firebase initialization state
+    @State private var firebaseReady = false
+    @State private var showSplash = true
+    
+    // State objects - created AFTER Firebase is ready
     @StateObject private var authState = AuthState()
-
-    init() {
-        if FirebaseApp.app() == nil { FirebaseApp.configure() }
-        print("✅ Firebase configured? \(FirebaseApp.app() != nil)")
-    }
-
+    @StateObject private var matchDataState = MatchDataState()
+    
     var body: some Scene {
         WindowGroup {
-            RootHost()
-                .environmentObject(authState)
-        }
-    }
-}
-
-/// A safe wrapper that shows your real root when it successfully appears,
-/// but gives you clear diagnostics (and a fallback) if it doesn’t.
-struct RootHost: View {
-    @EnvironmentObject var authState: AuthState
-
-    @State private var didRenderGettingStarted = false
-    @State private var timedOutFallback = false
-
-    var body: some View {
-        ZStack {
-            // Underlay so you never see pure white if the child view fails early
-            Color.black.opacity(0.02).ignoresSafeArea()
-
-            if timedOutFallback {
-                // If GettingStartedView never renders, show a known-safe screen
-                FallbackHome()
-                    .transition(.opacity)
-            } else {
-                // Your intended root
-                GettingStartedView()
-                    .onAppear {
-                        didRenderGettingStarted = true
-                        print("🟢 GettingStartedView didAppear")
+            ZStack {
+                // Safe background color
+                Color.white.ignoresSafeArea()
+                
+                if showSplash {
+                    // Extremely minimal splash screen
+                    VStack(spacing: 20) {
+                        Image(systemName: "flame.fill")
+                            .font(.system(size: 60))
+                            .foregroundColor(.orange)
+                        Text("Starting...")
+                            .font(.title2)
+                        ProgressView()
                     }
-                    .transition(.opacity)
-            }
-
-            // Visible overlay while we wait
-            if !didRenderGettingStarted && !timedOutFallback {
-                VStack(spacing: 12) {
-                    ProgressView()
-                    Text("Loading UI…").font(.callout)
+                    .onAppear {
+                        print("⏳ Splash screen appeared, initializing Firebase...")
+                        // Wait 1 second before checking Firebase
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                            if FirebaseApp.app() != nil {
+                                print("✅ Firebase is ready, proceeding to main content")
+                                self.firebaseReady = true
+                                withAnimation { self.showSplash = false }
+                            } else {
+                                print("❌ Firebase not ready - something is wrong")
+                            }
+                        }
+                    }
+                } else if firebaseReady {
+                    // Debug print to track progression
+                    VStack {
+                        // This is the key change - skip the coordinator and go directly to login
+                        if authState.isLoggedIn {
+                            MainAppView()
+                                .environmentObject(authState)
+                                .environmentObject(matchDataState)
+                                .onAppear { print("🏠 Showing MainAppView") }
+                        } else {
+                            LoginView()
+                                .environmentObject(authState)
+                                .environmentObject(matchDataState)
+                                .onAppear { print("🔑 Showing LoginView") }
+                        }
+                    }
+                    .onAppear {
+                        print("🚀 Firebase ready, auth state: \(authState.isLoggedIn ? "Logged in" : "Not logged in")")
+                    }
                 }
-                .padding()
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
-                .shadow(radius: 6)
-            }
-        }
-        // If the root hasn't rendered after 2s, assume it's blocked by a crash/missing env object
-        .task {
-            try? await Task.sleep(nanoseconds: 2_000_000_000)
-            if !didRenderGettingStarted {
-                print("⚠️ GettingStartedView did not render in time — showing fallback.")
-                timedOutFallback = true
             }
         }
     }
 }
 
-/// A minimal, known-safe screen to prove the app UI still renders
-struct FallbackHome: View {
+// Simplified MainAppView that goes directly to GettingStartedView
+struct MainAppView: View {
+    @EnvironmentObject var authState: AuthState
+    @EnvironmentObject var matchDataState: MatchDataState
+    
     var body: some View {
-        ZStack {
-            LinearGradient(colors: [.blue.opacity(0.9), .cyan], startPoint: .top, endPoint: .bottom)
-                .ignoresSafeArea()
-            VStack(spacing: 16) {
-                Image(systemName: "house.fill").font(.system(size: 42)).foregroundStyle(.white)
-                Text("Fallback Home")
-                    .font(.title.bold()).foregroundStyle(.white)
-                Text("Your GettingStartedView didn't render. See Xcode console for hints.")
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(.white.opacity(0.9))
+        // Go straight to your GettingStartedView
+        GettingStartedView()
+            .onAppear {
+                print("📱 GettingStartedView appeared")
             }
-            .padding()
-        }
-        .onAppear { print("🟢 FallbackHome appeared") }
     }
 }

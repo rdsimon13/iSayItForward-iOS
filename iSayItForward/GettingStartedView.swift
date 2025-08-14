@@ -1,6 +1,11 @@
 import SwiftUI
+import Firebase
 
 struct GettingStartedView: View {
+    // Add environment objects for Firebase integration
+    @EnvironmentObject var authState: AuthState
+    @EnvironmentObject var matchDataState: MatchDataState
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -26,28 +31,28 @@ struct GettingStartedView: View {
                         
                         // Step Cards
                         VStack(spacing: 16) {
-                            GettingStartedCard(
+                            stepCard(
                                 stepNumber: 1,
                                 title: "Create Your First SIF",
                                 description: "Start by creating a personalized message with our easy-to-use composer.",
                                 iconName: "square.and.pencil"
                             )
                             
-                            GettingStartedCard(
+                            stepCard(
                                 stepNumber: 2,
                                 title: "Add Your Signature",
                                 description: "Enhance your SIFs with a digital signature for a personal touch.",
                                 iconName: "signature"
                             )
                             
-                            GettingStartedCard(
+                            stepCard(
                                 stepNumber: 3,
                                 title: "Choose Templates",
                                 description: "Browse our template gallery for quick and beautiful message templates.",
                                 iconName: "doc.on.doc"
                             )
                             
-                            GettingStartedCard(
+                            stepCard(
                                 stepNumber: 4,
                                 title: "Schedule Delivery",
                                 description: "Never forget important dates - schedule your SIFs for future delivery.",
@@ -63,16 +68,16 @@ struct GettingStartedView: View {
                                 .foregroundColor(Color.brandDarkBlue)
                             
                             HStack(spacing: 12) {
-                                NavigationLink(destination: CreateSIFView()) {
-                                    QuickActionButton(iconName: "square.and.pencil", text: "Create SIF")
+                                NavigationLink(destination: Text("Create SIF View")) {
+                                    quickActionButton(iconName: "square.and.pencil", text: "Create SIF")
                                 }
                                 
-                                NavigationLink(destination: TemplateGalleryView()) {
-                                    QuickActionButton(iconName: "doc.on.doc", text: "Templates")
+                                NavigationLink(destination: Text("Template Gallery View")) {
+                                    quickActionButton(iconName: "doc.on.doc", text: "Templates")
                                 }
                                 
-                                NavigationLink(destination: ProfileView()) {
-                                    QuickActionButton(iconName: "person.crop.circle", text: "Profile")
+                                NavigationLink(destination: Text("Profile View")) {
+                                    quickActionButton(iconName: "person.crop.circle", text: "Profile")
                                 }
                             }
                         }
@@ -88,18 +93,23 @@ struct GettingStartedView: View {
             }
             .navigationTitle("Getting Started")
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                print("🟢 GettingStartedView.onAppear called")
+                
+                // Safe Firebase usage - wrapped in checks
+                if FirebaseApp.app() != nil, let userId = authState.user?.uid {
+                    print("📱 User logged in with ID: \(userId)")
+                } else {
+                    print("📱 No user logged in or Firebase not ready")
+                }
+            }
         }
     }
-}
-
-// MARK: - Getting Started Card
-private struct GettingStartedCard: View {
-    let stepNumber: Int
-    let title: String
-    let description: String
-    let iconName: String
     
-    var body: some View {
+    // MARK: - Helper Views
+    
+    // Instead of using a separate struct, define it as a function that returns a view
+    private func stepCard(stepNumber: Int, title: String, description: String, iconName: String) -> some View {
         HStack(spacing: 16) {
             // Step number circle
             ZStack {
@@ -135,14 +145,8 @@ private struct GettingStartedCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
     }
-}
-
-// MARK: - Quick Action Button
-private struct QuickActionButton: View {
-    let iconName: String
-    let text: String
     
-    var body: some View {
+    private func quickActionButton(iconName: String, text: String) -> some View {
         VStack(spacing: 8) {
             Image(systemName: iconName)
                 .font(.title2)
@@ -162,8 +166,11 @@ private struct QuickActionButton: View {
     }
 }
 
+// MARK: - Preview Provider
 struct GettingStartedView_Previews: PreviewProvider {
     static var previews: some View {
         GettingStartedView()
+            .environmentObject(AuthState())
+            .environmentObject(MatchDataState())
     }
 }
