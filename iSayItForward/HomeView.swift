@@ -30,6 +30,41 @@ private struct HomeLaunchpadView: View {
                         }
                     }
 
+                    // Notification Center Quick Access
+                    NavigationLink(destination: NotificationCenterView()) {
+                        HStack(spacing: 12) {
+                            NotificationBadgeView()
+                                .overlay(
+                                    Image(systemName: "bell.fill")
+                                        .font(.title2)
+                                        .foregroundColor(.white)
+                                )
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Notification Center")
+                                    .font(.headline)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.white)
+                                
+                                Text("Stay updated with your SIF activities")
+                                    .font(.subheadline)
+                                    .foregroundColor(.white.opacity(0.9))
+                            }
+                            
+                            Spacer()
+                        }
+                        .padding()
+                        .background(
+                            LinearGradient(
+                                colors: [.blue, .purple],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
+                    }
+
                     NavigationLink(destination: TemplateGalleryView()) {
                         PromoCard(title: "SIF Template Gallery",
                                   description: "Explore a variety of ready made templates designed to help you express yourself with style and speed.",
@@ -128,6 +163,12 @@ struct HomeView: View {
                     .tabItem {
                         Image(systemName: "square.and.pencil")
                         Text("Send SIF")
+                    }
+                
+                NotificationCenterView()
+                    .tabItem {
+                        TabBadgeView(tab: .notifications)
+                        Text("Notifications")
                     }
 
                 TemplateGalleryView()
