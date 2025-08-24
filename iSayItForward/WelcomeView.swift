@@ -1,103 +1,199 @@
 import SwiftUI
+import FirebaseAuth
 
 struct WelcomeView: View {
+    @StateObject private var subscriptionManager = SubscriptionManager()
+    @EnvironmentObject var authState: AuthState
+    
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var showingSignupSheet = false
     @State private var showingAlert = false
     @State private var alertMessage = ""
-    @State private var isLoggedIn = false
-    @State private var currentUser: AppUser?
+    @State private var isSigningIn = false
 
     var body: some View {
         NavigationStack {
             ZStack {
                 Color.mainAppGradient.ignoresSafeArea()
 
-                VStack(spacing: 20) {
-                    Spacer()
+                if authState.isUserLoggedIn {
+                    HomeView()
+                        .environmentObject(subscriptionManager)
+                } else {
+                    ScrollView {
+                        VStack(spacing: 24) {
+                            Spacer(minLength: 60)
 
-                    Image("isifLogo")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 96, height: 96)
+                            // Logo and branding
+                            VStack(spacing: 16) {
+                                ModernCard(backgroundColor: .white, shadowRadius: 8) {
+                                    Image("isifLogo")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 80, height: 80)
+                                        .padding(20)
+                                }
+                                .frame(width: 120, height: 120)
 
-                    Text("iSayItForward")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .foregroundColor(Color.brandDarkBlue)
+                                VStack(spacing: 8) {
+                                    Text("iSayItForward")
+                                        .font(.system(size: 32, weight: .bold, design: .rounded))
+                                        .foregroundColor(.neutralGray800)
 
-                    Text("The Ultimate Way to Express Yourself")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
+                                    Text("The Ultimate Way to Express Yourself")
+                                        .font(.system(size: 16, weight: .medium))
+                                        .foregroundColor(.neutralGray600)
+                                        .multilineTextAlignment(.center)
+                                }
+                            }
 
-                    Text("Sign In or Register")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .padding(.top)
-                        .foregroundColor(Color.brandDarkBlue)
+                            // Sign in form
+                            ModernCard {
+                                VStack(spacing: 20) {
+                                    Text("Welcome Back")
+                                        .font(.system(size: 24, weight: .bold))
+                                        .foregroundColor(.neutralGray800)
 
-                    TextField("Email or Phone Number", text: $email)
-                        .textFieldStyle(PillTextFieldStyle())
-                        .autocapitalization(.none)
-                        .keyboardType(.emailAddress)
+                                    VStack(spacing: 16) {
+                                        TextField("Email or Phone Number", text: $email)
+                                            .textFieldStyle(ModernTextFieldStyle(iconName: "envelope.fill"))
+                                            .autocapitalization(.none)
+                                            .keyboardType(.emailAddress)
 
-                    SecureField("Enter Password", text: $password)
-                        .textFieldStyle(PillTextFieldStyle())
+                                        SecureField("Enter Password", text: $password)
+                                            .textFieldStyle(ModernTextFieldStyle(iconName: "lock.fill", isSecure: true))
+                                    }
 
-                    Button("Sign In") {
-                        currentUser = AppUser(uid: "demoUID", name: "Damon Sims", email: email)
-                        isLoggedIn = true
+                                    Button(action: handleSignIn) {
+                                        HStack {
+                                            if isSigningIn {
+                                                ProgressView()
+                                                    .scaleEffect(0.8)
+                                                    .foregroundColor(.white)
+                                            }
+                                            
+                                            Text(isSigningIn ? "Signing In..." : "Sign In")
+                                                .font(.system(size: 16, weight: .semibold))
+                                        }
+                                    }
+                                    .buttonStyle(ModernPrimaryButtonStyle(isEnabled: !isSigningIn && isFormValid))
+                                    .disabled(isSigningIn || !isFormValid)
+
+                                    Button("Forgot Password?") {
+                                        handleForgotPassword()
+                                    }
+                                    .buttonStyle(ModernTertiaryButtonStyle())
+                                    .font(.system(size: 14, weight: .medium))
+                                }
+                                .padding(24)
+                            }
+
+                            // Sign up section
+                            VStack(spacing: 16) {
+                                Text("New to iSayItForward?")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.neutralGray600)
+
+                                Button("Create New Account") {
+                                    showingSignupSheet = true
+                                }
+                                .buttonStyle(ModernSecondaryButtonStyle())
+                            }
+
+                            // Terms
+                            Text("By signing in, you agree to our Terms of Service and Privacy Policy")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(.neutralGray500)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 40)
+
+                            Spacer(minLength: 40)
+                        }
+                        .padding(.horizontal, 24)
                     }
-                    .buttonStyle(SecondaryActionButtonStyle())
-
-                    Button("Forgot Password?") {
-                        alertMessage = "Password reset is unavailable in demo mode."
-                        showingAlert = true
-                    }
-                    .font(.footnote)
-                    .foregroundColor(.gray)
-                    .padding(.top, -10)
-
-                    Spacer()
-
-                    Text("Sign In With")
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-
-                    HStack(spacing: 25) {
-                        Image(systemName: "lock.slash")
-                            .font(.system(size: 30))
-                            .foregroundColor(.gray)
-                    }
-                    .frame(height: 50)
-
-                    Button("Create New Account") {
-                        showingSignupSheet = true
-                    }
-                    .buttonStyle(PrimaryActionButtonStyle())
-
-                    Text("By signing up, you agree to our Terms of Service")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
                 }
-                .padding(.horizontal, 32)
-                .sheet(isPresented: $showingSignupSheet) {
-                    SignupView { user in
-                        currentUser = user
-                        isLoggedIn = true
-                        showingSignupSheet = false
-                    }
+            }
+            .navigationBarHidden(true)
+            .sheet(isPresented: $showingSignupSheet) {
+                SignupView { user in
+                    showingSignupSheet = false
+                    // User will be automatically signed in through Firebase Auth
                 }
-                .alert(isPresented: $showingAlert) {
-                    Alert(title: Text("Notice"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+                .environmentObject(subscriptionManager)
+            }
+            .alert("Sign In Error", isPresented: $showingAlert) {
+                Button("OK") { }
+            } message: {
+                Text(alertMessage)
+            }
+        }
+    }
+    
+    private var isFormValid: Bool {
+        !email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
+        !password.isEmpty &&
+        email.contains("@")
+    }
+    
+    private func handleSignIn() {
+        guard isFormValid else {
+            alertMessage = "Please enter a valid email and password."
+            showingAlert = true
+            return
+        }
+        
+        isSigningIn = true
+        
+        Task {
+            do {
+                let result = try await Auth.auth().signIn(withEmail: email, password: password)
+                
+                // Fetch user data from Firestore
+                await subscriptionManager.fetchUserData(uid: result.user.uid)
+                
+                await MainActor.run {
+                    isSigningIn = false
+                    // AuthState will automatically update through the listener
                 }
-
-                NavigationLink(destination: HomeView(), isActive: $isLoggedIn) {
-                    EmptyView()
+                
+            } catch {
+                await MainActor.run {
+                    isSigningIn = false
+                    alertMessage = "Failed to sign in: \(error.localizedDescription)"
+                    showingAlert = true
                 }
             }
         }
+    }
+    
+    private func handleForgotPassword() {
+        guard !email.isEmpty, email.contains("@") else {
+            alertMessage = "Please enter your email address first."
+            showingAlert = true
+            return
+        }
+        
+        Task {
+            do {
+                try await Auth.auth().sendPasswordReset(withEmail: email)
+                await MainActor.run {
+                    alertMessage = "Password reset email sent to \(email)"
+                    showingAlert = true
+                }
+            } catch {
+                await MainActor.run {
+                    alertMessage = "Failed to send password reset: \(error.localizedDescription)"
+                    showingAlert = true
+                }
+            }
+        }
+    }
+}
+
+struct WelcomeView_Previews: PreviewProvider {
+    static var previews: some View {
+        WelcomeView()
+            .environmentObject(AuthState())
     }
 }
