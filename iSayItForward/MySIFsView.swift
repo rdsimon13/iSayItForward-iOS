@@ -19,9 +19,22 @@ struct MySIFsView: View {
                         } else {
                             List(sifs) { sif in
                                 NavigationLink(destination: SIFDetailView(sif: sif)) {
-                                    VStack(alignment: .leading) {
-                                        Text(sif.subject)
-                                            .font(.headline)
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        HStack {
+                                            Text(sif.subject)
+                                                .font(.headline)
+                                                .fontWeight(.medium)
+                                            Spacer()
+                                            if sif.signatureImageData != nil {
+                                                Image(systemName: "signature")
+                                                    .font(.caption)
+                                                    .foregroundColor(Color.brandDarkBlue)
+                                                    .padding(.horizontal, 6)
+                                                    .padding(.vertical, 3)
+                                                    .background(Color.brandDarkBlue.opacity(0.1))
+                                                    .clipShape(RoundedRectangle(cornerRadius: 4))
+                                            }
+                                        }
                                         Text("To: \(sif.recipients.joined(separator: ", "))")
                                             .font(.subheadline)
                                             .foregroundColor(.secondary)

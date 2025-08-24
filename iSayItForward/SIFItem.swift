@@ -18,6 +18,10 @@ struct SIFItem: Identifiable, Codable, Hashable, Equatable {
     var attachmentURL: String? = nil
     var templateName: String? = nil
     
+    // eSignature support
+    var signatureImageData: Data? = nil
+    var signatureTimestamp: Date? = nil
+    
     // Hashable & Equatable conformance for SwiftUI lists
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)

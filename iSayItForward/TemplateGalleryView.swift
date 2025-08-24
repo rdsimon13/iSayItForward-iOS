@@ -58,26 +58,34 @@ private struct TemplateCardView: View {
                 Image(template.imageName)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: 60, height: 60)
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .shadow(radius: 2)
+                    .frame(width: 80, height: 80)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
 
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 6) {
                     Text(template.name)
                         .font(.headline)
                         .fontWeight(.bold)
+                        .multilineTextAlignment(.leading)
                     Text(template.message)
                         .font(.subheadline)
+                        .foregroundColor(.secondary)
                         .lineLimit(2)
+                        .multilineTextAlignment(.leading)
                 }
                 Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
-            .padding()
-            .background(.white.opacity(0.85))
+            .padding(16)
+            .background(.white.opacity(0.95))
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .foregroundColor(Color.brandDarkBlue)
-            .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
+            .shadow(color: .black.opacity(0.1), radius: 8, y: 3)
         }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 

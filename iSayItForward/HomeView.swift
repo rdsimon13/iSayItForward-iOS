@@ -14,26 +14,44 @@ private struct HomeLaunchpadView: View {
                     Text("Welcome to iSIF, \(userName).\nChoose an option below to get started.")
                         .padding(20)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(.white.opacity(0.85))
+                        .background(.white.opacity(0.9))
                         .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
+                        .shadow(color: .black.opacity(0.1), radius: 8, y: 3)
 
                     HStack(spacing: 16) {
-                        NavigationLink(destination: Text("Getting Started Screen")) {
+                        NavigationLink(destination: GettingStartedView()) {
                             HomeActionButton(iconName: "figure.walk", text: "Getting Started")
                         }
                         NavigationLink(destination: CreateSIFView()) {
                             HomeActionButton(iconName: "square.and.pencil", text: "CREATE A SIF")
                         }
                         NavigationLink(destination: MySIFsView()) {
-                            HomeActionButton(iconName: "envelope", text: "MANAGE MY SIF'S")
+                            HomeActionButton(iconName: "envelope", text: "MANAGE MY SIFS")
                         }
                     }
 
+                    NavigationLink(destination: SIFSettingsView()) {
+                        PromoCard(title: "Browse SIF Settings",
+                                  description: "Customize your SIF preferences, notification settings, and account options.",
+                                  iconName: "gearshape.fill")
+                    }
+
                     NavigationLink(destination: TemplateGalleryView()) {
-                        PromoCard(title: "SIF Template Gallery",
-                                  description: "Explore a variety of ready made templates designed to help you express yourself with style and speed.",
-                                  iconName: "photo.on.rectangle.angled")
+                        HStack {
+                            PromoCard(title: "SIF Template Gallery",
+                                      description: "Explore a variety of ready made templates designed to help you express yourself with style and speed.",
+                                      iconName: "photo.on.rectangle.angled")
+                            
+                            VStack {
+                                Spacer()
+                                ReportButton {
+                                    // Put your desired action here, e.g.:
+                                    print("Report tapped (Template Gallery Content)")
+                                    // Or open a report modal, etc.
+                                }
+                            }
+                            .padding(.trailing, 8)
+                        }
                     }
 
                     NavigationLink(destination: CreateSIFView()) {

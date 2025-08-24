@@ -27,9 +27,16 @@ struct WelcomeView: View {
                         .fontWeight(.bold)
                         .foregroundColor(Color.brandDarkBlue)
 
+                    Text("Welcome to the SIF Gateway")
+                        .font(.title2)
+                        .fontWeight(.medium)
+                        .foregroundColor(Color.brandDarkBlue)
+                        .multilineTextAlignment(.center)
+
                     Text("The Ultimate Way to Express Yourself")
                         .font(.headline)
                         .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
 
                     Text("Sign In or Register")
                         .font(.title2)
