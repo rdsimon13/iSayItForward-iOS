@@ -6,15 +6,18 @@ import FirebaseCore
 struct iSayItForwardApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var authState = AuthState()
+    @StateObject private var persistenceManager = PersistenceManager.shared
 
     var body: some Scene {
         WindowGroup {
             if UIDevice.current.userInterfaceIdiom == .pad {
                 iPadMainView()
                     .environmentObject(authState)
+                    .environment(\.managedObjectContext, persistenceManager.context)
             } else {
                 WelcomeView() // or ContentView() if you prefer
                     .environmentObject(authState)
+                    .environment(\.managedObjectContext, persistenceManager.context)
             }
         }
     }
