@@ -42,6 +42,9 @@ private struct HomeLaunchpadView: View {
                                   iconName: "calendar")
                     }
 
+                    // Category browsing section
+                    CategoryBrowsingSection()
+
                     Spacer()
                 }
                 .padding()
@@ -136,6 +139,12 @@ struct HomeView: View {
                         Text("Templates")
                     }
 
+                CategoryListView()
+                    .tabItem {
+                        Image(systemName: "folder.fill")
+                        Text("Categories")
+                    }
+
                 ProfileView()
                     .tabItem {
                         Image(systemName: "person.crop.circle")
@@ -155,5 +164,96 @@ struct HomeView: View {
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView()
+    }
+}
+
+// MARK: - Category Browsing Section
+struct CategoryBrowsingSection: View {
+    @StateObject private var categoryViewModel = CategoryViewModel()
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Text("Browse Categories")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .foregroundColor(Color.brandDarkBlue)
+                
+                Spacer()
+                
+                NavigationLink(destination: CategoryListView()) {
+                    HStack {
+                        Text("View All")
+                            .font(.caption)
+                        Image(systemName: "chevron.right")
+                            .font(.caption2)
+                    }
+                    .foregroundColor(.brandYellow)
+                }
+            }
+            
+            if categoryViewModel.isLoading {
+                HStack {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                    Text("Loading categories...")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+            } else if categoryViewModel.systemCategories.isEmpty {
+                Text("No categories available")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(categoryViewModel.systemCategories.prefix(6), id: \.id) { category in
+                            NavigationLink(destination: CategoryDetailView(category: category)) {
+                                HomeCategoryCard(category: category)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 4)
+                }
+            }
+        }
+        .padding(20)
+        .background(.white.opacity(0.85))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
+    }
+}
+
+// MARK: - Home Category Card
+struct HomeCategoryCard: View {
+    let category: Category
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: category.iconName)
+                .font(.title2)
+                .foregroundColor(CategoryUtilities.hexToColor(category.colorHex))
+                .frame(width: 40, height: 40)
+                .background(
+                    Circle()
+                        .fill(CategoryUtilities.hexToColor(category.colorHex).opacity(0.2))
+                )
+            
+            Text(category.displayName)
+                .font(.caption)
+                .fontWeight(.semibold)
+                .foregroundColor(Color.brandDarkBlue)
+                .lineLimit(1)
+            
+            Text("\(category.messageCount)")
+                .font(.caption2)
+                .foregroundColor(.secondary)
+        }
+        .padding(.vertical, 8)
+        .frame(width: 70)
     }
 }
