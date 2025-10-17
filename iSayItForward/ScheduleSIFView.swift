@@ -1,58 +1,50 @@
 import SwiftUI
 
 struct ScheduleSIFView: View {
-    @Binding var scheduledDate: Date
-    @State private var showingDatePicker = false
+    @State private var scheduledDate = Date()
+    @State private var message: String = ""
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Schedule Your SIF")
-                .font(.title2)
-                .fontWeight(.bold)
-                .foregroundColor(Color.brandDarkBlue)
-            
-            VStack(spacing: 12) {
-                Button(action: {
-                    showingDatePicker.toggle()
-                }) {
-                    HStack {
-                        Image(systemName: "calendar")
-                            .font(.title2)
-                            .foregroundColor(Color.brandDarkBlue)
-                        
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Send On")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Text(scheduledDate.formatted(date: .abbreviated, time: .shortened))
-                                .font(.headline)
-                                .fontWeight(.medium)
-                        }
-                        
-                        Spacer()
-                        
-                        Image(systemName: showingDatePicker ? "chevron.up" : "chevron.down")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
+        VStack(spacing: 20) {
+            Text("Schedule a SIF")
+                .font(.custom("Kodchasan-Bold", size: 28))
+                .padding(.top, 40)
+
+            Text("Never forget to send greetings again! Schedule your SIF to be delivered automatically on the date you choose.")
+                .font(.custom("Kodchasan-Regular", size: 16))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+
+            DatePicker("Select a date and time", selection: $scheduledDate, displayedComponents: [.date, .hourAndMinute])
+                .datePickerStyle(.graphical)
+                .padding()
+
+            TextField("Add an optional message", text: $message)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding(.horizontal, 40)
+
+            Button {
+                // placeholder for scheduling logic
+                print("Scheduled SIF for \(scheduledDate) with message: \(message)")
+            } label: {
+                Text("Confirm Schedule")
+                    .font(.custom("Kodchasan-SemiBold", size: 18))
+                    .foregroundColor(.white)
                     .padding()
-                    .background(.white.opacity(0.9))
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
-                }
-                .foregroundColor(Color.brandDarkBlue)
-                
-                if showingDatePicker {
-                    DatePicker("Select Date & Time", selection: $scheduledDate, displayedComponents: [.date, .hourAndMinute])
-                        .datePickerStyle(.graphical)
-                        .padding()
-                        .background(.white.opacity(0.95))
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .shadow(color: .black.opacity(0.1), radius: 8, y: 3)
-                        .transition(.opacity.combined(with: .scale))
-                        .animation(.easeInOut(duration: 0.3), value: showingDatePicker)
-                }
+                    .frame(maxWidth: .infinity)
+                    .background(Color(red: 0.15, green: 0.25, blue: 0.35))
+                    .cornerRadius(20)
+                    .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
             }
+            .padding(.horizontal, 40)
+
+            Spacer()
         }
+        .navigationTitle("Schedule a SIF")
+        .navigationBarTitleDisplayMode(.inline)
     }
+}
+
+#Preview {
+    ScheduleSIFView()
 }

@@ -88,6 +88,7 @@
 		7B85EC792E2A4AB3002A16F4 /* TemplateCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B85EC782E2A4AB3002A16F4 /* TemplateCategory.swift */; };
 		7BC81CE22E32DD0000A56540 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 7BC81CE12E32DD0000A56540 /* FirebaseAuth */; };
 		7BC81CE42E32DD0000A56540 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 7BC81CE32E32DD0000A56540 /* FirebaseFirestore */; };
+		7BCF8D952EA23667002DB810 /* ManageSIFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BCF8D942EA23667002DB810 /* ManageSIFView.swift */; };
 		7BDB06102E35BAFC00339523 /* iPadMain16View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDB060F2E35BAFC00339523 /* iPadMain16View.swift */; };
 		7BDB06122E35BB5600339523 /* SidebarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDB06112E35BB5600339523 /* SidebarItem.swift */; };
 		7BDB06142E36094700339523 /* AppUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDB06132E36094700339523 /* AppUser.swift */; };
@@ -177,6 +178,7 @@
 		7B79AF922E32B08F00BE0809 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		7B85EC6B2E29B5BA002A16F4 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		7B85EC782E2A4AB3002A16F4 /* TemplateCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateCategory.swift; sourceTree = "<group>"; };
+		7BCF8D942EA23667002DB810 /* ManageSIFView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageSIFView.swift; sourceTree = "<group>"; };
 		7BDB060F2E35BAFC00339523 /* iPadMain16View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPadMain16View.swift; sourceTree = "<group>"; };
 		7BDB06112E35BB5600339523 /* SidebarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarItem.swift; sourceTree = "<group>"; };
 		7BDB06132E36094700339523 /* AppUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUser.swift; sourceTree = "<group>"; };
@@ -266,6 +268,7 @@
 				7B6803622E9E589800A637C9 /* Kodchasan */,
 				7B6802F82E9D578200A637C9 /* MainTabView.swift */,
 				7B14DFD12E29756D004AB2B3 /* MySIFsView.swift */,
+				7BCF8D942EA23667002DB810 /* ManageSIFView.swift */,
 				7B68030A2E9DA3D900A637C9 /* New Group */,
 				7B6601DC2E33D7CD0097D647 /* OldiPadMainView.swift */,
 				7B6601DA2E33D57E0097D647 /* OldiPadRootView.swift */,
@@ -520,6 +523,7 @@
 				7B14E0032E29756D004AB2B3 /* SIFConfirmationView.swift in Sources */,
 				7B6601D92E3399E30097D647 /* CreateSIFView.swift in Sources */,
 				7B6803732E9E7FA000A637C9 /* DashboardView.swift in Sources */,
+				7BCF8D952EA23667002DB810 /* ManageSIFView.swift in Sources */,
 				7B85EC792E2A4AB3002A16F4 /* TemplateCategory.swift in Sources */,
 				7B79AF932E32B08F00BE0809 /* User.swift in Sources */,
 				7B14E0042E29756D004AB2B3 /* SendSIFView.swift in Sources */,
