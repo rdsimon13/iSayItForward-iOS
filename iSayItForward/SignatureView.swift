@@ -3,7 +3,7 @@ import FirebaseAuth
 
 // MARK: - Signature Data Model
 struct SignatureData: Identifiable, Codable {
-    let id = UUID()
+    var id = UUID()
     let signatureImageData: Data
     let timestamp: Date
     let userUID: String
@@ -77,7 +77,7 @@ struct SignatureView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.mainAppGradient.ignoresSafeArea()
+                GradientTheme.welcomeBackground.ignoresSafeArea()
                 
                 VStack(spacing: 20) {
                     Text("Please sign below")

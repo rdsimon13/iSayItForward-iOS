@@ -8,7 +8,8 @@ struct DocumentUploadView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.mainAppGradient.ignoresSafeArea()
+                Color.clear
+                    .background(Color.main.ignoresSafeArea())
                 
                 VStack(spacing: 24) {
                     Text("Upload Document")

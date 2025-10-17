@@ -1,89 +1,119 @@
 import SwiftUI
 
 struct GettingStartedView: View {
+    @Binding var selectedTab: Int
+
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.mainAppGradient.ignoresSafeArea()
-                
+                GradientTheme.welcomeBackground.ignoresSafeArea()
+                    .ignoresSafeArea()
+
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 24) {
-                        // Welcome Header
-                        VStack(alignment: .leading, spacing: 8) {
+                    VStack(alignment: .leading, spacing: 28) {
+
+                        // MARK: - Welcome Header
+                        VStack(alignment: .center, spacing: 8) {
+                            Image("isiFLogo")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 90)
+                                .shadow(color: .black.opacity(0.25), radius: 5, y: 3)
+
                             Text("Getting Started")
-                                .font(.largeTitle)
-                                .fontWeight(.bold)
+                                .font(.system(size: 28, weight: .heavy, design: .rounded))
                                 .foregroundColor(Color.brandDarkBlue)
-                            
-                            Text("Learn how to make the most of iSayItForward")
-                                .font(.headline)
-                                .foregroundColor(.secondary)
+
+                            Text("Learn how to make the most of iSayItForward.")
+                                .font(.system(size: 16, weight: .medium, design: .rounded))
+                                .foregroundColor(.black.opacity(0.75))
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 24)
                         }
-                        .padding()
-                        .background(.white.opacity(0.9))
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .shadow(color: .black.opacity(0.1), radius: 8, y: 3)
-                        
-                        // Step Cards
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 24)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(Color.white.opacity(0.9))
+                                .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
+                        )
+                        .padding(.horizontal)
+
+                        // MARK: - Step Cards
                         VStack(spacing: 16) {
-                            GettingStartedCard(
+                            GettingStartedStep(
                                 stepNumber: 1,
                                 title: "Create Your First SIF",
-                                description: "Start by creating a personalized message with our easy-to-use composer.",
+                                description: "Start by composing a personalized message with our easy-to-use composer.",
                                 iconName: "square.and.pencil"
                             )
-                            
-                            GettingStartedCard(
+                            GettingStartedStep(
                                 stepNumber: 2,
                                 title: "Add Your Signature",
                                 description: "Enhance your SIFs with a digital signature for a personal touch.",
                                 iconName: "signature"
                             )
-                            
-                            GettingStartedCard(
+                            GettingStartedStep(
                                 stepNumber: 3,
                                 title: "Choose Templates",
-                                description: "Browse our template gallery for quick and beautiful message templates.",
+                                description: "Browse our template gallery for quick and beautiful message designs.",
                                 iconName: "doc.on.doc"
                             )
-                            
-                            GettingStartedCard(
+                            GettingStartedStep(
                                 stepNumber: 4,
                                 title: "Schedule Delivery",
-                                description: "Never forget important dates - schedule your SIFs for future delivery.",
-                                iconName: "calendar"
+                                description: "Never forget important dates — schedule your SIFs for future delivery.",
+                                iconName: "calendar.badge.clock"
                             )
                         }
-                        
-                        // Quick Actions
-                        VStack(alignment: .leading, spacing: 12) {
+                        .padding(.horizontal)
+
+                        // MARK: - Quick Actions
+                        VStack(alignment: .leading, spacing: 16) {
                             Text("Quick Actions")
-                                .font(.title2)
-                                .fontWeight(.bold)
+                                .font(.system(size: 22, weight: .bold, design: .rounded))
                                 .foregroundColor(Color.brandDarkBlue)
-                            
-                            HStack(spacing: 12) {
-                                NavigationLink(destination: CreateSIFView()) {
-                                    QuickActionButton(iconName: "square.and.pencil", text: "Create SIF")
+
+                            HStack(spacing: 14) {
+                                Button {
+                                    selectedTab = 1
+                                } label: {
+                                    QuickAction(iconName: "square.and.pencil", text: "Create SIF")
                                 }
-                                
-                                NavigationLink(destination: TemplateGalleryView()) {
-                                    QuickActionButton(iconName: "doc.on.doc", text: "Templates")
+
+                                Button {
+                                    selectedTab = 2
+                                } label: {
+                                    QuickAction(iconName: "doc.on.doc", text: "Templates")
                                 }
-                                
-                                NavigationLink(destination: ProfileView()) {
-                                    QuickActionButton(iconName: "person.crop.circle", text: "Profile")
+
+                                Button {
+                                    selectedTab = 3
+                                } label: {
+                                    QuickAction(iconName: "calendar", text: "Schedule")
                                 }
                             }
                         }
                         .padding()
-                        .background(.white.opacity(0.9))
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .shadow(color: .black.opacity(0.1), radius: 8, y: 3)
-                        
-                        Spacer()
+                        .background(Color.white.opacity(0.9))
+                        .cornerRadius(18)
+                        .shadow(color: .black.opacity(0.1), radius: 6, y: 3)
+                        .padding(.horizontal)
+
+                        // MARK: - CTA Button
+                        PrimaryActionButton(
+                            title: "Start Creating!",
+                            gradientColors: [Color.yellow, Color.orange],
+                            action: {
+                                withAnimation(.spring()) {
+                                    selectedTab = 1
+                                }
+                            }
+                        )
+                        .padding(.horizontal, 40)
+                        .padding(.top, 10)
+                        .padding(.bottom, 40)
                     }
-                    .padding()
                 }
             }
             .navigationTitle("Getting Started")
@@ -92,62 +122,60 @@ struct GettingStartedView: View {
     }
 }
 
-// MARK: - Getting Started Card
-private struct GettingStartedCard: View {
+// MARK: - Step Card Component
+private struct GettingStartedStep: View {
     let stepNumber: Int
     let title: String
     let description: String
     let iconName: String
-    
+
     var body: some View {
         HStack(spacing: 16) {
-            // Step number circle
             ZStack {
                 Circle()
                     .fill(Color.brandDarkBlue)
-                    .frame(width: 40, height: 40)
+                    .frame(width: 42, height: 42)
                 Text("\(stepNumber)")
                     .font(.headline)
                     .fontWeight(.bold)
                     .foregroundColor(.white)
             }
-            
-            VStack(alignment: .leading, spacing: 4) {
+
+            VStack(alignment: .leading, spacing: 5) {
                 Text(title)
-                    .font(.headline)
-                    .fontWeight(.bold)
+                    .font(.system(size: 16, weight: .semibold, design: .rounded))
                     .foregroundColor(Color.brandDarkBlue)
-                
+
                 Text(description)
-                    .font(.subheadline)
+                    .font(.system(size: 14, design: .rounded))
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            
+
             Spacer()
-            
+
             Image(systemName: iconName)
-                .font(.title2)
+                .font(.system(size: 22))
                 .foregroundColor(Color.brandDarkBlue.opacity(0.7))
         }
         .padding()
-        .background(.white.opacity(0.9))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
+        .background(Color.white.opacity(0.9))
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.08), radius: 5, y: 3)
     }
 }
 
-// MARK: - Quick Action Button
-private struct QuickActionButton: View {
+// MARK: - Quick Action Component
+private struct QuickAction: View {
     let iconName: String
     let text: String
-    
+
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 6) {
             Image(systemName: iconName)
                 .font(.title2)
                 .foregroundColor(Color.brandDarkBlue)
-            
+
             Text(text)
                 .font(.caption)
                 .fontWeight(.medium)
@@ -156,14 +184,12 @@ private struct QuickActionButton: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)
-        .background(.white.opacity(0.7))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(color: .black.opacity(0.1), radius: 3, y: 1)
+        .background(Color.white.opacity(0.7))
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.08), radius: 4, y: 2)
     }
 }
 
-struct GettingStartedView_Previews: PreviewProvider {
-    static var previews: some View {
-        GettingStartedView()
-    }
+#Preview {
+    GettingStartedView(selectedTab: .constant(0))
 }

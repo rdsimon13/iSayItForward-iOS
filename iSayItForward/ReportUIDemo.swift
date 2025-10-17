@@ -8,7 +8,7 @@ struct ReportUIDemo: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.mainAppGradient.ignoresSafeArea()
+                GradientTheme.welcomeBackground.ignoresSafeArea()
                 
                 ScrollView {
                     VStack(spacing: 24) {

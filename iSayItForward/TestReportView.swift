@@ -7,7 +7,7 @@ struct TestReportView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.mainAppGradient.ignoresSafeArea()
+                GradientTheme.welcomeBackground.ignoresSafeArea()
                 
                 VStack(spacing: 30) {
                     Text("Report UI Test")

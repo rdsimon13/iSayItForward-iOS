@@ -13,6 +13,12 @@
 	</array>
 	<key>NSUserNotificationUsageDescription</key>
 	<string>This app uses notifications to remind you about scheduled messages and important updates.</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Kodchasan/Kodchasan-Regular.ttf</string>
+		<string>Kodchasan/Kodchasan-Medium.ttf</string>
+		<string>Kodchasan/Kodchasan-Bold.ttf</string>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

@@ -1,9 +1,13 @@
 import Foundation
 
-// This struct defines the data we will store for each user
-// in our Firestore database.
-struct User {
-    let uid: String
-    let name: String
-    let email: String
+struct User: Identifiable, Codable {
+    var id = UUID().uuidString
+    var firstName: String
+    var lastName: String
+    var email: String
+    var uid: String
+
+    var fullName: String {
+        "\(firstName) \(lastName)"
+    }
 }

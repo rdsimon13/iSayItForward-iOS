@@ -29,11 +29,9 @@
 		7B14DFF02E29756D004AB2B3 /* Color+Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFBE2E29756D004AB2B3 /* Color+Theme.swift */; };
 		7B14DFF32E29756D004AB2B3 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFE22E29756D004AB2B3 /* WelcomeView.swift */; };
 		7B14DFF42E29756D004AB2B3 /* SIFDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFD62E29756D004AB2B3 /* SIFDetailView.swift */; };
-		7B14DFF52E29756D004AB2B3 /* iSayItForwardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFCA2E29756D004AB2B3 /* iSayItForwardApp.swift */; };
 		7B14DFF72E29756D004AB2B3 /* MySIFsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFD12E29756D004AB2B3 /* MySIFsView.swift */; };
-		7B14DFFA2E29756D004AB2B3 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFD02E29756D004AB2B3 /* LoginView.swift */; };
+		7B14DFFA2E29756D004AB2B3 /* OldLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFD02E29756D004AB2B3 /* OldLoginView.swift */; };
 		7B14DFFB2E29756D004AB2B3 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFD22E29756D004AB2B3 /* ProfileView.swift */; };
-		7B14DFFC2E29756D004AB2B3 /*  Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFBB2E29756D004AB2B3 /*  Color+Hex.swift */; };
 		7B14DFFE2E29756D004AB2B3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFC02E29756D004AB2B3 /* ContentView.swift */; };
 		7B14DFFF2E29756D004AB2B3 /* SIFItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFD72E29756D004AB2B3 /* SIFItem.swift */; };
 		7B14E0002E29756D004AB2B3 /* ComposeSIFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFBF2E29756D004AB2B3 /* ComposeSIFView.swift */; };
@@ -44,10 +42,43 @@
 		7B14E0052E29756D004AB2B3 /* IOSCardModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B14DFC72E29756D004AB2B3 /* IOSCardModifier.swift */; };
 		7B14E0072E29756D004AB2B3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7B14DFBD2E29756D004AB2B3 /* Assets.xcassets */; };
 		7B14E0082E29756D004AB2B3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7B14DFC42E29756D004AB2B3 /* GoogleService-Info.plist */; };
+		7B4972302EA1A1F90023F2F8 /* FrostedRoundedCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B49722F2EA1A1F90023F2F8 /* FrostedRoundedCard.swift */; };
 		7B6601D72E3399A20097D647 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6601D62E3399A20097D647 /* HomeView.swift */; };
 		7B6601D92E3399E30097D647 /* CreateSIFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6601D82E3399E30097D647 /* CreateSIFView.swift */; };
-		7B6601DB2E33D57E0097D647 /* iPadRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6601DA2E33D57E0097D647 /* iPadRootView.swift */; };
-		7B6601DD2E33D7CD0097D647 /* iPadMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6601DC2E33D7CD0097D647 /* iPadMainView.swift */; };
+		7B6601DB2E33D57E0097D647 /* OldiPadRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6601DA2E33D57E0097D647 /* OldiPadRootView.swift */; };
+		7B6601DD2E33D7CD0097D647 /* OldiPadMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6601DC2E33D7CD0097D647 /* OldiPadMainView.swift */; };
+		7B6802F92E9D578200A637C9 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6802F82E9D578200A637C9 /* MainTabView.swift */; };
+		7B6802FB2E9D5F4A00A637C9 /* ScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6802FA2E9D5F4A00A637C9 /* ScheduleView.swift */; };
+		7B6802FD2E9D5F9400A637C9 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6802FC2E9D5F9400A637C9 /* SettingsView.swift */; };
+		7B6803092E9DA36A00A637C9 /* DesignPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6803082E9DA36A00A637C9 /* DesignPreviewView.swift */; };
+		7B68030F2E9DC53800A637C9 /*  SignatureCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B68030E2E9DC53800A637C9 /*  SignatureCaptureView.swift */; };
+		7B6803152E9DD09800A637C9 /* BackgroundGradientStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6803142E9DD09800A637C9 /* BackgroundGradientStyle.swift */; };
+		7B6803332E9E4B1D00A637C9 /* SocialLoginButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6803322E9E4B1D00A637C9 /* SocialLoginButton.swift */; };
+		7B6803632E9E589800A637C9 /* Kodchasan-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7B6803572E9E589800A637C9 /* Kodchasan-ExtraLight.ttf */; };
+		7B6803642E9E589800A637C9 /* Kodchasan-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7B68035E2E9E589800A637C9 /* Kodchasan-Regular.ttf */; };
+		7B6803652E9E589800A637C9 /* Kodchasan-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7B68035A2E9E589800A637C9 /* Kodchasan-Light.ttf */; };
+		7B6803662E9E589800A637C9 /* Kodchasan-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7B68035F2E9E589800A637C9 /* Kodchasan-SemiBold.ttf */; };
+		7B6803672E9E589800A637C9 /* Kodchasan-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7B68035B2E9E589800A637C9 /* Kodchasan-LightItalic.ttf */; };
+		7B6803682E9E589800A637C9 /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7B6803612E9E589800A637C9 /* OFL.txt */; };
+		7B6803692E9E589800A637C9 /* Kodchasan-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7B6803552E9E589800A637C9 /* Kodchasan-Bold.ttf */; };
+		7B68036A2E9E589800A637C9 /* Kodchasan-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7B6803592E9E589800A637C9 /* Kodchasan-Italic.ttf */; };
+		7B68036B2E9E589800A637C9 /* Kodchasan-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7B6803562E9E589800A637C9 /* Kodchasan-BoldItalic.ttf */; };
+		7B68036C2E9E589800A637C9 /* Kodchasan-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7B6803602E9E589800A637C9 /* Kodchasan-SemiBoldItalic.ttf */; };
+		7B68036D2E9E589800A637C9 /* Kodchasan-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7B6803582E9E589800A637C9 /* Kodchasan-ExtraLightItalic.ttf */; };
+		7B68036E2E9E589800A637C9 /* Kodchasan-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7B68035C2E9E589800A637C9 /* Kodchasan-Medium.ttf */; };
+		7B68036F2E9E589800A637C9 /* Kodchasan-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7B68035D2E9E589800A637C9 /* Kodchasan-MediumItalic.ttf */; };
+		7B6803712E9E7DA700A637C9 /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6803702E9E7DA700A637C9 /* ForgotPasswordView.swift */; };
+		7B6803732E9E7FA000A637C9 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6803722E9E7FA000A637C9 /* DashboardView.swift */; };
+		7B6803752E9E811900A637C9 /* AppFlowCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6803742E9E811900A637C9 /* AppFlowCoordinator.swift */; };
+		7B6803772E9E850700A637C9 /* AppRouteEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6803762E9E850700A637C9 /* AppRouteEnvironment.swift */; };
+		7B6803792E9EBA1600A637C9 /* GradientCapsuleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6803782E9EBA1600A637C9 /* GradientCapsuleButton.swift */; };
+		7B68037B2E9ECD9200A637C9 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 7B68037A2E9ECD9200A637C9 /* GoogleSignInSwift */; };
+		7B68037D2E9ED04F00A637C9 /* GoogleAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B68037C2E9ED04F00A637C9 /* GoogleAuthManager.swift */; };
+		7B68037F2E9ED09400A637C9 /* AppleAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B68037E2E9ED09400A637C9 /* AppleAuthManager.swift */; };
+		7B6803812E9EEBFF00A637C9 /* DashboardComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6803802E9EEBFF00A637C9 /* DashboardComponents.swift */; };
+		7B6803832E9EEDEF00A637C9 /* ChangePasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6803822E9EEDEF00A637C9 /* ChangePasswordView.swift */; };
+		7B6803852E9EF1B400A637C9 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 7B6803842E9EF1B400A637C9 /* FirebaseStorage */; };
+		7B6803892E9EFC0300A637C9 /* OutlinedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B6803882E9EFC0300A637C9 /* OutlinedText.swift */; };
 		7B79AF892E324A0000BE0809 /* PillTextFieldStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B79AF882E324A0000BE0809 /* PillTextFieldStyle.swift */; };
 		7B79AF8B2E32523E00BE0809 /* SecondaryActionButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B79AF8A2E32523E00BE0809 /* SecondaryActionButtonStyle.swift */; };
 		7B79AF8D2E32529100BE0809 /* PrimaryActionButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B79AF8C2E32529100BE0809 /* PrimaryActionButtonStyle.swift */; };
@@ -74,7 +105,6 @@
 		022E2A752E44583100FF6129 /* SIFSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SIFSettingsView.swift; sourceTree = "<group>"; };
 		022E2A762E44583100FF6129 /* SignatureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureView.swift; sourceTree = "<group>"; };
 		022E2A7B2E4462D000FF6129 /* iSayItForwardApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iSayItForwardApp.swift; sourceTree = "<group>"; };
-		7B14DFBB2E29756D004AB2B3 /*  Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = " Color+Hex.swift"; sourceTree = "<group>"; };
 		7B14DFBC2E29756D004AB2B3 /* AdvancedComposerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedComposerView.swift; sourceTree = "<group>"; };
 		7B14DFBD2E29756D004AB2B3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7B14DFBE2E29756D004AB2B3 /* Color+Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Theme.swift"; sourceTree = "<group>"; };
@@ -86,8 +116,7 @@
 		7B14DFC72E29756D004AB2B3 /* IOSCardModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSCardModifier.swift; sourceTree = "<group>"; };
 		7B14DFC82E29756D004AB2B3 /* iSayItForward.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iSayItForward.entitlements; sourceTree = "<group>"; };
 		7B14DFC92E29756D004AB2B3 /* iSayItForward.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = iSayItForward.xcodeproj; sourceTree = "<group>"; };
-		7B14DFCA2E29756D004AB2B3 /* iSayItForwardApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iSayItForwardApp.swift; sourceTree = "<group>"; };
-		7B14DFD02E29756D004AB2B3 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		7B14DFD02E29756D004AB2B3 /* OldLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldLoginView.swift; sourceTree = "<group>"; };
 		7B14DFD12E29756D004AB2B3 /* MySIFsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MySIFsView.swift; sourceTree = "<group>"; };
 		7B14DFD22E29756D004AB2B3 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		7B14DFD32E29756D004AB2B3 /* ScheduleSIFView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleSIFView.swift; sourceTree = "<group>"; };
@@ -103,13 +132,44 @@
 		7B14DFDF2E29756D004AB2B3 /* UploadMediaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadMediaView.swift; sourceTree = "<group>"; };
 		7B14DFE12E29756D004AB2B3 /* VoiceNoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceNoteView.swift; sourceTree = "<group>"; };
 		7B14DFE22E29756D004AB2B3 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		7B49722F2EA1A1F90023F2F8 /* FrostedRoundedCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrostedRoundedCard.swift; sourceTree = "<group>"; };
 		7B4B2AE22E289CAA00F1ABCA /* iSayItForward.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iSayItForward.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B6601D62E3399A20097D647 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		7B6601D82E3399E30097D647 /* CreateSIFView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateSIFView.swift; sourceTree = "<group>"; };
-		7B6601DA2E33D57E0097D647 /* iPadRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPadRootView.swift; sourceTree = "<group>"; };
-		7B6601DC2E33D7CD0097D647 /* iPadMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPadMainView.swift; sourceTree = "<group>"; };
+		7B6601DA2E33D57E0097D647 /* OldiPadRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldiPadRootView.swift; sourceTree = "<group>"; };
+		7B6601DC2E33D7CD0097D647 /* OldiPadMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldiPadMainView.swift; sourceTree = "<group>"; };
 		7B6601E12E33E3A10097D647 /* iSayItForward-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "iSayItForward-Info.plist"; sourceTree = "<group>"; };
 		7B6601E52E33F38B0097D647 /* Screenshot 2025-07-25 at 1.16.56 PM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Screenshot 2025-07-25 at 1.16.56 PM.png"; path = "../../../../../var/folders/2q/mqfmzkr10vg_nhtgdkn6hbxh0000gn/T/TemporaryItems/NSIRD_screencaptureui_adR4mc/Screenshot 2025-07-25 at 1.16.56 PM.png"; sourceTree = "<group>"; };
+		7B6802F82E9D578200A637C9 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		7B6802FA2E9D5F4A00A637C9 /* ScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleView.swift; sourceTree = "<group>"; };
+		7B6802FC2E9D5F9400A637C9 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		7B6803082E9DA36A00A637C9 /* DesignPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignPreviewView.swift; sourceTree = "<group>"; };
+		7B68030E2E9DC53800A637C9 /*  SignatureCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = " SignatureCaptureView.swift"; sourceTree = "<group>"; };
+		7B6803142E9DD09800A637C9 /* BackgroundGradientStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundGradientStyle.swift; sourceTree = "<group>"; };
+		7B6803322E9E4B1D00A637C9 /* SocialLoginButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialLoginButton.swift; sourceTree = "<group>"; };
+		7B6803552E9E589800A637C9 /* Kodchasan-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Kodchasan-Bold.ttf"; sourceTree = "<group>"; };
+		7B6803562E9E589800A637C9 /* Kodchasan-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Kodchasan-BoldItalic.ttf"; sourceTree = "<group>"; };
+		7B6803572E9E589800A637C9 /* Kodchasan-ExtraLight.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Kodchasan-ExtraLight.ttf"; sourceTree = "<group>"; };
+		7B6803582E9E589800A637C9 /* Kodchasan-ExtraLightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Kodchasan-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
+		7B6803592E9E589800A637C9 /* Kodchasan-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Kodchasan-Italic.ttf"; sourceTree = "<group>"; };
+		7B68035A2E9E589800A637C9 /* Kodchasan-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Kodchasan-Light.ttf"; sourceTree = "<group>"; };
+		7B68035B2E9E589800A637C9 /* Kodchasan-LightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Kodchasan-LightItalic.ttf"; sourceTree = "<group>"; };
+		7B68035C2E9E589800A637C9 /* Kodchasan-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Kodchasan-Medium.ttf"; sourceTree = "<group>"; };
+		7B68035D2E9E589800A637C9 /* Kodchasan-MediumItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Kodchasan-MediumItalic.ttf"; sourceTree = "<group>"; };
+		7B68035E2E9E589800A637C9 /* Kodchasan-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Kodchasan-Regular.ttf"; sourceTree = "<group>"; };
+		7B68035F2E9E589800A637C9 /* Kodchasan-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Kodchasan-SemiBold.ttf"; sourceTree = "<group>"; };
+		7B6803602E9E589800A637C9 /* Kodchasan-SemiBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Kodchasan-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
+		7B6803612E9E589800A637C9 /* OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
+		7B6803702E9E7DA700A637C9 /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
+		7B6803722E9E7FA000A637C9 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		7B6803742E9E811900A637C9 /* AppFlowCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFlowCoordinator.swift; sourceTree = "<group>"; };
+		7B6803762E9E850700A637C9 /* AppRouteEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouteEnvironment.swift; sourceTree = "<group>"; };
+		7B6803782E9EBA1600A637C9 /* GradientCapsuleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientCapsuleButton.swift; sourceTree = "<group>"; };
+		7B68037C2E9ED04F00A637C9 /* GoogleAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAuthManager.swift; sourceTree = "<group>"; };
+		7B68037E2E9ED09400A637C9 /* AppleAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleAuthManager.swift; sourceTree = "<group>"; };
+		7B6803802E9EEBFF00A637C9 /* DashboardComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardComponents.swift; sourceTree = "<group>"; };
+		7B6803822E9EEDEF00A637C9 /* ChangePasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordView.swift; sourceTree = "<group>"; };
+		7B6803882E9EFC0300A637C9 /* OutlinedText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutlinedText.swift; sourceTree = "<group>"; };
 		7B79AF882E324A0000BE0809 /* PillTextFieldStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillTextFieldStyle.swift; sourceTree = "<group>"; };
 		7B79AF8A2E32523E00BE0809 /* SecondaryActionButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryActionButtonStyle.swift; sourceTree = "<group>"; };
 		7B79AF8C2E32529100BE0809 /* PrimaryActionButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryActionButtonStyle.swift; sourceTree = "<group>"; };
@@ -122,6 +182,27 @@
 		7BDB06132E36094700339523 /* AppUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUser.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		7B6803312E9DE9B800A637C9 /* Exceptions for "DesignSystem" folder in "iSayItForward" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ColorTheme.swift,
+			);
+			target = 7B4B2AE12E289CAA00F1ABCA /* iSayItForward */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		7BA27F022E96A58D00EB2097 /* DesignSystem */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				7B6803312E9DE9B800A637C9 /* Exceptions for "DesignSystem" folder in "iSayItForward" target */,
+			);
+			path = DesignSystem;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		7B4B2ADF2E289CAA00F1ABCA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -130,6 +211,8 @@
 				7BC81CE22E32DD0000A56540 /* FirebaseAuth in Frameworks */,
 				7BC81CE42E32DD0000A56540 /* FirebaseFirestore in Frameworks */,
 				7BDF693E2E33F7360035F0B5 /* GoogleSignIn in Frameworks */,
+				7B6803852E9EF1B400A637C9 /* FirebaseStorage in Frameworks */,
+				7B68037B2E9ECD9200A637C9 /* GoogleSignInSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -146,35 +229,48 @@
 		7B4B2AD92E289CAA00F1ABCA = {
 			isa = PBXGroup;
 			children = (
-				022E2A7B2E4462D000FF6129 /* iSayItForwardApp.swift */,
-				022E2A742E44583100FF6129 /* GettingStartedView.swift */,
-				022E2A752E44583100FF6129 /* SIFSettingsView.swift */,
-				022E2A762E44583100FF6129 /* SignatureView.swift */,
-				022E2A772E44583100FF6129 /* Utilities */,
-				7B14DFBB2E29756D004AB2B3 /*  Color+Hex.swift */,
+				7B68030E2E9DC53800A637C9 /*  SignatureCaptureView.swift */,
 				7B14DFBC2E29756D004AB2B3 /* AdvancedComposerView.swift */,
 				7B79AF8E2E32A06500BE0809 /* AppDelegate.swift */,
+				7B6803742E9E811900A637C9 /* AppFlowCoordinator.swift */,
+				7B68037E2E9ED09400A637C9 /* AppleAuthManager.swift */,
+				7B6803762E9E850700A637C9 /* AppRouteEnvironment.swift */,
 				7BDB06132E36094700339523 /* AppUser.swift */,
 				7B14DFBD2E29756D004AB2B3 /* Assets.xcassets */,
+				7B6803142E9DD09800A637C9 /* BackgroundGradientStyle.swift */,
+				7B6803822E9EEDEF00A637C9 /* ChangePasswordView.swift */,
 				7B14DFBE2E29756D004AB2B3 /* Color+Theme.swift */,
+				7B49722F2EA1A1F90023F2F8 /* FrostedRoundedCard.swift */,
 				7B14DFBF2E29756D004AB2B3 /* ComposeSIFView.swift */,
 				7B14DFC02E29756D004AB2B3 /* ContentView.swift */,
 				7B6601D82E3399E30097D647 /* CreateSIFView.swift */,
+				7B6803802E9EEBFF00A637C9 /* DashboardComponents.swift */,
+				7B6803722E9E7FA000A637C9 /* DashboardView.swift */,
+				7B6803082E9DA36A00A637C9 /* DesignPreviewView.swift */,
+				7BA27F022E96A58D00EB2097 /* DesignSystem */,
 				7B14DFC22E29756D004AB2B3 /* DocumentUploadView.swift */,
 				7B14DFC32E29756D004AB2B3 /* Font+Theme.swift */,
+				7B6803702E9E7DA700A637C9 /* ForgotPasswordView.swift */,
 				7B6601E42E33F38B0097D647 /* Frameworks */,
+				022E2A742E44583100FF6129 /* GettingStartedView.swift */,
+				7B68037C2E9ED04F00A637C9 /* GoogleAuthManager.swift */,
 				7B14DFC42E29756D004AB2B3 /* GoogleService-Info.plist */,
+				7B6803782E9EBA1600A637C9 /* GradientCapsuleButton.swift */,
 				7B6601D62E3399A20097D647 /* HomeView.swift */,
 				7B14DFC72E29756D004AB2B3 /* IOSCardModifier.swift */,
 				7BDB060F2E35BAFC00339523 /* iPadMain16View.swift */,
-				7B6601DC2E33D7CD0097D647 /* iPadMainView.swift */,
-				7B6601DA2E33D57E0097D647 /* iPadRootView.swift */,
 				7B14DFC82E29756D004AB2B3 /* iSayItForward.entitlements */,
 				7B14DFC92E29756D004AB2B3 /* iSayItForward.xcodeproj */,
 				7B6601E12E33E3A10097D647 /* iSayItForward-Info.plist */,
-				7B14DFCA2E29756D004AB2B3 /* iSayItForwardApp.swift */,
-				7B14DFD02E29756D004AB2B3 /* LoginView.swift */,
+				022E2A7B2E4462D000FF6129 /* iSayItForwardApp.swift */,
+				7B6803622E9E589800A637C9 /* Kodchasan */,
+				7B6802F82E9D578200A637C9 /* MainTabView.swift */,
 				7B14DFD12E29756D004AB2B3 /* MySIFsView.swift */,
+				7B68030A2E9DA3D900A637C9 /* New Group */,
+				7B6601DC2E33D7CD0097D647 /* OldiPadMainView.swift */,
+				7B6601DA2E33D57E0097D647 /* OldiPadRootView.swift */,
+				7B14DFD02E29756D004AB2B3 /* OldLoginView.swift */,
+				7B6803882E9EFC0300A637C9 /* OutlinedText.swift */,
 				7B79AF882E324A0000BE0809 /* PillTextFieldStyle.swift */,
 				7B79AF8C2E32529100BE0809 /* PrimaryActionButtonStyle.swift */,
 				7B4B2AE32E289CAA00F1ABCA /* Products */,
@@ -184,15 +280,20 @@
 				021BAC6D2E3EC11A006FE2D6 /* ReportOverlayModifier.swift */,
 				021BAC6E2E3EC11A006FE2D6 /* ReportUIDemo.swift */,
 				7B14DFD32E29756D004AB2B3 /* ScheduleSIFView.swift */,
+				7B6802FA2E9D5F4A00A637C9 /* ScheduleView.swift */,
 				021BAC6F2E3EC11A006FE2D6 /* Screenshot 2025-07-29 at 10.30.53 PM.png */,
 				7B79AF8A2E32523E00BE0809 /* SecondaryActionButtonStyle.swift */,
 				7B14DFD42E29756D004AB2B3 /* SendSIFView.swift */,
+				7B6802FC2E9D5F9400A637C9 /* SettingsView.swift */,
 				7BDB06112E35BB5600339523 /* SidebarItem.swift */,
 				7B14DFD52E29756D004AB2B3 /* SIFConfirmationView.swift */,
 				7B14DFD62E29756D004AB2B3 /* SIFDetailView.swift */,
 				7B14DFD72E29756D004AB2B3 /* SIFItem.swift */,
 				7B14DFD82E29756D004AB2B3 /* SIFPreviewView.swift */,
+				022E2A752E44583100FF6129 /* SIFSettingsView.swift */,
+				022E2A762E44583100FF6129 /* SignatureView.swift */,
 				7B14DFD92E29756D004AB2B3 /* SignupView.swift */,
+				7B6803322E9E4B1D00A637C9 /* SocialLoginButton.swift */,
 				7B85EC6B2E29B5BA002A16F4 /* SplashView.swift */,
 				7B85EC782E2A4AB3002A16F4 /* TemplateCategory.swift */,
 				7B14DFDB2E29756D004AB2B3 /* TemplateGalleryView.swift */,
@@ -201,6 +302,7 @@
 				021BAC702E3EC11A006FE2D6 /* TestReportView.swift */,
 				7B14DFDF2E29756D004AB2B3 /* UploadMediaView.swift */,
 				7B79AF922E32B08F00BE0809 /* User.swift */,
+				022E2A772E44583100FF6129 /* Utilities */,
 				7B14DFE12E29756D004AB2B3 /* VoiceNoteView.swift */,
 				7B14DFE22E29756D004AB2B3 /* WelcomeView.swift */,
 			);
@@ -220,6 +322,33 @@
 				7B6601E52E33F38B0097D647 /* Screenshot 2025-07-25 at 1.16.56 PM.png */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		7B68030A2E9DA3D900A637C9 /* New Group */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "New Group";
+			sourceTree = "<group>";
+		};
+		7B6803622E9E589800A637C9 /* Kodchasan */ = {
+			isa = PBXGroup;
+			children = (
+				7B6803552E9E589800A637C9 /* Kodchasan-Bold.ttf */,
+				7B6803562E9E589800A637C9 /* Kodchasan-BoldItalic.ttf */,
+				7B6803572E9E589800A637C9 /* Kodchasan-ExtraLight.ttf */,
+				7B6803582E9E589800A637C9 /* Kodchasan-ExtraLightItalic.ttf */,
+				7B6803592E9E589800A637C9 /* Kodchasan-Italic.ttf */,
+				7B68035A2E9E589800A637C9 /* Kodchasan-Light.ttf */,
+				7B68035B2E9E589800A637C9 /* Kodchasan-LightItalic.ttf */,
+				7B68035C2E9E589800A637C9 /* Kodchasan-Medium.ttf */,
+				7B68035D2E9E589800A637C9 /* Kodchasan-MediumItalic.ttf */,
+				7B68035E2E9E589800A637C9 /* Kodchasan-Regular.ttf */,
+				7B68035F2E9E589800A637C9 /* Kodchasan-SemiBold.ttf */,
+				7B6803602E9E589800A637C9 /* Kodchasan-SemiBoldItalic.ttf */,
+				7B6803612E9E589800A637C9 /* OFL.txt */,
+			);
+			path = Kodchasan;
 			sourceTree = "<group>";
 		};
 		7B85EC692E297967002A16F4 /* Products */ = {
@@ -242,11 +371,16 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				7BA27F022E96A58D00EB2097 /* DesignSystem */,
+			);
 			name = iSayItForward;
 			packageProductDependencies = (
 				7BC81CE12E32DD0000A56540 /* FirebaseAuth */,
 				7BC81CE32E32DD0000A56540 /* FirebaseFirestore */,
 				7BDF693D2E33F7360035F0B5 /* GoogleSignIn */,
+				7B68037A2E9ECD9200A637C9 /* GoogleSignInSwift */,
+				7B6803842E9EF1B400A637C9 /* FirebaseStorage */,
 			);
 			productName = iSayItForward;
 			productReference = 7B4B2AE22E289CAA00F1ABCA /* iSayItForward.app */;
@@ -304,6 +438,19 @@
 				7B14E0072E29756D004AB2B3 /* Assets.xcassets in Resources */,
 				021BAC712E3EC11A006FE2D6 /* Screenshot 2025-07-29 at 10.30.53 PM.png in Resources */,
 				7B14E0082E29756D004AB2B3 /* GoogleService-Info.plist in Resources */,
+				7B6803632E9E589800A637C9 /* Kodchasan-ExtraLight.ttf in Resources */,
+				7B6803642E9E589800A637C9 /* Kodchasan-Regular.ttf in Resources */,
+				7B6803652E9E589800A637C9 /* Kodchasan-Light.ttf in Resources */,
+				7B6803662E9E589800A637C9 /* Kodchasan-SemiBold.ttf in Resources */,
+				7B6803672E9E589800A637C9 /* Kodchasan-LightItalic.ttf in Resources */,
+				7B6803682E9E589800A637C9 /* OFL.txt in Resources */,
+				7B6803692E9E589800A637C9 /* Kodchasan-Bold.ttf in Resources */,
+				7B68036A2E9E589800A637C9 /* Kodchasan-Italic.ttf in Resources */,
+				7B68036B2E9E589800A637C9 /* Kodchasan-BoldItalic.ttf in Resources */,
+				7B68036C2E9E589800A637C9 /* Kodchasan-SemiBoldItalic.ttf in Resources */,
+				7B68036D2E9E589800A637C9 /* Kodchasan-ExtraLightItalic.ttf in Resources */,
+				7B68036E2E9E589800A637C9 /* Kodchasan-Medium.ttf in Resources */,
+				7B68036F2E9E589800A637C9 /* Kodchasan-MediumItalic.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -315,40 +462,54 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B14DFE52E29756D004AB2B3 /* UploadMediaView.swift in Sources */,
+				7B6803832E9EEDEF00A637C9 /* ChangePasswordView.swift in Sources */,
 				021BAC772E3EC1A7006FE2D6 /* ReportButton.swift in Sources */,
+				7B6803332E9E4B1D00A637C9 /* SocialLoginButton.swift in Sources */,
 				7BDB06142E36094700339523 /* AppUser.swift in Sources */,
 				7B14DFE62E29756D004AB2B3 /* SIFPreviewView.swift in Sources */,
 				7BDB06102E35BAFC00339523 /* iPadMain16View.swift in Sources */,
 				7B14DFE72E29756D004AB2B3 /* TemplateItem.swift in Sources */,
 				7B14DFE92E29756D004AB2B3 /* TemplateLibrary.swift in Sources */,
+				7B6802F92E9D578200A637C9 /* MainTabView.swift in Sources */,
 				7B14DFEB2E29756D004AB2B3 /* DocumentUploadView.swift in Sources */,
 				7B6601D72E3399A20097D647 /* HomeView.swift in Sources */,
 				7B14DFEC2E29756D004AB2B3 /* ScheduleSIFView.swift in Sources */,
 				7B14DFED2E29756D004AB2B3 /* VoiceNoteView.swift in Sources */,
+				7B6803752E9E811900A637C9 /* AppFlowCoordinator.swift in Sources */,
+				7B6802FB2E9D5F4A00A637C9 /* ScheduleView.swift in Sources */,
 				7B14DFEE2E29756D004AB2B3 /* SignupView.swift in Sources */,
+				7B6803772E9E850700A637C9 /* AppRouteEnvironment.swift in Sources */,
 				7B14DFEF2E29756D004AB2B3 /* AdvancedComposerView.swift in Sources */,
+				7B6803792E9EBA1600A637C9 /* GradientCapsuleButton.swift in Sources */,
 				7B14DFF02E29756D004AB2B3 /* Color+Theme.swift in Sources */,
 				7B14DFF32E29756D004AB2B3 /* WelcomeView.swift in Sources */,
 				7B79AF8F2E32A06500BE0809 /* AppDelegate.swift in Sources */,
+				7B6802FD2E9D5F9400A637C9 /* SettingsView.swift in Sources */,
 				7B14DFF42E29756D004AB2B3 /* SIFDetailView.swift in Sources */,
-				7B6601DB2E33D57E0097D647 /* iPadRootView.swift in Sources */,
-				7B6601DD2E33D7CD0097D647 /* iPadMainView.swift in Sources */,
-				7B14DFF52E29756D004AB2B3 /* iSayItForwardApp.swift in Sources */,
+				7B6601DB2E33D57E0097D647 /* OldiPadRootView.swift in Sources */,
+				7B6601DD2E33D7CD0097D647 /* OldiPadMainView.swift in Sources */,
+				7B6803712E9E7DA700A637C9 /* ForgotPasswordView.swift in Sources */,
 				7B14DFF72E29756D004AB2B3 /* MySIFsView.swift in Sources */,
 				7B79AF8D2E32529100BE0809 /* PrimaryActionButtonStyle.swift in Sources */,
 				7B79AF8B2E32523E00BE0809 /* SecondaryActionButtonStyle.swift in Sources */,
 				7B85EC6C2E29B5BA002A16F4 /* SplashView.swift in Sources */,
 				7B79AF892E324A0000BE0809 /* PillTextFieldStyle.swift in Sources */,
-				7B14DFFA2E29756D004AB2B3 /* LoginView.swift in Sources */,
+				7B14DFFA2E29756D004AB2B3 /* OldLoginView.swift in Sources */,
+				7B4972302EA1A1F90023F2F8 /* FrostedRoundedCard.swift in Sources */,
 				022E2A7C2E4462D000FF6129 /* iSayItForwardApp.swift in Sources */,
+				7B6803152E9DD09800A637C9 /* BackgroundGradientStyle.swift in Sources */,
 				7B14DFFB2E29756D004AB2B3 /* ProfileView.swift in Sources */,
 				7BDB06122E35BB5600339523 /* SidebarItem.swift in Sources */,
-				7B14DFFC2E29756D004AB2B3 /*  Color+Hex.swift in Sources */,
+				7B6803092E9DA36A00A637C9 /* DesignPreviewView.swift in Sources */,
+				7B68030F2E9DC53800A637C9 /*  SignatureCaptureView.swift in Sources */,
 				7B14DFFE2E29756D004AB2B3 /* ContentView.swift in Sources */,
 				7B14DFFF2E29756D004AB2B3 /* SIFItem.swift in Sources */,
+				7B68037F2E9ED09400A637C9 /* AppleAuthManager.swift in Sources */,
 				7B14E0002E29756D004AB2B3 /* ComposeSIFView.swift in Sources */,
+				7B6803812E9EEBFF00A637C9 /* DashboardComponents.swift in Sources */,
 				7B14E0012E29756D004AB2B3 /* Font+Theme.swift in Sources */,
 				7B14E0022E29756D004AB2B3 /* TemplateGalleryView.swift in Sources */,
+				7B6803892E9EFC0300A637C9 /* OutlinedText.swift in Sources */,
 				021BAC722E3EC11A006FE2D6 /* ReportUIDemo.swift in Sources */,
 				021BAC732E3EC11A006FE2D6 /* TestReportView.swift in Sources */,
 				022E2A782E44583100FF6129 /* GettingStartedView.swift in Sources */,
@@ -358,9 +519,11 @@
 				021BAC752E3EC11A006FE2D6 /* ReportContentView.swift in Sources */,
 				7B14E0032E29756D004AB2B3 /* SIFConfirmationView.swift in Sources */,
 				7B6601D92E3399E30097D647 /* CreateSIFView.swift in Sources */,
+				7B6803732E9E7FA000A637C9 /* DashboardView.swift in Sources */,
 				7B85EC792E2A4AB3002A16F4 /* TemplateCategory.swift in Sources */,
 				7B79AF932E32B08F00BE0809 /* User.swift in Sources */,
 				7B14E0042E29756D004AB2B3 /* SendSIFView.swift in Sources */,
+				7B68037D2E9ED04F00A637C9 /* GoogleAuthManager.swift in Sources */,
 				7B14E0052E29756D004AB2B3 /* IOSCardModifier.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -494,6 +657,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = iSayItForward.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = FL6TX5N96G;
@@ -530,6 +694,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = iSayItForward.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = FL6TX5N96G;
@@ -604,6 +769,15 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		7B68037A2E9ECD9200A637C9 /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7BDF693C2E33F7360035F0B5 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
+		7B6803842E9EF1B400A637C9 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FirebaseStorage;
+		};
 		7BC81CE12E32DD0000A56540 /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 7BC81CE02E32DD0000A56540 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

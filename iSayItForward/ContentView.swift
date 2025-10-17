@@ -1,10 +1,23 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject var authState: AuthState
+
     var body: some View {
-        SignupView { user in
-            print("Signed up user: \(user.name), \(user.email)")
-            // Navigate or store user info as needed
+        ZStack {
+            if authState.isUserLoggedIn {
+                DashboardView()
+                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+            } else {
+                WelcomeView()
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
         }
+        .animation(.easeInOut(duration: 0.4), value: authState.isUserLoggedIn)
     }
+}
+
+#Preview {
+    ContentView()
+        .environmentObject(AuthState())
 }

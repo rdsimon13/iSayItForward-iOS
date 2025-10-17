@@ -1,177 +1,164 @@
 import SwiftUI
 import FirebaseAuth
-import FirebaseFirestore
 
-// MARK: - HomeLaunchpadView must be defined first
-private struct HomeLaunchpadView: View {
-    @State private var userName: String = "User"
-
-    var body: some View {
-        ZStack {
-            Color.mainAppGradient.ignoresSafeArea()
-            ScrollView {
-                VStack(spacing: 24) {
-                    Text("Welcome to iSIF, \(userName).\nChoose an option below to get started.")
-                        .padding(20)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(.white.opacity(0.9))
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .shadow(color: .black.opacity(0.1), radius: 8, y: 3)
-
-                    HStack(spacing: 16) {
-                        NavigationLink(destination: GettingStartedView()) {
-                            HomeActionButton(iconName: "figure.walk", text: "Getting Started")
-                        }
-                        NavigationLink(destination: CreateSIFView()) {
-                            HomeActionButton(iconName: "square.and.pencil", text: "CREATE A SIF")
-                        }
-                        NavigationLink(destination: MySIFsView()) {
-                            HomeActionButton(iconName: "envelope", text: "MANAGE MY SIFS")
-                        }
-                    }
-
-                    NavigationLink(destination: SIFSettingsView()) {
-                        PromoCard(title: "Browse SIF Settings",
-                                  description: "Customize your SIF preferences, notification settings, and account options.",
-                                  iconName: "gearshape.fill")
-                    }
-
-                    NavigationLink(destination: TemplateGalleryView()) {
-                        HStack {
-                            PromoCard(title: "SIF Template Gallery",
-                                      description: "Explore a variety of ready made templates designed to help you express yourself with style and speed.",
-                                      iconName: "photo.on.rectangle.angled")
-                            
-                            VStack {
-                                Spacer()
-                                ReportButton {
-                                    // Put your desired action here, e.g.:
-                                    print("Report tapped (Template Gallery Content)")
-                                    // Or open a report modal, etc.
-                                }
-                            }
-                            .padding(.trailing, 8)
-                        }
-                    }
-
-                    NavigationLink(destination: CreateSIFView()) {
-                        PromoCard(title: "Schedule a SIF",
-                                  description: "Never forget to send greetings on that special day ever again. Schedule your SIF for future delivery today!",
-                                  iconName: "calendar")
-                    }
-
-                    Spacer()
-                }
-                .padding()
-            }
-            .onAppear(perform: fetchUserData)
-            .navigationTitle("Home")
-            .navigationBarHidden(true)
-        }
-    }
-
-    func fetchUserData() {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        let db = Firestore.firestore()
-        db.collection("users").document(uid).getDocument { snapshot, error in
-            if let document = snapshot, document.exists {
-                self.userName = document.data()?["name"] as? String ?? "User"
-            }
-        }
-    }
-}
-
-private struct HomeActionButton: View {
-    let iconName: String
-    let text: String
-
-    var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: iconName)
-                .font(.largeTitle)
-                .frame(width: 60, height: 60)
-                .background(.white.opacity(0.85))
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .shadow(color: .black.opacity(0.1), radius: 4, y: 2)
-            Text(text)
-                .font(.caption)
-                .fontWeight(.semibold)
-                .multilineTextAlignment(.center)
-        }
-        .foregroundColor(Color.brandDarkBlue)
-        .frame(maxWidth: .infinity)
-    }
-}
-
-private struct PromoCard: View {
-    let title: String
-    let description: String
-    let iconName: String
-
-    var body: some View {
-        HStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.headline)
-                    .fontWeight(.bold)
-                Text(description)
-                    .font(.caption)
-            }
-            Spacer()
-            Image(systemName: iconName)
-                .font(.system(size: 40, weight: .light))
-        }
-        .padding(20)
-        .background(.white.opacity(0.85))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .foregroundColor(Color.brandDarkBlue)
-        .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
-    }
-}
-
-// MARK: - Main HomeView
 struct HomeView: View {
+    @EnvironmentObject var authState: AuthState
+    @Binding var selectedTab: Int
+    @State private var userName: String = "User"
+    
     var body: some View {
-        if #available(iOS 16.0, *) {
-            TabView {
-                NavigationStack {
-                    HomeLaunchpadView()
+        NavigationStack {
+            ZStack {
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color(red: 0.70, green: 0.90, blue: 1.0),
+                        Color(red: 0.55, green: 0.75, blue: 0.95)
+                    ]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
+                
+                VStack(spacing: 26) {
+                    Spacer(minLength: 20)
+                    
+                    // MARK: - Header
+                    VStack(spacing: 6) {
+                        Image("isiFLogo")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 85)
+                            .shadow(color: .black.opacity(0.25), radius: 6, y: 3)
+                        
+                        Text("iSayItForward")
+                            .font(.system(size: 32, weight: .heavy, design: .rounded))
+                            .foregroundColor(Color(red: 0.08, green: 0.15, blue: 0.3))
+                        
+                        Text("The Ultimate Way to Express Yourself")
+                            .font(.system(size: 15, weight: .semibold, design: .rounded))
+                            .foregroundColor(Color(red: 0.12, green: 0.22, blue: 0.32))
+                    }
+                    
+                    // MARK: - Welcome Bubble
+                    Text("Welcome to iSIF, \(userName).")
+                        .font(.system(size: 16, weight: .medium, design: .rounded))
+                        .foregroundColor(.black.opacity(0.8))
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .background(
+                            Capsule()
+                                .fill(Color.white.opacity(0.95))
+                                .shadow(color: .black.opacity(0.15), radius: 3, y: 2)
+                        )
+                    
+                    // MARK: - Main Buttons
+                    HStack(spacing: 28) {
+                        VStack(spacing: 6) {
+                            Button {
+                                selectedTab = 4 // Navigate to Getting Started tab
+                            } label: {
+                                CircleIconButton(icon: "figure.walk", color: .indigo)
+                            }
+                            Text("Getting Started")
+                                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                                .foregroundColor(.black.opacity(0.8))
+                        }
+                        
+                        VStack(spacing: 6) {
+                            Button {
+                                selectedTab = 1 // Create a SIF
+                            } label: {
+                                CircleIconButton(icon: "square.and.pencil", color: .blue)
+                            }
+                            Text("CREATE A SIF")
+                                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                                .foregroundColor(.black.opacity(0.8))
+                        }
+                        
+                        VStack(spacing: 6) {
+                            Button {
+                                selectedTab = 3 // Manage SIFs (Schedule)
+                            } label: {
+                                CircleIconButton(icon: "envelope.fill", color: .teal)
+                            }
+                            Text("MANAGE MY SIF'S")
+                                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                                .foregroundColor(.black.opacity(0.8))
+                        }
+                    }
+                    
+                    // MARK: - Info Cards
+                    VStack(spacing: 16) {
+                        Button {
+                            selectedTab = 2 // Template Gallery
+                        } label: {
+                            InfoCard(
+                                title: "SIF Template Gallery",
+                                subtitle: "Explore a variety of ready-made templates to express yourself with style and speed.",
+                                trailingSystemIcon: "photo.on.rectangle"
+                            )
+                        }
+                        
+                        Button {
+                            selectedTab = 3 // Schedule tab
+                        } label: {
+                            InfoCard(
+                                title: "Schedule a SIF",
+                                subtitle: "Never forget to send greetings on that special day. Schedule your SIF for future delivery!",
+                                trailingSystemIcon: "calendar"
+                            )
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    
+                    Spacer()
+                    
+                    // MARK: - Logout Button
+                    Button(action: signOut) {
+                        Label("Log Out", systemImage: "arrow.right.circle.fill")
+                            .font(.system(size: 17, weight: .medium, design: .rounded))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 28)
+                            .padding(.vertical, 12)
+                            .background(
+                                Capsule().fill(Color(red: 0.12, green: 0.25, blue: 0.45))
+                            )
+                            .shadow(color: .black.opacity(0.3), radius: 4, y: 3)
+                    }
+                    .padding(.bottom, 20)
                 }
-                .tabItem {
-                    Image(systemName: "house.fill")
-                    Text("Home")
-                }
-
-                CreateSIFView()
-                    .tabItem {
-                        Image(systemName: "square.and.pencil")
-                        Text("Send SIF")
-                    }
-
-                TemplateGalleryView()
-                    .tabItem {
-                        Image(systemName: "doc.on.doc")
-                        Text("Templates")
-                    }
-
-                ProfileView()
-                    .tabItem {
-                        Image(systemName: "person.crop.circle")
-                        Text("Profile")
-                    }
             }
-            .accentColor(Color.brandDarkBlue)
-        } else {
-            Text("Home requires iOS 16.0 or newer.")
-                .multilineTextAlignment(.center)
-                .padding()
-                .foregroundColor(.red)
+            .onAppear {
+                if let user = Auth.auth().currentUser {
+                    userName = user.displayName ?? user.email?.components(separatedBy: "@").first ?? "User"
+                }
+            }
+        }
+    }
+    
+    // MARK: - Functions
+    private func signOut() {
+        do {
+            try Auth.auth().signOut()
+            authState.isUserLoggedIn = false
+        } catch {
+            print("Error signing out: \(error.localizedDescription)")
         }
     }
 }
 
-struct HomeView_Previews: PreviewProvider {
-    static var previews: some View {
-        HomeView()
+// MARK: - Reusable Subviews
+
+struct CircleIconButton: View {
+    let icon: String
+    let color: Color
+    
+    var body: some View {
+        Image(systemName: icon)
+            .font(.system(size: 26, weight: .bold))
+            .foregroundColor(.white)
+            .frame(width: 60, height: 60)
+            .background(Circle().fill(color))
+            .shadow(color: .black.opacity(0.25), radius: 4, y: 3)
     }
 }

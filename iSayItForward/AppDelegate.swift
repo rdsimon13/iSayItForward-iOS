@@ -1,22 +1,20 @@
+import UIKit
 import FirebaseCore
 import GoogleSignIn
-import UIKit
 import UserNotifications
 
 class AppDelegate: NSObject, UIApplicationDelegate {
+
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         FirebaseApp.configure()
-        
-        // Request notification permissions
         requestNotificationPermissions()
-        
         return true
     }
 
-    // Google Sign-In redirect handler
+    // MARK: - Handle Google Sign-In Redirect
     func application(
         _ app: UIApplication,
         open url: URL,
@@ -24,15 +22,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     ) -> Bool {
         return GIDSignIn.sharedInstance.handle(url)
     }
-    
-    // MARK: - Notification Setup
+
+    // MARK: - Push Notification Permissions
     private func requestNotificationPermissions() {
         let center = UNUserNotificationCenter.current()
         center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
             if let error = error {
-                print("Notification permission error: \(error.localizedDescription)")
+                print("❌ Notification permission error: \(error.localizedDescription)")
             }
-            
             DispatchQueue.main.async {
                 if granted {
                     UIApplication.shared.registerForRemoteNotifications()
@@ -40,17 +37,23 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             }
         }
     }
-    
-    // Handle remote notification registration
+
+    // MARK: - Handle Remote Notification Registration
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        // Convert device token to string
         let tokenString = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
-        print("Device token: \(tokenString)")
-        
-        // In a real app, send this token to your server
+        print("✅ Device token: \(tokenString)")
     }
-    
+
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        print("Failed to register for remote notifications: \(error.localizedDescription)")
+        print("❌ Failed to register for remote notifications: \(error.localizedDescription)")
+    }
+}
+
+extension UIApplication {
+    var rootController: UIViewController? {
+        connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first { $0.isKeyWindow }?.rootViewController
     }
 }

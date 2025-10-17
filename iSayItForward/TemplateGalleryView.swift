@@ -11,7 +11,7 @@ struct TemplateGalleryView: View {
 
     var body: some View {
         ZStack {
-            Color.mainAppGradient.ignoresSafeArea()
+            GradientTheme.welcomeBackground.ignoresSafeArea()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {

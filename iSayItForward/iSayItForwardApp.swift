@@ -1,6 +1,6 @@
 import SwiftUI
-import FirebaseAuth
 import FirebaseCore
+import FirebaseAuth
 
 @main
 struct iSayItForwardApp: App {
@@ -9,36 +9,37 @@ struct iSayItForwardApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ZStack {
-                if UIDevice.current.userInterfaceIdiom == .pad {
-                    iPadMainView()
-                        .environmentObject(authState)
-                } else {
-                    WelcomeView() // or ContentView() if you prefer
-                        .environmentObject(authState)
-                }
-                
-                // Global report overlay for system-wide access
-                GlobalReportOverlay()
-            }
+            ContentView()
+                .environmentObject(authState)
         }
     }
 }
 
-// MARK: - Auth State Observable Object
+// MARK: - AuthState (Global Authentication Manager)
 class AuthState: ObservableObject {
     @Published var isUserLoggedIn = false
     private var authHandle: AuthStateDidChangeListenerHandle?
 
     init() {
-        authHandle = Auth.auth().addStateDidChangeListener { auth, user in
-            self.isUserLoggedIn = (user != nil)
+        authHandle = Auth.auth().addStateDidChangeListener { _, user in
+            DispatchQueue.main.async {
+                self.isUserLoggedIn = (user != nil)
+            }
         }
     }
 
     deinit {
-        if let authHandle = authHandle {
-            Auth.auth().removeStateDidChangeListener(authHandle)
+        if let handle = authHandle {
+            Auth.auth().removeStateDidChangeListener(handle)
+        }
+    }
+
+    func signOut() {
+        do {
+            try Auth.auth().signOut()
+            isUserLoggedIn = false
+        } catch {
+            print("❌ Sign-out failed: \(error.localizedDescription)")
         }
     }
 }

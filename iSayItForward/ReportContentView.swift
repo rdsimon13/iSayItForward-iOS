@@ -270,7 +270,7 @@ private struct ReportReasonRow: View {
 struct ReportContentView_Previews: PreviewProvider {
     static var previews: some View {
         ZStack {
-            Color.mainAppGradient.ignoresSafeArea()
+            GradientTheme.welcomeBackground.ignoresSafeArea()
             
             ReportContentView(isPresented: .constant(true))
         }

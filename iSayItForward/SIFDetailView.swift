@@ -5,7 +5,7 @@ struct SIFDetailView: View {
 
     var body: some View {
         ZStack {
-            Color.mainAppGradient.ignoresSafeArea()
+            GradientTheme.welcomeBackground.ignoresSafeArea()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
