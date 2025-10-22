@@ -2,6 +2,19 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>UIAppFonts</key>
+    <array>
+        <string>isiffonts/isif-Regular.ttf</string>
+        <string>isiffonts/isif-Medium.ttf</string>
+        <string>isiffonts/isif-Bold.ttf</string>
+        <string>isiffonts/isif-SemiBold.ttf</string>
+        <string>isiffonts/isif-Light.ttf</string>
+        <string>isiffonts/isif-Italic.ttf</string>
+        <string>isiffonts/isif-BoldItalic.ttf</string>
+        <string>isiffonts/isif-SemiBoldItalic.ttf</string>
+    </array>
+	<key>CFBundleGetInfoString</key>
+	<string></string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -14,11 +27,7 @@
 	<key>NSUserNotificationUsageDescription</key>
 	<string>This app uses notifications to remind you about scheduled messages and important updates.</string>
 	<key>UIAppFonts</key>
-	<array>
-		<string>Kodchasan/Kodchasan-Regular.ttf</string>
-		<string>Kodchasan/Kodchasan-Medium.ttf</string>
-		<string>Kodchasan/Kodchasan-Bold.ttf</string>
-	</array>
+	<array/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

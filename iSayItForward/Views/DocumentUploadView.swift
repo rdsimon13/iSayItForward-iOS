@@ -75,3 +75,7 @@ struct DocumentUploadView: View {
         }
     }
 }
+#Preview {
+    DocumentUploadView()
+        .environmentObject(AuthState())
+}

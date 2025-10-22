@@ -162,3 +162,7 @@ struct CircleIconButton: View {
             .shadow(color: .black.opacity(0.25), radius: 4, y: 3)
     }
 }
+#Preview {
+    WelcomeView()
+        .environmentObject(AuthState())
+}

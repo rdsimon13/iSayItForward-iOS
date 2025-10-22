@@ -130,3 +130,7 @@ struct LoginView: View {
         }
     }
 }
+#Preview {
+    WelcomeView()
+        .environmentObject(AuthState())
+}

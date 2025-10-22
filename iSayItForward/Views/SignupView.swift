@@ -26,7 +26,7 @@ struct SignupView: View {
 
                 // MARK: Header
                 VStack(spacing: 12) {
-                    Image("isiFLogo")
+                    Image("isifLogo")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 100, height: 100)

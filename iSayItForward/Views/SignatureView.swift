@@ -15,7 +15,7 @@ struct SignatureData: Identifiable, Codable {
     }
 }
 
-// MARK: - Canvas Drawing Data
+// MARK: - Canvas Drawing Path
 struct DrawingPath {
     var points: [CGPoint] = []
     var lineWidth: CGFloat = 2.0
@@ -28,7 +28,7 @@ struct SignatureCanvas: View {
     
     var body: some View {
         Canvas { context, size in
-            // Draw all completed paths
+            // Draw completed paths
             for path in paths {
                 var cgPath = Path()
                 if !path.points.isEmpty {
@@ -37,24 +37,23 @@ struct SignatureCanvas: View {
                         cgPath.addLine(to: point)
                     }
                 }
-                context.stroke(cgPath, with: .color(.primary), lineWidth: path.lineWidth)
+                context.stroke(cgPath, with: .color(.black), lineWidth: path.lineWidth)
             }
             
-            // Draw current path being drawn
+            // Draw active path
             if !currentPath.points.isEmpty {
                 var cgPath = Path()
                 cgPath.move(to: currentPath.points[0])
                 for point in currentPath.points.dropFirst() {
                     cgPath.addLine(to: point)
                 }
-                context.stroke(cgPath, with: .color(.primary), lineWidth: currentPath.lineWidth)
+                context.stroke(cgPath, with: .color(.black), lineWidth: currentPath.lineWidth)
             }
         }
         .gesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { value in
-                    let point = value.location
-                    currentPath.points.append(point)
+                    currentPath.points.append(value.location)
                 }
                 .onEnded { _ in
                     if !currentPath.points.isEmpty {
@@ -66,7 +65,7 @@ struct SignatureCanvas: View {
     }
 }
 
-// MARK: - Main Signature View
+// MARK: - Signature View
 struct SignatureView: View {
     @Binding var isPresented: Bool
     @State private var paths: [DrawingPath] = []
@@ -77,20 +76,26 @@ struct SignatureView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                GradientTheme.welcomeBackground.ignoresSafeArea()
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color(red: 0.0, green: 0.8118, blue: 1.0),
+                        Color.white
+                    ]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
                 
                 VStack(spacing: 20) {
                     Text("Please sign below")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .foregroundColor(Color.brandDarkBlue)
+                        .font(.custom("Kodchasan-SemiBold", size: 22))
+                        .foregroundColor(.black.opacity(0.8))
                         .padding(.top)
                     
-                    // Signature canvas area
                     VStack {
                         SignatureCanvas(paths: $paths)
                             .frame(height: 200)
-                            .background(.white)
+                            .background(Color.white)
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                             .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
                             .overlay(
@@ -101,24 +106,22 @@ struct SignatureView: View {
                         Text("Sign your name above")
                             .font(.caption)
                             .foregroundColor(.gray)
-                            .padding(.top, 4)
                     }
                     .padding(.horizontal)
                     
-                    // Action buttons
                     HStack(spacing: 16) {
                         Button("Clear") {
-                            if !paths.isEmpty {
-                                showingClearAlert = true
-                            }
+                            if !paths.isEmpty { showingClearAlert = true }
                         }
-                        .buttonStyle(SecondaryActionButtonStyle())
+                        .buttonStyle(.bordered)
+                        .tint(.gray)
                         .disabled(paths.isEmpty)
                         
                         Button("Save Signature") {
                             saveSignature()
                         }
-                        .buttonStyle(PrimaryActionButtonStyle())
+                        .buttonStyle(.borderedProminent)
+                        .tint(Color(red: 0.145, green: 0.588, blue: 0.745))
                         .disabled(paths.isEmpty)
                     }
                     .padding(.horizontal)
@@ -130,15 +133,11 @@ struct SignatureView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        isPresented = false
-                    }
+                    Button("Cancel") { isPresented = false }
                 }
             }
             .alert("Clear Signature", isPresented: $showingClearAlert) {
-                Button("Clear", role: .destructive) {
-                    paths.removeAll()
-                }
+                Button("Clear", role: .destructive) { paths.removeAll() }
                 Button("Cancel", role: .cancel) { }
             } message: {
                 Text("Are you sure you want to clear your signature?")
@@ -147,12 +146,10 @@ struct SignatureView: View {
     }
     
     private func saveSignature() {
-        guard let signatureImage = generateSignatureImage() else { return }
-        guard let imageData = signatureImage.pngData() else { return }
+        guard let signatureImage = generateSignatureImage(),
+              let imageData = signatureImage.pngData() else { return }
         
-        // Get current user UID from Firebase Auth
         let userUID = Auth.auth().currentUser?.uid ?? "anonymous"
-        
         let signatureData = SignatureData(signatureImageData: imageData, userUID: userUID)
         onSignatureComplete(signatureData)
         isPresented = false
@@ -161,22 +158,19 @@ struct SignatureView: View {
     private func generateSignatureImage() -> UIImage? {
         let renderer = UIGraphicsImageRenderer(size: CGSize(width: 300, height: 150))
         return renderer.image { context in
-            // White background
             UIColor.white.setFill()
             context.fill(CGRect(x: 0, y: 0, width: 300, height: 150))
             
-            // Draw paths
             UIColor.black.setStroke()
             for path in paths {
-                let bezierPath = UIBezierPath()
-                bezierPath.lineWidth = path.lineWidth
-                
+                let bezier = UIBezierPath()
+                bezier.lineWidth = path.lineWidth
                 if !path.points.isEmpty {
-                    bezierPath.move(to: path.points[0])
-                    for point in path.points.dropFirst() {
-                        bezierPath.addLine(to: point)
+                    bezier.move(to: path.points[0])
+                    for p in path.points.dropFirst() {
+                        bezier.addLine(to: p)
                     }
-                    bezierPath.stroke()
+                    bezier.stroke()
                 }
             }
         }
@@ -214,10 +208,9 @@ struct SignaturePreviewView: View {
     }
 }
 
-struct SignatureView_Previews: PreviewProvider {
-    static var previews: some View {
-        SignatureView(isPresented: .constant(true)) { _ in
-            print("Signature saved")
-        }
+// MARK: - Preview
+#Preview {
+    SignatureView(isPresented: .constant(true)) { sig in
+        print("✅ Signature saved: \(sig.id)")
     }
 }
