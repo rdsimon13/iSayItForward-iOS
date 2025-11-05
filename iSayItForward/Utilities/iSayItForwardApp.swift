@@ -4,32 +4,49 @@ import FirebaseAuth
 
 @main
 struct iSayItForwardApp: App {
-    // MARK: - App Delegate
+    // MARK: - App Delegate (Google Sign-In + Notifications)
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
-    // MARK: - Auth State
-    @StateObject private var authState = AuthState()
+    // MARK: - Global State Objects
+    @StateObject private var authState = AuthState() // ✅ Handles login tracking
+    @StateObject private var appState = AppState()
+    @StateObject private var router = TabRouter()
 
-    // MARK: - Init (Global Setup)
-    init() {
-        // ✅ Firebase config is already in AppDelegate — do not call again here.
-        FontTheme.setupGlobalFontAppearance()
-    }
 
-    // MARK: - Scene Body
+    // MARK: - Main Scene
     var body: some Scene {
         WindowGroup {
-            Group {
-                if authState.isUserLoggedIn {
-                    AppFlowCoordinator()
-                        .environmentObject(authState)
-                        .applyGlobalFont() // 👈 Global SwiftUI font modifier
-                } else {
-                    WelcomeView()
-                        .environmentObject(authState)
-                        .applyGlobalFont()
-                }
+            RootView()
+                .environmentObject(authState)
+                .environmentObject(appState)
+                .environmentObject(router)
+                .applyGlobalFont()
+        }
+    }
+}
+
+// MARK: - RootView Wrapper
+struct RootView: View {
+    @EnvironmentObject var authState: AuthState
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var router: TabRouter
+
+    var body: some View {
+        Group {
+            if authState.isUserLoggedIn {
+                NavigationHostView() // ✅ your Dashboard
+                    .environmentObject(authState)
+                    .environmentObject(appState)
+                    .environmentObject(router)
+                    .transition(.move(edge: .trailing).combined(with: .opacity))
+            } else {
+                WelcomeView()
+                    .environmentObject(authState)
+                    .environmentObject(appState)
+                    .environmentObject(router)
+                    .transition(.move(edge: .leading).combined(with: .opacity))
             }
         }
+        .animation(.easeInOut(duration: 0.35), value: authState.isUserLoggedIn)
     }
 }

@@ -1,17 +1,11 @@
 import SwiftUI
 
 struct VisualEffectBlur: UIViewRepresentable {
-    var blurStyle: UIBlurEffect.Style
-    var intensity: CGFloat = 1.0
+    var style: UIBlurEffect.Style
 
     func makeUIView(context: Context) -> UIVisualEffectView {
-        let view = UIVisualEffectView(effect: UIBlurEffect(style: blurStyle))
-        view.alpha = intensity
-        return view
+        UIVisualEffectView(effect: UIBlurEffect(style: style))
     }
 
-    func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
-        uiView.effect = UIBlurEffect(style: blurStyle)
-        uiView.alpha = intensity
-    }
+    func updateUIView(_ uiView: UIVisualEffectView, context: Context) {}
 }

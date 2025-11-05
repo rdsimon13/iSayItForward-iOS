@@ -1,185 +1,225 @@
 import SwiftUI
 
 struct TemplateGalleryView: View {
-    let templates: [TemplateItem] = TemplateLibrary.templates
-    @State private var selectedTab = "compose"
-    @State private var navigateToSIF: TemplateItem? = nil
+    // ✅ Optional binding to return selection to ComposeSIFView
+    @Binding var selectedTemplate: Template?
+
+    @EnvironmentObject var router: TabRouter
+    @EnvironmentObject var appState: AppState
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var layoutMode: LayoutMode = .grid
+    @State private var showSavedToast = false
+    @State private var isLoading = false
+
     @State private var scrollOffset: CGFloat = 0
+    @State private var lastScrollOffset: CGFloat = 0
+    @State private var isNavVisible: Bool = true
 
-    // Group templates by category
-    var categorizedTemplates: [TemplateCategory: [TemplateItem]] {
-        Dictionary(grouping: templates, by: { $0.category })
-    }
+    // Local data
+    @State private var templates: [TemplateModel] = TemplateModel.templates
 
     var body: some View {
-        NavigationStack {
-            ZStack(alignment: .bottom) {
-                // MARK: - Background Gradient
-                GradientTheme.welcomeBackground
-                    .ignoresSafeArea()
+        ZStack(alignment: .bottom) {
+            BrandTheme.backgroundGradient
+                .ignoresSafeArea()
 
-                // MARK: - Scrollable Template Sections
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 32) {
-                        ForEach(TemplateCategory.allCases, id: \.self) { category in
-                            if let items = categorizedTemplates[category], !items.isEmpty {
-                                CategorySectionView(category: category, templates: items) { template in
-                                    navigateToSIF = template
-                                }
-                            }
-                        }
-                    }
-                    .padding(.top, 20)
-                    .padding(.bottom, 120)
-                    .trackScrollOffset(in: "scroll", offset: $scrollOffset)
-                }
-                .coordinateSpace(name: "scroll")
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 24) {
+                    headerSection
+                    layoutToggle
 
-                // MARK: - Bottom Navigation Bar
-                BottomNavBar(selectedTab: $selectedTab, scrollOffsetBinding: $scrollOffset)
-                    .onChange(of: selectedTab) { newTab in
-                        navigateTo(tab: newTab)
-                    }
-            }
-            .navigationTitle("Template Gallery")
-            .navigationBarTitleDisplayMode(.inline)
-            .background(
-                Group {
-                    if #available(iOS 17.0, *) {
-                        NavigationLink(value: navigateToSIF) {
-                            EmptyView()
-                        }
-                        .navigationDestination(for: TemplateItem.self) { template in
-                            CreateSIFView(
-                                preloadedSubject: template.name,
-                                preloadedMessage: template.message,
-                                preloadedImageName: template.imageName
-                            )
-                        }
+                    if isLoading {
+                        ProgressView("Loading templates…")
+                            .font(.system(size: 15, weight: .regular, design: .rounded))
+                            .foregroundColor(.gray)
+                            .padding(.top, 40)
                     } else {
-                        NavigationLink(
-                            destination: Group {
-                                if let template = navigateToSIF {
-                                    CreateSIFView(
-                                        preloadedSubject: template.name,
-                                        preloadedMessage: template.message,
-                                        preloadedImageName: template.imageName
-                                    )
-                                }
-                            },
-                            isActive: Binding(
-                                get: { navigateToSIF != nil },
-                                set: { active in if !active { navigateToSIF = nil } }
-                            )
-                        ) {
-                            EmptyView()
-                        }
-                        .hidden()
+                        templateSection
                     }
+
+                    Spacer(minLength: 140)
                 }
-            )
-        }
-    }
-
-    // MARK: - Navigation
-    private func navigateTo(tab: String) {
-        switch tab {
-        case "home": navigate(to: DashboardView())
-        case "compose": navigate(to: CreateSIFView())
-        case "profile": navigate(to: ProfileView())
-        case "schedule": navigate(to: ScheduleSIFView())
-        case "settings": navigate(to: GettingStartedView())
-        default: break
-        }
-    }
-
-    private func navigate<Destination: View>(to destination: Destination) {
-        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = scene.windows.first else { return }
-        window.rootViewController = UIHostingController(rootView: destination)
-        window.makeKeyAndVisible()
-    }
-}
-
-// MARK: - Category Section View
-struct CategorySectionView: View {
-    let category: TemplateCategory
-    let templates: [TemplateItem]
-    let onSelect: (TemplateItem) -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 10) {
-                Image(systemName: category.icon)
-                    .foregroundColor(.white)
-                    .frame(width: 26, height: 26)
-                    .background(category.color)
-                    .clipShape(Circle())
-                    .shadow(color: category.color.opacity(0.4), radius: 3, y: 2)
-
-                Text(category.displayTitle)
-                    .font(.system(size: 20, weight: .bold, design: .rounded))
-                    .foregroundColor(Color.brandDarkBlue)
+                .padding(.horizontal, 20)
+                .padding(.top, 40)
+                .padding(.bottom, 120)
+                .trackScrollOffset(in: "galleryScroll", offset: $scrollOffset)
             }
-            .padding(.horizontal)
+            .coordinateSpace(name: "galleryScroll")
+            .onChange(of: scrollOffset) { _ in
+                handleScroll(offset: scrollOffset)
+            }
 
-            VStack(spacing: 12) {
+            BottomNavBar(selectedTab: $router.selectedTab, isVisible: $isNavVisible)
+                .environmentObject(router)
+                .padding(.bottom, 5)
+
+            if showSavedToast {
+                toastView
+            }
+        }
+        .onAppear(perform: loadTemplates)
+        .navigationBarHidden(true)
+    }
+
+    // MARK: Header
+    private var headerSection: some View {
+        VStack(spacing: 8) {
+            Text("Template Gallery")
+                .font(.system(size: 30, weight: .bold, design: .rounded))
+                .foregroundColor(BrandTheme.titleStroke)
+
+            Text("Choose a message style to start your SIF.")
+                .font(.system(size: 15, weight: .medium, design: .rounded))
+                .foregroundColor(.black.opacity(0.75))
+                .multilineTextAlignment(.center)
+        }
+        .multilineTextAlignment(.center)
+    }
+
+    // MARK: Toggle
+    private var layoutToggle: some View {
+        HStack(spacing: 12) {
+            toggleButton("Grid", icon: "square.grid.2x2", mode: .grid)
+            toggleButton("List", icon: "list.bullet", mode: .list)
+        }
+        .font(.system(size: 15, weight: .semibold, design: .rounded))
+        .foregroundColor(.black.opacity(0.8))
+    }
+
+    private func toggleButton(_ title: String, icon: String, mode: LayoutMode) -> some View {
+        Button {
+            withAnimation { layoutMode = mode }
+        } label: {
+            Label(title, systemImage: icon)
+                .labelStyle(.titleAndIcon)
+                .padding(.vertical, 8)
+                .padding(.horizontal, 16)
+                .background(
+                    Capsule()
+                        .fill(mode == layoutMode ? BrandTheme.pillBG.opacity(0.15) : Color.clear)
+                )
+        }
+    }
+
+    // MARK: Templates
+    @ViewBuilder
+    private var templateSection: some View {
+        if layoutMode == .grid {
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
                 ForEach(templates) { template in
-                    TemplateCardView(template: template) {
-                        onSelect(template)
+                    TemplateThumbCard(template: template) {
+                        handleSelect(template)
                     }
                 }
             }
-            .padding(.horizontal)
+        } else {
+            VStack(spacing: 20) {
+                ForEach(templates) { template in
+                    TemplateThumbCard(template: template) {
+                        handleSelect(template)
+                    }
+                }
+            }
         }
     }
+
+    // MARK: Toast
+    private var toastView: some View {
+        Text("Template Selected ✓")
+            .font(.system(size: 14, weight: .semibold, design: .rounded))
+            .foregroundColor(.white)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 10)
+            .background(Capsule().fill(Color.green.opacity(0.9)))
+            .shadow(radius: 4)
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+            .padding(.bottom, 100)
+    }
+
+    // MARK: Actions
+    private func handleSelect(_ template: TemplateModel) {
+        // ✅ Save to ComposeSIFView
+        selectedTemplate = Template(
+            id: template.id.uuidString, // convert UUID → String
+            name: template.title,
+            imageName: template.imageName
+        )
+
+        withAnimation { showSavedToast = true }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
+            withAnimation { showSavedToast = false }
+            dismiss()
+        }
+    }
+
+    private func loadTemplates() {
+        isLoading = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            isLoading = false
+        }
+    }
+
+    private func handleScroll(offset: CGFloat) {
+        let delta = offset - lastScrollOffset
+        if abs(delta) > 8 {
+            withAnimation(.easeInOut(duration: 0.25)) {
+                isNavVisible = delta > 0
+            }
+            lastScrollOffset = offset
+        }
+    }
+
+    private enum LayoutMode { case grid, list }
 }
 
-// MARK: - Template Card View
-private struct TemplateCardView: View {
-    let template: TemplateItem
-    var onTap: () -> Void
+// MARK: Template Card
+private struct TemplateThumbCard: View {
+    let template: TemplateModel
+    let onTap: () -> Void
 
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 12) {
                 Image(template.imageName)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: 80, height: 80)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
+                    .frame(height: 140)
+                    .frame(maxWidth: .infinity)
+                    .clipped()
+                    .clipShape(RoundedRectangle(cornerRadius: 18))
+                    .shadow(color: .black.opacity(0.15), radius: 4, y: 3)
 
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(template.name)
-                        .font(.headline)
-                        .fontWeight(.bold)
-                        .foregroundColor(Color.brandDarkBlue)
-                        .multilineTextAlignment(.leading)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(template.title)
+                        .font(.system(size: 16, weight: .semibold, design: .rounded))
+                        .foregroundColor(.black)
 
-                    Text(template.message)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .lineLimit(2)
+                    Text(template.subtitle)
+                        .font(.system(size: 14, weight: .regular, design: .rounded))
+                        .foregroundColor(.black.opacity(0.7))
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-
-                Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(16)
-            .background(.white.opacity(0.95))
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .shadow(color: .black.opacity(0.1), radius: 8, y: 3)
+            .frame(maxWidth: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color.white.opacity(0.9))
+                    .shadow(color: .black.opacity(0.1), radius: 6, y: 4)
+            )
         }
-        .buttonStyle(PlainButtonStyle())
+        .buttonStyle(.plain)
     }
 }
 
 #Preview {
-    NavigationStack {
-        TemplateGalleryView()
-    }
+    TemplateGalleryView(selectedTemplate: .constant(nil))
+        .environmentObject(TabRouter())
+        .environmentObject(AppState())
+}
+#Preview {
+    TemplateGalleryView(selectedTemplate: .constant(nil))
 }

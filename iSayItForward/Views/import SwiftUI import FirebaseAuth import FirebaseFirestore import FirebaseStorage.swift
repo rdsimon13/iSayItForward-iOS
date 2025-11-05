@@ -1,17 +1,6 @@
-/*import SwiftUI
+import SwiftUI
 import FirebaseAuth
 
-struct SignatureView: View {
-    @Binding var isPresented: Bool
-    @State private var paths: [DrawingPath] = []
-    @State private var showingClearAlert = false
-    @State private var selectedTab = "compose"
-
-    let onSignatureComplete: (SignatureData) -> Void
-
-    var body: some View {
-        NavigationStack {
-            ZStack {
                 // MARK: - Gradient
                 RadialGradient(
                     gradient: Gradient(stops: [
@@ -135,11 +124,5 @@ struct SignatureView: View {
         window.makeKeyAndVisible()
     }
 }
-struct SignatureView_Previews: PreviewProvider {
-    static var previews: some View {
-        SignatureView(isPresented: .constant(true)) { _ in
-            print("Signature saved")
-        }
-    }
-}
+
 */

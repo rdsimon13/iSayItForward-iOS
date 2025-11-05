@@ -1,4 +1,4 @@
-/* import SwiftUI
+import SwiftUI
 
 // MARK: - Safe color loader with hex + Asset fallback
 extension Color {
@@ -41,4 +41,56 @@ enum BrandColor {
     static let surface     = Color.white.opacity(0.95)
     static let stroke      = Color.black.opacity(0.25)
 }
-*/
+// MARK: - Brand Gradient System
+enum BrandGradient {
+    /// The classic bright blue-to-white background (used on DashboardView, Template Gallery, etc.)
+    static let sky = LinearGradient(
+        gradient: Gradient(colors: [
+            BrandColor.blueTop,
+            BrandColor.blueMid,
+            Color.white
+        ]),
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+
+    /// A deep navy background for headers, overlays, or footers.
+    static let night = LinearGradient(
+        gradient: Gradient(colors: [
+            BrandColor.navyStart,
+            BrandColor.navyEnd
+        ]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
+
+    /// Soft gold fade for CTA buttons or highlight cards.
+    static let goldAccent = LinearGradient(
+        gradient: Gradient(colors: [
+            BrandColor.gold,
+            BrandColor.goldDeep
+        ]),
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+
+    /// Subtle gray-white surface gradient for card backgrounds.
+    static let surface = LinearGradient(
+        gradient: Gradient(colors: [
+            BrandColor.surface,
+            Color.white
+        ]),
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+
+    /// A “signature card” gradient for premium or success moments.
+    static let premium = LinearGradient(
+        gradient: Gradient(colors: [
+            BrandColor.goldDeep,
+            BrandColor.blueMid
+        ]),
+        startPoint: .top,
+        endPoint: .bottomTrailing
+    )
+}

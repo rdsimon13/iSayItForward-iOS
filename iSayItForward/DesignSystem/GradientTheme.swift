@@ -1,9 +1,6 @@
 import SwiftUI
 
-// MARK: - GradientTheme
 struct GradientTheme {
-
-    // MARK: - Welcome Background (Global Default)
     static var welcomeBackground: some View {
         LinearGradient(
             colors: [
@@ -14,13 +11,12 @@ struct GradientTheme {
             endPoint: .bottomTrailing
         )
     }
-    
+
     static let goldPillColors: [Color] = [
         Color(red: 0.95, green: 0.75, blue: 0.20),
         Color(red: 0.10, green: 0.70, blue: 0.80)
     ]
-    
-    // MARK: - Primary Pill Gradient
+
     static var primaryPill: LinearGradient {
         LinearGradient(
             colors: [
@@ -31,7 +27,7 @@ struct GradientTheme {
             endPoint: .bottomTrailing
         )
     }
-    // MARK: - Deep Blue Gradient (for Dashboard Buttons)
+
     static var deepBlue: LinearGradient {
         LinearGradient(
             colors: [
@@ -42,7 +38,7 @@ struct GradientTheme {
             endPoint: .bottomTrailing
         )
     }
-    // MARK: - Gold Pill Gradient
+
     static var goldPill: LinearGradient {
         LinearGradient(
             colors: [
@@ -54,7 +50,6 @@ struct GradientTheme {
         )
     }
 
-    // MARK: - Dashboard Background (Fixes Missing Member)
     static var dashboardBackground: some View {
         ZStack {
             LinearGradient(
@@ -65,6 +60,7 @@ struct GradientTheme {
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
+
             RadialGradient(
                 colors: [
                     .white.opacity(0.15),
@@ -76,40 +72,5 @@ struct GradientTheme {
             )
             .blendMode(.screen)
         }
-    }
-}
-
-extension Color {
-    /// Initialize Color from HEX code
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let a, r, g, b: UInt64
-        switch hex.count {
-        case 3: // RGB (12-bit)
-            (a, r, g, b) = (255, (int >> 8) * 17,
-                            (int >> 4 & 0xF) * 17,
-                            (int & 0xF) * 17)
-        case 6: // RGB (24-bit)
-            (a, r, g, b) = (255,
-                            int >> 16,
-                            int >> 8 & 0xFF,
-                            int & 0xFF)
-        case 8: // ARGB (32-bit)
-            (a, r, g, b) = (int >> 24,
-                            int >> 16 & 0xFF,
-                            int >> 8 & 0xFF,
-                            int & 0xFF)
-        default:
-            (a, r, g, b) = (255, 0, 0, 0)
-        }
-        self.init(
-            .sRGB,
-            red: Double(r) / 255,
-            green: Double(g) / 255,
-            blue: Double(b) / 255,
-            opacity: Double(a) / 255
-        )
     }
 }
