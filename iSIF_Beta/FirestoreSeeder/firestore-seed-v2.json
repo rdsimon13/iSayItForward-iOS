@@ -1,0 +1,153 @@
+{
+  "users": {
+    "testUser001": {
+      "displayName": "John Doe",
+      "email": "john.doe@example.com",
+      "photoURL": "https://example.com/john.jpg",
+      "role": "admin",
+      "tier": "tier2",
+      "isProfilePublic": true,
+      "allowMessagesFrom": "friends_only",
+      "usage": {
+        "totalSent": 4,
+        "totalReceived": 2,
+        "templatesUsed": 2,
+        "storageUsedMB": 15.3,
+        "tierLimitMB": 500
+      },
+      "createdAt": "2025-11-04T18:00:00Z",
+
+      "friends": {
+        "friendUser001": {
+          "id": "friendUser001",
+          "name": "Jane Smith",
+          "email": "jane.smith@example.com",
+          "photoURL": "https://example.com/jane.jpg"
+        }
+      },
+
+      "groups": {
+        "group001": {
+          "id": "group001",
+          "name": "Close Friends",
+          "description": "Private friend group for quick SIFs",
+          "createdAt": "2025-11-04T18:30:00Z",
+          "members": ["testUser001", "friendUser001"]
+        }
+      },
+
+      "sifs": {
+        "sif_local_001": {
+          "senderId": "testUser001",
+          "recipients": [
+            { "id": "friendUser001", "name": "Jane Smith", "email": "jane.smith@example.com" }
+          ],
+          "subject": "Hey Jane!",
+          "message": "Just wanted to send some positive vibes today 🌞",
+          "category": "General",
+          "tone": "Friendly",
+          "emotion": "Joy",
+          "templateId": "sunset_template",
+          "documentURL": "",
+          "signatureURL": "",
+          "deliveryType": "One-to-One",
+          "isScheduled": false,
+          "scheduledDate": "",
+          "createdAt": "2025-11-04T18:00:00Z",
+          "status": "sent"
+        }
+      }
+    },
+
+    "friendUser001": {
+      "displayName": "Jane Smith",
+      "email": "jane.smith@example.com",
+      "photoURL": "https://example.com/jane.jpg",
+      "role": "user",
+      "tier": "free",
+      "isProfilePublic": true,
+      "allowMessagesFrom": "everyone",
+      "usage": {
+        "totalSent": 1,
+        "totalReceived": 2,
+        "templatesUsed": 1,
+        "storageUsedMB": 8.4,
+        "tierLimitMB": 50
+      },
+      "createdAt": "2025-11-04T18:10:00Z",
+      "friends": {},
+      "groups": {},
+      "sifs": {}
+    }
+  },
+
+  "SIFs": {
+    "sif001": {
+      "senderId": "testUser001",
+      "recipients": [
+        { "id": "friendUser001", "name": "Jane Smith", "email": "jane.smith@example.com" }
+      ],
+      "subject": "This is a global SIF copy",
+      "message": "Just testing Firestore setup globally!",
+      "category": "General",
+      "tone": "Supportive",
+      "emotion": "Joyful",
+      "templateId": "sunset_template",
+      "documentURL": "",
+      "signatureURL": "",
+      "deliveryType": "One-to-One",
+      "isScheduled": false,
+      "scheduledDate": "",
+      "createdAt": "2025-11-04T18:00:00Z",
+      "status": "sent"
+    },
+    "sif002": {
+      "senderId": "testUser001",
+      "recipients": [
+        { "id": "friendUser001", "name": "Jane Smith", "email": "jane.smith@example.com" }
+      ],
+      "subject": "A second global SIF",
+      "message": "Testing multiple document entries under global SIFs collection.",
+      "category": "General",
+      "tone": "Uplifting",
+      "emotion": "Inspired",
+      "templateId": "sunrise_template",
+      "documentURL": "",
+      "signatureURL": "",
+      "deliveryType": "One-to-Many",
+      "isScheduled": false,
+      "scheduledDate": "",
+      "createdAt": "2025-11-04T18:15:00Z",
+      "status": "sent"
+    }
+  },
+
+  "friendRequests": {
+    "request001": {
+      "id": "request001",
+      "fromUserId": "testUser001",
+      "fromName": "John Doe",
+      "fromEmail": "john.doe@example.com",
+      "toUserId": "friendUser001",
+      "status": "pending",
+      "createdAt": "2025-11-04T18:05:00Z"
+    }
+  },
+
+  "templates": {
+    "sunset_template": {
+      "id": "sunset_template",
+      "name": "Sunset Reflection",
+      "category": "General",
+      "thumbnailURL": "https://example.com/templates/sunset.png",
+      "description": "Warm and thoughtful template for friendly or emotional messages."
+    },
+    "sunrise_template": {
+      "id": "sunrise_template",
+      "name": "Sunrise Hope",
+      "category": "Inspirational",
+      "thumbnailURL": "https://example.com/templates/sunrise.png",
+      "description": "Bright, positive layout for encouragement and motivation."
+    }
+  }
+}
