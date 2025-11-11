@@ -220,7 +220,8 @@ struct SIFDetailView: View {
             do {
                 isDeleting = true
                 let userId = Auth.auth().currentUser?.uid ?? "anonymous"
-                try await sifService.sendSIF(sif, for: userId)
+                let db = Firestore.firestore()
+                try await db.collection("users").document(userId).collection("sifs").document(sif.id).delete()
                 isDeleting = false
                 showDeleteAlert = false
                 showToast = true
@@ -231,6 +232,8 @@ struct SIFDetailView: View {
             } catch {
                 isDeleting = false
                 showDeleteAlert = false
+                alertMessage = "Failed to delete SIF: \(error.localizedDescription)"
+                showingAlert = true
             }
         }
     }
