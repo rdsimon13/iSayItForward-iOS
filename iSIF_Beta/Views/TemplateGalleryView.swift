@@ -213,5 +213,5 @@ private struct TemplateThumbCard: View {
 #Preview {
     TemplateGalleryView(selectedTemplate: .constant(nil))
         .environmentObject(TabRouter())
-        .environmentObject(AppState())
+        .environmentObject(AuthState())
 }

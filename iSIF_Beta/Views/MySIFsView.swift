@@ -86,4 +86,5 @@ struct MySIFsView: View {
 #Preview {
     MySIFsView()
         .environmentObject(TabRouter())
+        .environmentObject(AuthState())
 }
