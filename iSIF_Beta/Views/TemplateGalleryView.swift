@@ -5,7 +5,7 @@ struct TemplateGalleryView: View {
     @Binding var selectedTemplate: TemplateModel?
 
     @EnvironmentObject var router: TabRouter
-    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var authState: AuthState
     @Environment(\.dismiss) private var dismiss
 
     @State private var layoutMode: LayoutMode = .grid
