@@ -14,7 +14,7 @@ struct SIFDetailView: View {
     @State private var showMailComposer = false
     @State private var mailData = MailData(subject: "", recipients: [], message: "")
     
-    @StateObject private var sifService = SIFService()
+    @StateObject private var sifService = SIFDataManager()
     
     var body: some View {
         ZStack {
