@@ -2,13 +2,11 @@ import SwiftUI
 import FirebaseAuth
 import UIKit
 
-
-/*
 // MARK: - Drawing Path Model
 struct DrawingPath: Identifiable {
     let id = UUID()
     var points: [CGPoint] = []
-    var lineWidth: CGFloat = 2.0
+    var lineWidth: CGFloat = 3.0
 }
 
 // MARK: - Signature Canvas
@@ -44,7 +42,8 @@ struct SignatureCanvas: View {
         .gesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { value in
-                    currentPath.points.append(value.location)
+                    let newPoint = value.location
+                    currentPath.points.append(newPoint)
                 }
                 .onEnded { _ in
                     if !currentPath.points.isEmpty {
@@ -62,8 +61,6 @@ struct SignatureCanvas: View {
         )
     }
 }
-*/
-
 
 // MARK: - Signature View
 struct SignatureView: View {
@@ -101,7 +98,6 @@ struct SignatureView: View {
                         .foregroundColor(.black.opacity(0.85))
                         .padding(.top, 30)
 
- /*
                     // MARK: Signature Area
                     VStack(spacing: 10) {
                         SignatureCanvas(paths: $paths)
@@ -138,7 +134,6 @@ struct SignatureView: View {
                         .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
                     }
                     .padding(.horizontal)
-*/
                     
                     // MARK: Preview Section
                     if let previewImage {
@@ -174,7 +169,9 @@ struct SignatureView: View {
                     Text("Are you sure you want to clear your signature?")
                 }
                 .alert("Signature Saved", isPresented: $showingSaveAlert) {
-                    Button("OK", role: .cancel) { }
+                    Button("OK", role: .cancel) { 
+                        isPresented = false
+                    }
                 } message: {
                     Text("Your signature was captured successfully.")
                 }
@@ -198,7 +195,6 @@ struct SignatureView: View {
 
     // MARK: - Generate Signature Image
     private func generateSignatureImage() -> UIImage? {
-        // Auto-scale to the drawn size
         let size = CGSize(width: 400, height: 220)
         let renderer = UIGraphicsImageRenderer(size: size)
         return renderer.image { context in

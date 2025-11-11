@@ -12,6 +12,7 @@ struct WelcomeView: View {
     @State private var verificationCode = ""
     @State private var verificationID: String?
     @State private var showingSignupSheet = false
+    @State private var showingForgotPassword = false
     @State private var isLoading = false
     @State private var bannerMessage: String?
     @State private var bannerVisible = false
@@ -31,6 +32,7 @@ struct WelcomeView: View {
                             signInForm
                             socialLoginSection
                             createAccountButton
+                            forgotPasswordLink
                             footerSection
                         }
                     }
@@ -66,31 +68,24 @@ struct WelcomeView: View {
             }
         }
         .modifier(HideKeyboardOnTapModifier())
+        .sheet(isPresented: $showingForgotPassword) {
+            ForgotPasswordView()
+        }
     }
 
     // MARK: - Background
     private var backgroundGradient: some View {
         ZStack {
-            LinearGradient(
-                colors: [Color.white, Color.cyan.opacity(0.2)],
-                startPoint: .top,
-                endPoint: .bottom
+            RadialGradient(
+                gradient: Gradient(stops: [
+                    .init(color: .white, location: 0.0),
+                    .init(color: Color(red: 0.0, green: 0.732, blue: 1.2), location: 1.0)
+                ]),
+                center: .top,
+                startRadius: 0,
+                endRadius: UIScreen.main.bounds.height
             )
             .ignoresSafeArea()
-
-            GeometryReader { geo in
-                let safeHeight = max(geo.size.height, 1)
-                RadialGradient(
-                    gradient: Gradient(stops: [
-                        .init(color: Color(hex: "00CCFF"), location: 0.0),
-                        .init(color: Color.white, location: 1.0)
-                    ]),
-                    center: .bottom,
-                    startRadius: 0,
-                    endRadius: safeHeight * 0.8
-                )
-                .ignoresSafeArea()
-            }
         }
     }
 
@@ -231,6 +226,19 @@ struct WelcomeView: View {
         }
         .padding(.horizontal, 40)
         .padding(.top, 15)
+    }
+
+    // MARK: - Forgot Password Link
+    private var forgotPasswordLink: some View {
+        Button {
+            showingForgotPassword = true
+        } label: {
+            Text("Forgot Password?")
+                .font(.custom("AvenirNext-Regular", size: 14))
+                .foregroundColor(.blue)
+                .underline()
+        }
+        .padding(.top, 5)
     }
 
     // MARK: - Footer

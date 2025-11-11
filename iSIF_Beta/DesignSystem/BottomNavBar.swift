@@ -73,12 +73,22 @@ struct BottomNavBar: View {
                     if let url = authState.photoURL {
                         AsyncImage(url: url) { phase in
                             switch phase {
-                            case .success(let img): img.resizable().scaledToFill()
-                            default: Image("isifLogo").resizable().scaledToFill()
+                            case .success(let img): 
+                                img.resizable().scaledToFill()
+                            case .empty, .failure:
+                                Image("isiFLogo")
+                                    .resizable()
+                                    .scaledToFill()
+                            @unknown default:
+                                Image("isiFLogo")
+                                    .resizable()
+                                    .scaledToFill()
                             }
                         }
                     } else {
-                        Image("isifLogo").resizable().scaledToFill()
+                        Image("isiFLogo")
+                            .resizable()
+                            .scaledToFill()
                     }
                 }
                 .frame(width: 32, height: 32)
