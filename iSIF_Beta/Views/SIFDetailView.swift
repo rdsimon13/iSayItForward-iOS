@@ -1,5 +1,6 @@
 import SwiftUI
 import FirebaseAuth
+import FirebaseFirestore
 import MessageUI
 import Foundation
 
@@ -13,6 +14,8 @@ struct SIFDetailView: View {
     @State private var showToast = false
     @State private var showMailComposer = false
     @State private var mailData = MailData(subject: "", recipients: [], message: "")
+    @State private var alertMessage = ""
+    @State private var showingAlert = false
     
     @StateObject private var sifService = SIFDataManager()
     
