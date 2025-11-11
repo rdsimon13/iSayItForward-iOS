@@ -480,9 +480,4 @@ struct ComposeSIFView: View {
         )
     }
     
-    #Preview {
-        ComposeSIFView()
-            .environmentObject(AuthState())
-            .environmentObject(TabRouter())
-    }
 }
