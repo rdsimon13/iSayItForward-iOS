@@ -36,11 +36,11 @@ struct ComposeSIFView: View {
     // ✅ Mock templates: these match your TemplateModel
         @State private var mockTemplates: [TemplateModel] = [
             TemplateModel(id: UUID().uuidString, title: "Sunset Bliss", subtitle: "Warm, gentle, reflective",
-                          imageName: "sunset_placeholder", color: .orange), // Fixed: .orange instead of Color
+                          imageName: "sunset_placeholder", colorHex: "#FF9500"),
             TemplateModel(id: UUID().uuidString, title: "Ocean Whisper", subtitle: "Calming, cool, peaceful",
-                          imageName: "ocean_placeholder", color: .blue),   // Fixed: .blue instead of Color
+                          imageName: "ocean_placeholder", colorHex: "#007AFF"),
             TemplateModel(id: UUID().uuidString, title: "Minimal Calm", subtitle: "Simple, clean, modern",
-                          imageName: "calm_placeholder", color: .gray)     // Fixed: .gray instead of Color
+                          imageName: "calm_placeholder", colorHex: "#8E8E93")
         ]
     
     init(existingSIF: SIF? = nil, isEditing: Bool = false, isResend: Bool = false) {
@@ -294,8 +294,8 @@ struct ComposeSIFView: View {
     // MARK: Message Section
     private var messageSection: some View {
         ZStack {
-            if let selectedTemplate = selectedTemplate {
-                Image(selectedTemplate.imageName!)
+            if let selectedTemplate = selectedTemplate, let imageName = selectedTemplate.imageName {
+                Image(imageName)
                     .resizable()
                     .scaledToFill()
                     .frame(height: 200)
