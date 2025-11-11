@@ -8,19 +8,26 @@ struct CreateSIFView: View {
     @EnvironmentObject var authState: AuthState
 
     // MARK: - Core Fields
-    @State private var recipient: String = ""
     @State private var subject: String = ""
     @State private var messageText: String = ""
     @State private var signatureData: Data? = nil
-
-    // ✅ Selected template is TemplateModel?
     @State private var selectedTemplate: TemplateModel? = nil
+    @State private var selectedRecipients: [SIFRecipient] = []
+    @State private var deliveryType: DeliveryType = .oneToOne
 
     // MARK: - UI State
     @State private var showSignatureSheet = false
     @State private var showValidationAlert = false
     @State private var showToast = false
+    @State private var showRecipientPicker = false
+    @State private var showConfirmation = false
     @State private var isNavVisible = true
+    @State private var isLoading = false
+    @State private var errorMessage: String?
+    @State private var sentSIF: SIF?
+
+    private let friendsService = FriendsService()
+    private let sifService = SIFService()
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -64,6 +71,15 @@ struct CreateSIFView: View {
             if showToast {
                 successToast
             }
+            
+            if isLoading {
+                Color.black.opacity(0.3)
+                    .ignoresSafeArea()
+                ProgressView("Sending SIF...")
+                    .padding()
+                    .background(Color.white)
+                    .cornerRadius(10)
+            }
         }
         .navigationBarHidden(true)
         
@@ -76,6 +92,22 @@ struct CreateSIFView: View {
             .environmentObject(authState)
         }
         
+        // MARK: - Recipient Picker Sheet
+        .sheet(isPresented: $showRecipientPicker) {
+            RecipientPickerView(
+                friendsProvider: friendsService,
+                deliveryType: deliveryType,
+                selectedRecipients: $selectedRecipients
+            )
+        }
+        
+        // MARK: - Confirmation Sheet
+        .sheet(isPresented: $showConfirmation) {
+            if let sentSIF = sentSIF {
+                ConfirmationView(sif: sentSIF)
+            }
+        }
+        
         // MARK: - Validation Alert
         .alert("Missing Information", isPresented: $showValidationAlert) {
             Button("OK", role: .cancel) { }
@@ -83,10 +115,24 @@ struct CreateSIFView: View {
             Text("Please fill out all required fields before sending.")
         }
         
+        // MARK: - Error Alert
+        .alert("Error", isPresented: .init(get: { errorMessage != nil }, set: { _ in errorMessage = nil })) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(errorMessage ?? "An error occurred")
+        }
+        
         // ✅ WORKING Template Autofill
         .onChange(of: selectedTemplate, initial: false) { oldValue, newValue in
             if let tmpl = newValue {
                 messageText = tmpl.subtitle
+            }
+        }
+        
+        // Enforce delivery type constraints
+        .onChange(of: deliveryType) { oldValue, newValue in
+            if newValue == .oneToOne && selectedRecipients.count > 1 {
+                selectedRecipients = Array(selectedRecipients.prefix(1))
             }
         }
     }
@@ -105,11 +151,20 @@ struct CreateSIFView: View {
         .padding(.top, 20)
     }
 
-    // MARK: - Delivery Type (placeholder)
+    // MARK: - Delivery Type
     private var deliveryTypeSection: some View {
-        Text("Delivery Type Section")
-            .font(.system(size: 16))
-            .foregroundColor(.gray)
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Delivery Type")
+                .font(.custom("AvenirNext-DemiBold", size: 16))
+
+            Picker("Delivery Type", selection: $deliveryType) {
+                ForEach(DeliveryType.allCases, id: \.self) { type in
+                    Text(type.rawValue).tag(type)
+                }
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            .padding(.vertical, 8)
+        }
     }
 
     // MARK: - Recipient
@@ -118,10 +173,36 @@ struct CreateSIFView: View {
             Text("Send To")
                 .font(.custom("AvenirNext-DemiBold", size: 16))
 
-            TextField("Recipient name or email", text: $recipient)
+            Button {
+                showRecipientPicker = true
+            } label: {
+                HStack {
+                    if selectedRecipients.isEmpty {
+                        Text("Choose Recipients")
+                            .foregroundColor(.gray)
+                    } else {
+                        Text("\(selectedRecipients.count) recipient(s) selected")
+                            .foregroundColor(.black)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(.gray)
+                }
                 .padding()
                 .background(Color.white.opacity(0.9))
                 .cornerRadius(12)
+            }
+
+            if !selectedRecipients.isEmpty {
+                VStack(alignment: .leading, spacing: 4) {
+                    ForEach(selectedRecipients) { recipient in
+                        Text("• \(recipient.name) (\(recipient.email))")
+                            .font(.caption)
+                            .foregroundColor(.black.opacity(0.7))
+                    }
+                }
+                .padding(.horizontal, 4)
+            }
         }
     }
 
@@ -200,17 +281,13 @@ struct CreateSIFView: View {
     // MARK: - Send Button
     private var sendButton: some View {
         Button {
-            if recipient.isEmpty || messageText.isEmpty {
+            if selectedRecipients.isEmpty || messageText.isEmpty {
                 showValidationAlert = true
                 return
             }
 
-            withAnimation {
-                showToast = true
-            }
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                withAnimation { showToast = false }
+            Task {
+                await sendSIF()
             }
 
         } label: {
@@ -224,6 +301,39 @@ struct CreateSIFView: View {
                 .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
         }
         .padding(.top, 10)
+    }
+
+    private func sendSIF() async {
+        guard let currentUser = Auth.auth().currentUser else {
+            errorMessage = "You must be logged in to send a SIF"
+            return
+        }
+        
+        isLoading = true
+        defer { isLoading = false }
+        
+        do {
+            let sif = SIF(
+                senderUID: currentUser.uid,
+                recipients: selectedRecipients,
+                subject: subject.isEmpty ? nil : subject,
+                message: messageText,
+                deliveryType: deliveryType,
+                status: "sent"
+            )
+            
+            _ = try await sifService.saveSIF(sif)
+            sentSIF = sif
+            showConfirmation = true
+            
+            // Clear form
+            subject = ""
+            messageText = ""
+            selectedRecipients = []
+            selectedTemplate = nil
+        } catch {
+            errorMessage = error.localizedDescription
+        }
     }
 
     // MARK: - Toast
