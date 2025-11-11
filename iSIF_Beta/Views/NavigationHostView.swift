@@ -8,7 +8,7 @@ struct NavigationHostView: View {
         ZStack {
             switch router.selectedTab {
             case .home:
-                DashboardView()
+                SIFDataManager()
                     .environmentObject(router)
                     .environmentObject(authState)
 
