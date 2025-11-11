@@ -25,7 +25,7 @@ struct TemplateDetailView: View {
                             .frame(height: 250)
                             .shadow(color: .black.opacity(0.15), radius: 6, y: 4)
 
-                        Image(systemName: template.icon)
+                        Image(systemName: template.icon!)
                             .resizable()
                             .scaledToFit()
                             .frame(width: 120, height: 120)

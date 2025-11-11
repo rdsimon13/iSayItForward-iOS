@@ -100,7 +100,7 @@ struct GettingStartedView: View {
 
     private var startButton: some View {
         Button {
-            appState.selectedTab = "compose"
+            appState.selectedTab = .compose
         } label: {
             Label("Start Your First SIF", systemImage: "plus.circle.fill")
                 .font(.custom("AvenirNext-DemiBold", size: 17))

@@ -1,5 +1,7 @@
 import SwiftUI
 
+
+/*
 // MARK: - Signature Data Model
 struct SignatureData: Identifiable, Codable {
     var id = UUID()
@@ -21,4 +23,4 @@ struct DrawingPath {
 }
 */
 
-
+*/

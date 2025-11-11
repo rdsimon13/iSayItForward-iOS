@@ -43,7 +43,7 @@ enum BrandColor {
 }
 // MARK: - Brand Gradient System
 enum BrandGradient {
-    /// The classic bright blue-to-white background (used on DashboardView, Template Gallery, etc.)
+    /// The classic bright blue-to-white background (used on SIFDataManager, Template Gallery, etc.)
     static let sky = LinearGradient(
         gradient: Gradient(colors: [
             BrandColor.blueTop,

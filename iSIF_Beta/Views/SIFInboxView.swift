@@ -6,7 +6,7 @@ import FirebaseFirestore
 struct SIFInboxView: View {
     @EnvironmentObject var router: TabRouter
     @EnvironmentObject var authState: AuthState
-    @StateObject private var sifService = SIFService()
+    @StateObject private var sifService = SIFDataManager()
 
     @State private var sifs: [SIF] = []
     @State private var searchText = ""

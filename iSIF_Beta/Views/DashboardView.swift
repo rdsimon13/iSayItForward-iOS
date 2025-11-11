@@ -1,8 +1,8 @@
-
 import SwiftUI
 import FirebaseAuth
 import FirebaseFirestore
 
+// ✅ RENAMED from SIFDataManager to DashboardView to fix the "Invalid redeclaration" error
 struct DashboardView: View {
     @EnvironmentObject var router: TabRouter
     @EnvironmentObject var authState: AuthState
@@ -12,7 +12,8 @@ struct DashboardView: View {
     @State private var receivedSIFs: [SIF] = []
     @State private var isLoadingSIFs = false
 
-    private let sifService = SIFService()
+    // ✅ UPDATED to use the new service instead of SIFService
+    private let sifDataManager = SIFDataManager()
 
     let titleFillColor = Color(hex: "E6F4F5")
     let titleStrokeColor = Color(hex: "132E37")
@@ -307,7 +308,8 @@ struct DashboardView: View {
 
         Task {
             do {
-                let allSIFs = try await sifService.fetchUserSIFs(for: user.uid)
+                // ✅ UPDATED to use sifDataManager
+                let allSIFs = try await sifDataManager.fetchUserSIFs(for: user.uid)
                 sentSIFs = allSIFs.filter { $0.senderId == user.uid }
                 receivedSIFs = allSIFs.filter { sif in
                     sif.recipients.contains { $0.email == user.email }

@@ -5,6 +5,7 @@ enum AppTab: String, CaseIterable, Identifiable {
     case compose
     case profile
     case schedule
+    case gallery  // ✅ Added to fix "Type 'AppTab' has no member 'gallery'"
     case settings
 
     var id: String { rawValue }
@@ -15,6 +16,7 @@ enum AppTab: String, CaseIterable, Identifiable {
         case .compose:  return "square.and.pencil"
         case .profile:  return "person.fill"
         case .schedule: return "calendar"
+        case .gallery:  return "photo.on.rectangle" // ✅ Added icon
         case .settings: return "gearshape.fill"
         }
     }
@@ -25,6 +27,7 @@ enum AppTab: String, CaseIterable, Identifiable {
         case .compose:  return "Compose"
         case .profile:  return "Profile"
         case .schedule: return "Schedule"
+        case .gallery:  return "Gallery" // ✅ Added title
         case .settings: return "Settings"
         }
     }

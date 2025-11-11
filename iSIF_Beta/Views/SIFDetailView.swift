@@ -17,7 +17,7 @@ struct SIFDetailView: View {
     @State private var alertMessage = ""
     @State private var showingAlert = false
     
-    @StateObject private var sifService = SIFDataManager()
+    @StateObject private var sifDataManager = SIFDataManager()
     
     var body: some View {
         ZStack {
@@ -49,6 +49,11 @@ struct SIFDetailView: View {
             Button("Delete", role: .destructive, action: deleteSIF)
         } message: {
             Text("Are you sure you want to permanently delete this SIF?")
+        }
+        .alert("Error", isPresented: $showingAlert) { // Alert for deletion errors
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(alertMessage)
         }
         .sheet(isPresented: $showMailComposer) {
             MailView(data: $mailData)
@@ -224,10 +229,17 @@ struct SIFDetailView: View {
                 isDeleting = true
                 let userId = Auth.auth().currentUser?.uid ?? "anonymous"
                 let db = Firestore.firestore()
-                try await db.collection("users").document(userId).collection("sifs").document(sif.id).delete()
+                // ✅ FIXED: Check for sif.id, which should be a String
+                guard let sifId = sif.id else {
+                    throw NSError(domain: "SIFDetailView", code: 1, userInfo: [NSLocalizedDescriptionKey: "SIF ID is missing."])
+                }
+                try await db.collection("users").document(userId).collection("sifs").document(sifId).delete()
+                
                 isDeleting = false
                 showDeleteAlert = false
-                showToast = true
+                withAnimation {
+                    showToast = true
+                }
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) {
                     withAnimation { router.selectedTab = .profile }
@@ -254,6 +266,12 @@ struct MailView: UIViewControllerRepresentable {
     @Environment(\.dismiss) var dismiss
 
     func makeUIViewController(context: Context) -> MFMailComposeViewController {
+        guard MFMailComposeViewController.canSendMail() else {
+            // Handle devices that can't send mail (like simulator)
+            // You could show an alert here via the Coordinator
+            return MFMailComposeViewController()
+        }
+        
         let vc = MFMailComposeViewController()
         vc.setSubject(data.subject)
         vc.setToRecipients(data.recipients)

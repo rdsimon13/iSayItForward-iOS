@@ -6,7 +6,7 @@ struct ComposeSIFView: View {
     @EnvironmentObject var authState: AuthState
     @EnvironmentObject var router: TabRouter
     
-    private let sifService = SIFService()
+    private let sifService = SIFDataManager()
     private let friendService = FriendService()
     
     // MARK: - Optional Editing Context
@@ -34,11 +34,14 @@ struct ComposeSIFView: View {
     @State private var sentSIF: SIF?
     
     // ✅ Mock templates: these match your TemplateModel
-    @State private var mockTemplates: [TemplateModel] = [
-        TemplateModel(id: UUID().uuidString, title: "Sunset Bliss",  subtitle: "Warm, gentle, reflective", imageName: "sunset_placeholder", color: <#Color#>),
-        TemplateModel(id: UUID().uuidString, title: "Ocean Whisper", subtitle: "Calming, cool, peaceful",   imageName: "ocean_placeholder", color: <#Color#>),
-        TemplateModel(id: UUID().uuidString, title: "Minimal Calm",  subtitle: "Simple, clean, modern",    imageName: "calm_placeholder", color: <#Color#>)
-    ]
+        @State private var mockTemplates: [TemplateModel] = [
+            TemplateModel(id: UUID().uuidString, title: "Sunset Bliss", subtitle: "Warm, gentle, reflective",
+                          imageName: "sunset_placeholder", color: .orange), // Fixed: .orange instead of Color
+            TemplateModel(id: UUID().uuidString, title: "Ocean Whisper", subtitle: "Calming, cool, peaceful",
+                          imageName: "ocean_placeholder", color: .blue),   // Fixed: .blue instead of Color
+            TemplateModel(id: UUID().uuidString, title: "Minimal Calm", subtitle: "Simple, clean, modern",
+                          imageName: "calm_placeholder", color: .gray)     // Fixed: .gray instead of Color
+        ]
     
     init(existingSIF: SIF? = nil, isEditing: Bool = false, isResend: Bool = false) {
         self.existingSIF = existingSIF
@@ -249,7 +252,7 @@ struct ComposeSIFView: View {
                         VStack {
 
                             // ✅ FIXED — ALWAYS VALID, NO PLACEHOLDER
-                            Image(template.imageName ?? <#default value#>)
+                            Image(template.imageName ?? "photo")
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: 100, height: 80)

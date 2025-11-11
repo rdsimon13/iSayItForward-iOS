@@ -1,44 +1,42 @@
 import SwiftUI
 
-/// Lightweight model used only in-app (no Codable to avoid `Color` encoding issues)
-struct TemplateModel: Identifiable, Equatable {
-    var id: String
-    var title: String
-    var subtitle: String
-    /// SF Symbol name (optional)
-    var icon: String?
-    /// Asset catalog image name (optional)
+struct TemplateModel: Identifiable, Hashable, Codable {
+    let id: String
+    let title: String
+    let subtitle: String
     var imageName: String?
-    /// Background swatch for cards
-    var color: Color
-}
+    var icon: String?      // ✅ Added icon
+    let colorHex: String
 
-extension TemplateModel {
-    /// Safe, in-app demo data
+    var color: Color {
+        Color(hex: colorHex)
+    }
+
+    init(id: String = UUID().uuidString, title: String, subtitle: String, imageName: String? = nil, icon: String? = nil, colorHex: String) {
+        self.id = id
+        self.title = title
+        self.subtitle = subtitle
+        self.imageName = imageName
+        self.icon = icon
+        self.colorHex = colorHex
+    }
+
+    // Convenience init for older code using Color directly (if needed, otherwise can be removed)
+    init(id: String = UUID().uuidString, title: String, subtitle: String, imageName: String? = nil, icon: String? = nil, color: Color) {
+        self.id = id
+        self.title = title
+        self.subtitle = subtitle
+        self.imageName = imageName
+        self.icon = icon
+        // Fallback hex if we can't easily extract it from Color
+        self.colorHex = "#000000"
+    }
+
+    // ✅ Added sampleTemplates
     static let sampleTemplates: [TemplateModel] = [
-        .init(
-            id: UUID().uuidString,
-            title: "Sunset Bliss",
-            subtitle: "Warm, gentle, reflective",
-            icon: "sun.max.fill",
-            imageName: nil,
-            color: Color.orange.opacity(0.30)
-        ),
-        .init(
-            id: UUID().uuidString,
-            title: "Ocean Whisper",
-            subtitle: "Calming, cool, peaceful",
-            icon: "waveform",
-            imageName: nil,
-            color: Color.blue.opacity(0.30)
-        ),
-        .init(
-            id: UUID().uuidString,
-            title: "Minimal Calm",
-            subtitle: "Simple, clean, modern",
-            icon: "square.grid.2x2",
-            imageName: nil,
-            color: Color.gray.opacity(0.25)
-        )
+        TemplateModel(title: "Sunset Bliss", subtitle: "Warm, gentle, reflective", imageName: "sunset_placeholder", icon: "sun.max.fill", colorHex: "#FF9500"),
+        TemplateModel(title: "Ocean Whisper", subtitle: "Calming, cool, peaceful", imageName: "ocean_placeholder", icon: "water.waves", colorHex: "#007AFF"),
+        TemplateModel(title: "Minimal Calm", subtitle: "Simple, clean, modern", imageName: "calm_placeholder", icon: "leaf.fill", colorHex: "#8E8E93")
     ]
 }
+// NOTE: 'extension Color { init(hex: String) ... }' REMOVED here because it exists elsewhere in your project.

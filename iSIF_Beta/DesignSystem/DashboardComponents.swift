@@ -3,7 +3,7 @@ import SwiftUI
 // MARK: - Dashboard Utility Components
 
 /// Reusable circular action button with icon and label.
-/// (Used for quick actions elsewhere in the app, not in DashboardView)
+/// (Used for quick actions elsewhere in the app, not in SIFDataManager)
 struct DashboardCircleButton: View {
     let icon: String
     let title: String
@@ -30,7 +30,7 @@ struct DashboardCircleButton: View {
     }
 }
 
-/// Simplified bottom navigation item (if you want to reuse outside DashboardView)
+/// Simplified bottom navigation item (if you want to reuse outside SIFDataManager)
 struct BottomNavItem: View {
     let icon: String
     let label: String

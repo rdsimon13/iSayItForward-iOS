@@ -2,6 +2,8 @@ import SwiftUI
 import FirebaseAuth
 import UIKit
 
+
+/*
 // MARK: - Drawing Path Model
 struct DrawingPath: Identifiable {
     let id = UUID()
@@ -60,6 +62,8 @@ struct SignatureCanvas: View {
         )
     }
 }
+*/
+
 
 // MARK: - Signature View
 struct SignatureView: View {
@@ -97,6 +101,7 @@ struct SignatureView: View {
                         .foregroundColor(.black.opacity(0.85))
                         .padding(.top, 30)
 
+ /*
                     // MARK: Signature Area
                     VStack(spacing: 10) {
                         SignatureCanvas(paths: $paths)
@@ -133,7 +138,8 @@ struct SignatureView: View {
                         .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
                     }
                     .padding(.horizontal)
-
+*/
+                    
                     // MARK: Preview Section
                     if let previewImage {
                         VStack {
