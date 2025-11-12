@@ -7,7 +7,7 @@ struct MySIFsView: View {
     @State private var isLoading = false
     @State private var errorMessage: String?
     
-    private let sifService = SIFService()
+    private let sifService: SIFProviding = SIFService.shared
     
     var body: some View {
         NavigationStack {

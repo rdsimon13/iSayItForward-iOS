@@ -26,8 +26,8 @@ struct CreateSIFView: View {
     @State private var errorMessage: String?
     @State private var sentSIF: SIF?
 
-    private let friendsService = FriendsService()
-    private let sifService = SIFService()
+    private let friendsService: FriendsProviding = FriendService()
+    private let sifService: SIFProviding = SIFService.shared
 
     var body: some View {
         ZStack(alignment: .bottom) {
