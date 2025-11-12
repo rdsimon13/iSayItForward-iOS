@@ -343,7 +343,9 @@ struct CreateSIFView: View {
     }
 }
 #Preview {
-    CreateSIFView()
-        .environmentObject(AuthState())
+    let authState = AuthState()
+    authState.uid = "preview-user"
+    return CreateSIFView()
+        .environmentObject(authState)
         .environmentObject(TabRouter())
 }
