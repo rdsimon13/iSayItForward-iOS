@@ -1,6 +1,3 @@
-public enum DeliveryType: String, Codable, CaseIterable { 
-    case oneToOne, oneToMany, group 
-}
 import Foundation
 
 public enum DeliveryType: String, Codable, CaseIterable, Identifiable {

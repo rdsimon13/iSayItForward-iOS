@@ -94,14 +94,10 @@ struct CreateSIFView: View {
         
         // MARK: - Recipient Picker Sheet
         .sheet(isPresented: $showRecipientPicker) {
-            RecipientPickerView(
-                friendsProvider: friendsService,
-                deliveryType: deliveryType,
-                selectedRecipients: $selectedRecipients
-            )
+            RecipientPickerView(selected: $selectedRecipients)
         }
         
-        // MARK: - Confirmation Sheet
+        // MARK: - Confirmation Navigation
         .sheet(isPresented: $showConfirmation) {
             if let sentSIF = sentSIF {
                 ConfirmationView(sif: sentSIF)
@@ -158,11 +154,11 @@ struct CreateSIFView: View {
                 .font(.custom("AvenirNext-DemiBold", size: 16))
 
             Picker("Delivery Type", selection: $deliveryType) {
-                ForEach(DeliveryType.allCases, id: \.self) { type in
-                    Text(type.rawValue).tag(type)
+                ForEach(DeliveryType.allCases) { type in
+                    Text(type.displayTitle).tag(type)
                 }
             }
-            .pickerStyle(SegmentedPickerStyle())
+            .pickerStyle(.segmented)
             .padding(.vertical, 8)
         }
     }
@@ -319,10 +315,10 @@ struct CreateSIFView: View {
                 subject: subject.isEmpty ? nil : subject,
                 message: messageText,
                 deliveryType: deliveryType,
-                status: "sent"
+                scheduledAt: nil
             )
             
-            _ = try await sifService.saveSIF(sif)
+            let id = try await sifService.saveSIF(sif)
             sentSIF = sif
             showConfirmation = true
             

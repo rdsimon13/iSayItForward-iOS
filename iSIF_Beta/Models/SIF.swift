@@ -1,3 +1,5 @@
+import Foundation
+
 public struct SIF: Codable, Identifiable {
     public var id: String
     public var senderUID: String
@@ -7,8 +9,8 @@ public struct SIF: Codable, Identifiable {
     public var deliveryType: DeliveryType
     public var scheduledAt: Date?
     public var createdAt: Date
-    public var status: String
-    
+    public var status: String  // e.g. "draft", "queued", "sent"
+
     public init(
         id: String = UUID().uuidString,
         senderUID: String,
@@ -18,7 +20,7 @@ public struct SIF: Codable, Identifiable {
         deliveryType: DeliveryType,
         scheduledAt: Date? = nil,
         createdAt: Date = Date(),
-        status: String = "queued"
+        status: String = "sent"
     ) {
         self.id = id
         self.senderUID = senderUID

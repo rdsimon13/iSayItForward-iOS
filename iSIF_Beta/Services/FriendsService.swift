@@ -1,20 +1,19 @@
 import Foundation
-import FirebaseAuth
-import FirebaseFirestore
 
 public protocol FriendsProviding {
     func fetchFriends() async throws -> [SIFRecipient]
 }
 
-public class FriendsService: FriendsProviding {
+public final class FriendService: FriendsProviding {
     public init() {}
-    
     public func fetchFriends() async throws -> [SIFRecipient] {
-        // Mock implementation - replace with actual Firestore query
+        // Mock data; replace with Firestore later
         return [
-            SIFRecipient(name: "John Doe", email: "john@example.com"),
-            SIFRecipient(name: "Jane Smith", email: "jane@example.com"),
-            SIFRecipient(name: "Bob Wilson", email: "bob@example.com")
+            SIFRecipient(name: "Demo User", email: "demo@isif.app"),
+            SIFRecipient(name: "Ada Lovelace", email: "ada@isif.app")
         ]
     }
 }
+
+// Back-compat alias if old code referenced FriendsService
+public typealias FriendsService = FriendService
