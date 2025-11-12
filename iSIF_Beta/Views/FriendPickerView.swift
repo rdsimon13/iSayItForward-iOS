@@ -35,76 +35,74 @@ struct FriendPickerView: View {
             Group {
                 if isLoading {
                     ProgressView("Loading friends…")
+                        .padding(.top, 60)
                 } else if let errorMessage {
                     VStack(spacing: 8) {
                         Image(systemName: "exclamationmark.triangle.fill")
                         Text(errorMessage).font(.footnote)
                     }
                     .foregroundColor(.red)
+                    .padding(.top, 60)
                 } else {
                     List(filteredFriends) { friend in
                         HStack {
                             VStack(alignment: .leading) {
                                 Text(friend.name).font(.headline)
-                                Text(friend.email).font(.caption).foregroundColor(.gray)
+                                Text(friend.email).font(.caption).foregroundColor(.secondary)
                             }
                             Spacer()
-                            if isSelected(friend) {
+                            if selectedFriends.contains(where: { $0.id == friend.id }) {
                                 Image(systemName: "checkmark.circle.fill")
                             }
                         }
                         .contentShape(Rectangle())
                         .onTapGesture { toggle(friend) }
                     }
-                    .listStyle(.plain)
                 }
             }
-            .navigationTitle("Select Friend\(deliveryType == .oneToOne ? "" : "s")")
+            .navigationTitle("Select Friend" + (deliveryType == .oneToMany ? " (multi)" : ""))
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") { dismiss() }
-                        .disabled(deliveryType != .oneToOne && selectedFriends.isEmpty)
                 }
             }
-            .searchable(text: $searchText)
         }
+        .searchable(text: $searchText)
         .task { await loadFriends() }
     }
 
-    // MARK: - Helpers
     private var filteredFriends: [SIFRecipient] {
         guard !searchText.isEmpty else { return friends }
-        let q = searchText.lowercased()
-        return friends.filter { $0.name.lowercased().contains(q) || $0.email.lowercased().contains(q) }
-    }
-
-    private func loadFriends() async {
-        isLoading = true
-        defer { isLoading = false }
-        do {
-            friends = try await friendsService.fetchFriends()
-        } catch {
-            errorMessage = error.localizedDescription
+        return friends.filter { f in
+            f.name.localizedCaseInsensitiveContains(searchText) ||
+            f.email.localizedCaseInsensitiveContains(searchText)
         }
     }
 
-    private func isSelected(_ f: SIFRecipient) -> Bool {
-        selectedFriends.contains(where: { $0.id == f.id })
+    private func toggle(_ friend: SIFRecipient) {
+        if deliveryType == .oneToOne {
+            selectedFriends = [friend]
+            dismiss()
+            return
+        }
+        // Multi-select
+        if let idx = selectedFriends.firstIndex(where: { $0.id == friend.id }) {
+            selectedFriends.remove(at: idx)
+        } else {
+            selectedFriends.append(friend)
+        }
     }
 
-    private func toggle(_ f: SIFRecipient) {
-        switch deliveryType {
-        case .oneToOne:
-            selectedFriends = [f]
-        case .oneToMany, .group:
-            if let idx = selectedFriends.firstIndex(where: { $0.id == f.id }) {
-                selectedFriends.remove(at: idx)
-            } else {
-                selectedFriends.append(f)
-            }
+    private func loadFriends() async {
+        do {
+            friends = try await friendsService.fetchFriends()
+            isLoading = false
+        } catch {
+            errorMessage = error.localizedDescription
+            isLoading = false
         }
     }
 }
