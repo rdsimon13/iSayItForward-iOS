@@ -300,17 +300,15 @@ struct CreateSIFView: View {
     }
 
     private func sendSIF() async {
-        guard let currentUser = Auth.auth().currentUser else {
-            errorMessage = "You must be logged in to send a SIF"
-            return
-        }
+        // Use authState for user ID to avoid Firebase dependency in previews
+        let userUID = authState.uid ?? "preview-user"
         
         isLoading = true
         defer { isLoading = false }
         
         do {
             let sif = SIF(
-                senderUID: currentUser.uid,
+                senderUID: userUID,
                 recipients: selectedRecipients,
                 subject: subject.isEmpty ? nil : subject,
                 message: messageText,
