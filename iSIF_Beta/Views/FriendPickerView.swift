@@ -112,4 +112,6 @@ struct FriendPickerView: View {
         deliveryType: .oneToMany,
         selectedFriends: .constant([])
     )
+    .environmentObject(AuthState())
+    .environmentObject(TabRouter())
 }
