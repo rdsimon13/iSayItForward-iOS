@@ -1,7 +1,5 @@
 import SwiftUI
 
-
-/*
 // MARK: - Signature Data Model
 struct SignatureData: Identifiable, Codable {
     var id = UUID()
@@ -15,12 +13,9 @@ struct SignatureData: Identifiable, Codable {
         self.userUID = userUID
     }
 }
-/*
+
 // MARK: - Drawing Path Model
-struct DrawingPath {
+struct SignatureStroke {
     var points: [CGPoint] = []
     var lineWidth: CGFloat = 2.0
 }
-*/
-
-*/
