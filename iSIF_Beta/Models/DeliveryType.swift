@@ -3,16 +3,24 @@ import Foundation
 public enum DeliveryType: String, Codable, CaseIterable, Identifiable {
     case oneToOne
     case oneToMany
-    case group
+    case toGroup  // canonical name
 
     public var id: String { rawValue }
-    public var isMulti: Bool { self == .oneToMany || self == .group }
 
+    /// UI label used in pickers/buttons
     public var displayTitle: String {
         switch self {
-        case .oneToOne:  return "One to One"
-        case .oneToMany: return "One to Many"
-        case .group:     return "Group"
+        case .oneToOne:  return "One-to-One"
+        case .oneToMany: return "One-to-Many"
+        case .toGroup:   return "To Group"
         }
+    }
+
+    /// Lossy map from old string values -> enum (keeps legacy code alive)
+    public init(fromLegacy value: String) {
+        let v = value.lowercased()
+        if v.contains("many") { self = .oneToMany }
+        else if v.contains("group") { self = .toGroup }
+        else { self = .oneToOne }
     }
 }

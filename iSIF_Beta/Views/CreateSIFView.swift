@@ -94,7 +94,12 @@ struct CreateSIFView: View {
         
         // MARK: - Recipient Picker Sheet
         .sheet(isPresented: $showRecipientPicker) {
-            RecipientPickerView(selected: $selectedRecipients)
+            FriendPickerView(
+                deliveryType: deliveryType,
+                selectedFriends: $selectedRecipients
+            )
+            .environmentObject(router)
+            .environmentObject(authState)
         }
         
         // MARK: - Confirmation Navigation
