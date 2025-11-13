@@ -1,7 +1,7 @@
 // FriendService+FindFriends.swift
 import Foundation
 import FirebaseFirestore
-import FirebaseFirestoreSwift
+import FirebaseCore
 
 // NOTE: Do NOT redeclare `FriendService` here.
 // NOTE: Assume `public typealias UserFriend = SIFRecipient` already exists (LegacyCompat.swift).
