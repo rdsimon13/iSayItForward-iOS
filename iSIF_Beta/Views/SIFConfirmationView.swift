@@ -168,6 +168,8 @@ struct ConfettiPiece: Identifiable {
         status: "sent"
     )
     
-    SIFConfirmationView(sif: demoSIF)
-        .environmentObject(TabRouter())
+    let tabRouter = TabRouter()
+    
+    return SIFConfirmationView(sif: demoSIF)
+        .environmentObject(tabRouter)
 }
