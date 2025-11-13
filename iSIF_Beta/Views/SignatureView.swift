@@ -134,3 +134,20 @@ struct SignatureView: View {
     }
 }
 
+#Preview {
+    SignatureView_PreviewWrapper()   // <- single View expression
+}
+
+private struct SignatureView_PreviewWrapper: View {
+    @State private var isPresented = true
+    @StateObject private var authState = AuthState()
+    @StateObject private var tabRouter = TabRouter()
+
+    var body: some View {
+        SignatureView(isPresented: $isPresented) { _ in }
+            .environmentObject(tabRouter)
+            .environmentObject(authState)
+            .onAppear { authState.uid = "preview-user" }
+    }
+}
+
