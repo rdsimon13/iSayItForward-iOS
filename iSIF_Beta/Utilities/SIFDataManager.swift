@@ -13,27 +13,20 @@ final class SIFDataManager {
 
     // MARK: - Send (create/merge)
     func sendSIF(_ sif: SIF, for uid: String) async throws {
-        var data: [String: Any] = [
-            "id": sif.id,
-            "senderId": sif.senderUID,
-            "message": sif.message,
-            "deliveryType": sif.deliveryType.rawValue,
-            "status": sif.status,
-            "createdAt": Timestamp(date: sif.createdAt),
-            "recipients": sif.recipients.map {
-                ["id": $0.id, "name": $0.name, "email": $0.email]
-            }
-        ]
-        if let subject = sif.subject { data["subject"] = subject }
-        if let when = sif.scheduledAt { data["scheduledAt"] = Timestamp(date: when) }
-        if let url = sif.signatureURL { data["signatureURL"] = url.absoluteString }
+        do {
+            let encoder = Firestore.Encoder()
+            let data = try encoder.encode(sif)
+            
+            print("🧾 Writing to Firestore collection path: \(col.path)")
+            print("📄 Data to be written: \(data)")
 
-        print("🧾 Writing to Firestore collection path: \(col.path)")
-        print("📄 Data to be written: \(data)")
+            try await col.document(sif.id).setData(data, merge: true)
 
-        try await col.document(sif.id).setData(data, merge: true)
-
-        print("✅ SIF successfully written to Firestore.")
+            print("✅ SIF successfully written to Firestore with ID: \(sif.id)")
+        } catch {
+            print("❌ Firestore encoding/write failed: \(error)")
+            throw error
+        }
     }
 
     // MARK: - Fetch user SIFs (sent)
@@ -44,10 +37,10 @@ final class SIFDataManager {
             .limit(to: 100)
             .getDocuments()
 
+        let decoder = Firestore.Decoder()
         let sifs = snapshot.documents.compactMap { doc -> SIF? in
             do {
-                let jsonData = try JSONSerialization.data(withJSONObject: doc.data(), options: [])
-                return try JSONDecoder().decode(SIF.self, from: jsonData)
+                return try decoder.decode(SIF.self, from: doc.data())
             } catch {
                 print("⚠️ Could not decode SIF \(doc.documentID): \(error)")
                 return nil
