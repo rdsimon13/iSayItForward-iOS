@@ -36,11 +36,10 @@ public struct SIF: Codable, Identifiable {
         self.status = status
     }
 
-    // ✅ Add coding keys only — this is the minimal required change
-    //     It ensures Firestore sees "senderId" while Swift still uses "senderUID"
+    // ✅ Use consistent field names that match Firestore exactly
     enum CodingKeys: String, CodingKey {
         case id
-        case senderUID = "senderId" // 🔥 This fixes Firestore field mismatch
+        case senderUID
         case recipients
         case subject
         case message

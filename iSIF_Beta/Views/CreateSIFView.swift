@@ -317,7 +317,8 @@ struct CreateSIFView: View {
                 scheduledAt: nil
             )
             
-            let id = try await sifService.saveSIF(sif)
+            // Use SIFDataManager directly instead of sifService
+            try await SIFDataManager.shared.saveSIF(sif)
             sentSIF = sif
             showConfirmation = true
             

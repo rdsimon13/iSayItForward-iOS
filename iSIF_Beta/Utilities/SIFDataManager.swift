@@ -15,7 +15,9 @@ final class SIFDataManager {
         let encoder = Firestore.Encoder()
         do {
             let data = try encoder.encode(sif)
-            print("🧾 Writing to Firestore collection path: \(collectionName)")
+            print("🧾 Writing to Firestore collection: \(collectionName)")
+            print("🧾 Firestore project: \(FirebaseApp.app()?.options.projectID ?? "unknown")")
+            print("📄 Document ID: \(sif.id)")
             print("📄 Data to be written: \(data)")
 
             try await db.collection(collectionName)
@@ -23,6 +25,14 @@ final class SIFDataManager {
                 .setData(data, merge: true)
 
             print("✅ SIF successfully written to Firestore with ID: \(sif.id)")
+            
+            // Verify the document was written
+            let doc = try await db.collection(collectionName).document(sif.id).getDocument()
+            if doc.exists {
+                print("✅ Document verified to exist after write")
+            } else {
+                print("❌ Document does not exist after write!")
+            }
         } catch {
             print("❌ Error writing SIF: \(error.localizedDescription)")
             throw error
@@ -32,10 +42,9 @@ final class SIFDataManager {
     // MARK: - Fetch SIFs for a User
     func fetchUserSIFs(for userId: String) async throws -> [SIF] {
         print("📡 Fetching SIFs for user: \(userId) from \(collectionName)...")
-        let decoder = Firestore.Decoder()
         do {
             let snapshot = try await db.collection(collectionName)
-                .whereField("senderId", isEqualTo: userId)
+                .whereField("senderUID", isEqualTo: userId)
                 .order(by: "createdAt", descending: true)
                 .limit(to: 100)
                 .getDocuments()
