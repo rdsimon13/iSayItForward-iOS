@@ -1,13 +1,13 @@
 import SwiftUI
 
 // MARK: - Signature Data Model
-struct SignatureData: Identifiable, Codable {
-    var id = UUID()
-    let signatureImageData: Data
-    let timestamp: Date
-    let userUID: String
+public struct SignatureData: Identifiable, Codable {
+    public var id = UUID()
+    public let signatureImageData: Data
+    public let timestamp: Date
+    public let userUID: String
     
-    init(signatureImageData: Data, userUID: String) {
+    public init(signatureImageData: Data, userUID: String) {
         self.signatureImageData = signatureImageData
         self.timestamp = Date()
         self.userUID = userUID
@@ -15,7 +15,12 @@ struct SignatureData: Identifiable, Codable {
 }
 
 // MARK: - Drawing Path Model
-struct SignatureStroke {
-    var points: [CGPoint] = []
-    var lineWidth: CGFloat = 2.0
+public struct SignatureStroke {
+    public var points: [CGPoint] = []
+    public var lineWidth: CGFloat = 2.0
+    
+    public init(points: [CGPoint] = [], lineWidth: CGFloat = 2.0) {
+        self.points = points
+        self.lineWidth = lineWidth
+    }
 }
