@@ -347,12 +347,18 @@ struct CreateSIFView: View {
             .padding(.bottom, 80)
     }
 }
+struct CreateSIFView_PreviewWrapper: View {
+    @StateObject private var authState = AuthState()
+    @StateObject private var tabRouter = TabRouter()
+
+    var body: some View {
+        CreateSIFView()
+            .environmentObject(authState)
+            .environmentObject(tabRouter)
+            .onAppear { authState.uid = "preview-user" }
+    }
+}
+
 #Preview {
-    let authState = AuthState()
-    authState.uid = "preview-user"
-    let tabRouter = TabRouter()
-    
-    return CreateSIFView()
-        .environmentObject(authState)
-        .environmentObject(tabRouter)
+    CreateSIFView_PreviewWrapper()
 }
