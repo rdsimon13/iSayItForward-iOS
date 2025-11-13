@@ -9,7 +9,7 @@ struct SignatureView: View {
     @EnvironmentObject var router: TabRouter
     @EnvironmentObject var authState: AuthState
 
-    @State private var strokes: [DrawingStroke] = []
+    @State private var strokes: [CanvasStroke] = []
     @State private var showingClearAlert = false
     @State private var isNavVisible = true
     @State private var previewImage: UIImage? = nil

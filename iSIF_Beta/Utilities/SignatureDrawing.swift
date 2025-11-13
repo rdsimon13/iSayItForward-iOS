@@ -1,7 +1,7 @@
 import SwiftUI
 
-// MARK: - Drawing Stroke Model (for canvas operations)
-struct DrawingStroke: Identifiable {
+// MARK: - Canvas Stroke Model (for drawing operations only)
+struct CanvasStroke: Identifiable {
     let id = UUID()
     var points: [CGPoint] = []
     var lineWidth: CGFloat = 3.0
@@ -9,8 +9,8 @@ struct DrawingStroke: Identifiable {
 
 // MARK: - Signature Canvas
 struct SignatureCanvas: View {
-    @Binding var strokes: [DrawingStroke]
-    @State private var currentStroke = DrawingStroke()
+    @Binding var strokes: [CanvasStroke]
+    @State private var currentStroke = CanvasStroke()
 
     var body: some View {
         Canvas { context, _ in
@@ -41,7 +41,7 @@ struct SignatureCanvas: View {
                 .onEnded { _ in
                     if !currentStroke.points.isEmpty {
                         strokes.append(currentStroke)
-                        currentStroke = DrawingStroke()
+                        currentStroke = CanvasStroke()
                     }
                 }
         )
