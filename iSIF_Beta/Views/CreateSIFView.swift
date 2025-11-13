@@ -19,12 +19,13 @@ struct CreateSIFView: View {
     @State private var showSignatureSheet = false
     @State private var showValidationAlert = false
     @State private var showToast = false
-    @State private var showRecipientPicker = false
+    @State private var showFriendPicker = false
     @State private var showConfirmation = false
     @State private var isNavVisible = true
     @State private var isLoading = false
     @State private var errorMessage: String?
     @State private var sentSIF: SIF?
+    @State private var selectedFriends: [SIFRecipient] = []
 
     private let friendsService: FriendsProviding = FriendService()
     private let sifService: SIFProviding = SIFService.shared
@@ -92,9 +93,6 @@ struct CreateSIFView: View {
             .environmentObject(authState)
         }
         
-        // ... file header & imports unchanged ...
-
-        // Replace the existing friend picker sheet block with:
         .sheet(isPresented: $showFriendPicker) {
             FriendPickerSheet(deliveryType: deliveryType, selected: $selectedFriends)
                 .environmentObject(router)
@@ -174,14 +172,14 @@ struct CreateSIFView: View {
                 .font(.custom("AvenirNext-DemiBold", size: 16))
 
             Button {
-                showRecipientPicker = true
+                showFriendPicker = true
             } label: {
                 HStack {
-                    if selectedRecipients.isEmpty {
+                    if selectedFriends.isEmpty {
                         Text("Choose Recipients")
                             .foregroundColor(.gray)
                     } else {
-                        Text("\(selectedRecipients.count) recipient(s) selected")
+                        Text("\(selectedFriends.count) recipient(s) selected")
                             .foregroundColor(.black)
                     }
                     Spacer()
@@ -193,9 +191,9 @@ struct CreateSIFView: View {
                 .cornerRadius(12)
             }
 
-            if !selectedRecipients.isEmpty {
+            if !selectedFriends.isEmpty {
                 VStack(alignment: .leading, spacing: 4) {
-                    ForEach(selectedRecipients) { recipient in
+                    ForEach(selectedFriends) { recipient in
                         Text("• \(recipient.name) (\(recipient.email))")
                             .font(.caption)
                             .foregroundColor(.black.opacity(0.7))
@@ -313,7 +311,7 @@ struct CreateSIFView: View {
         do {
             let sif = SIF(
                 senderUID: userUID,
-                recipients: selectedRecipients,
+                recipients: selectedFriends,
                 subject: subject.isEmpty ? nil : subject,
                 message: messageText,
                 deliveryType: deliveryType,
@@ -327,7 +325,7 @@ struct CreateSIFView: View {
             // Clear form
             subject = ""
             messageText = ""
-            selectedRecipients = []
+            selectedFriends = []
             selectedTemplate = nil
         } catch {
             errorMessage = error.localizedDescription
