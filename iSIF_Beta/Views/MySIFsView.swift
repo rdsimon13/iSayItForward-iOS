@@ -86,7 +86,9 @@ struct MySIFsView: View {
 #Preview {
     let authState = AuthState()
     authState.uid = "preview-user"
+    let tabRouter = TabRouter()
+    
     return MySIFsView()
-        .environmentObject(TabRouter())
+        .environmentObject(tabRouter)
         .environmentObject(authState)
 }
