@@ -48,7 +48,6 @@ struct ComposeSIFView: View {
             do {
                 // 🧩 Build SIF object
                 let sif = SIF(
-                    id: UUID().uuidString,
                     senderUID: uid,
                     recipients: selectedFriends,
                     subject: "My SIF",

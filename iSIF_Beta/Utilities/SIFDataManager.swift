@@ -1,33 +1,33 @@
 import Foundation
 import FirebaseFirestore
+import FirebaseFirestoreSwift
 
 final class SIFDataManager {
 
     static let shared = SIFDataManager()
     private init() {}
 
-    // ✅ Always use the same collection name
     private let collectionName = "SIFs"
     private var db: Firestore { Firestore.firestore() }
 
     // MARK: - Save or Update SIF
     func saveSIF(_ sif: SIF) async throws {
-        let encoder = Firestore.Encoder()
         do {
-            let data = try encoder.encode(sif)
+            let documentRef = db.collection(collectionName).document()
+            var sifToSave = sif
+            sifToSave.id = documentRef.documentID
+            
             print("🧾 Writing to Firestore collection: \(collectionName)")
             print("🧾 Firestore project: \(FirebaseApp.app()?.options.projectID ?? "unknown")")
-            print("📄 Document ID: \(sif.id)")
-            print("📄 Data to be written: \(data)")
+            print("📄 Document ID: \(documentRef.documentID)")
+            print("📄 SIF data: \(sifToSave)")
 
-            try await db.collection(collectionName)
-                .document(sif.id)
-                .setData(data, merge: true)
+            try documentRef.setData(from: sifToSave, merge: false)
 
-            print("✅ SIF successfully written to Firestore with ID: \(sif.id)")
+            print("✅ SIF successfully written to Firestore with ID: \(documentRef.documentID)")
             
             // Verify the document was written
-            let doc = try await db.collection(collectionName).document(sif.id).getDocument()
+            let doc = try await documentRef.getDocument()
             if doc.exists {
                 print("✅ Document verified to exist after write")
             } else {
@@ -49,12 +49,18 @@ final class SIFDataManager {
                 .limit(to: 100)
                 .getDocuments()
 
-            print("📦 Retrieved \(snapshot.documents.count) SIF(s) for user: \(userId)")
+            print("📦 Retrieved \(snapshot.documents.count) document(s) for user: \(userId)")
 
-            let sifs = snapshot.documents.compactMap {
-                try? $0.data(as: SIF.self)
+            let sifs = snapshot.documents.compactMap { document -> SIF? in
+                do {
+                    return try document.data(as: SIF.self)
+                } catch {
+                    print("❌ Error decoding document \(document.documentID): \(error)")
+                    return nil
+                }
             }
 
+            print("✅ Successfully decoded \(sifs.count) SIF(s)")
             return sifs
         } catch {
             print("❌ Error fetching SIFs: \(error.localizedDescription)")
