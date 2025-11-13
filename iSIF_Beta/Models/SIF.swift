@@ -9,8 +9,10 @@ public struct SIF: Codable, Identifiable {
     public var deliveryType: DeliveryType
     public var scheduledAt: Date?
     public var createdAt: Date
-    public var status: String  // e.g. "draft", "queued", "sent"
+    public var status: String
 
+    // ✅ Explicit public member-wise init INSIDE the struct.
+    // This suppresses the synthesized one and avoids the redeclaration clash.
     public init(
         id: String = UUID().uuidString,
         senderUID: String,
@@ -34,8 +36,8 @@ public struct SIF: Codable, Identifiable {
     }
 }
 
+// ✅ Keep only this convenience overload in an extension.
 public extension SIF {
-    /// Legacy convenience taking Bool + Date for scheduling.
     init(
         id: String = UUID().uuidString,
         senderUID: String,
@@ -44,7 +46,7 @@ public extension SIF {
         message: String,
         deliveryType: DeliveryType,
         isScheduled: Bool,
-        scheduleDate: Date? = nil,
+        scheduledDate: Date? = nil,
         createdAt: Date = Date(),
         status: String = "sent"
     ) {
@@ -55,32 +57,7 @@ public extension SIF {
             subject: subject,
             message: message,
             deliveryType: deliveryType,
-            scheduledAt: isScheduled ? scheduleDate : nil,
-            createdAt: createdAt,
-            status: status
-        )
-    }
-
-    /// Labeled-but-permissive overload to satisfy unlabeled/nil-heavy legacy calls.
-    init(
-        id: String = UUID().uuidString,
-        senderUID: String,
-        recipients: [SIFRecipient],
-        subject: String?,
-        message: String,
-        deliveryType: DeliveryType,
-        scheduledAt: Date?,
-        createdAt: Date,
-        status: String
-    ) {
-        self.init(
-            id: id,
-            senderUID: senderUID,
-            recipients: recipients,
-            subject: subject,
-            message: message,
-            deliveryType: deliveryType,
-            scheduledAt: scheduledAt,
+            scheduledAt: isScheduled ? scheduledDate : nil,
             createdAt: createdAt,
             status: status
         )

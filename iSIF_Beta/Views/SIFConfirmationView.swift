@@ -54,9 +54,8 @@ struct SIFConfirmationView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Recipient: \(sif.recipients.first?.name ?? "Unknown")")
                     Text("Message: “\(sif.message)”")
-                    Text("Tone: \(sif.tone ?? "None")")
-                    Text("Emotion: \(sif.emotion ?? "None")")
-                    Text("Delivery: \(sif.deliveryType)")
+                    Text("Subject: \(sif.subject ?? "No Subject")")
+                    Text("Delivery: \(sif.deliveryType.displayTitle)")
                     Text("Status: \(sif.status.capitalized)")
                 }
                 .font(.custom("AvenirNext-Regular", size: 15))
