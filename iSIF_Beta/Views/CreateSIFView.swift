@@ -358,7 +358,9 @@ struct CreateSIFView_PreviewWrapper: View {
 }
 
 #if DEBUG
-#Preview {
-    CreateSIFView_PreviewWrapper()
+struct CreateSIFView_Previews: PreviewProvider {
+    static var previews: some View {
+        CreateSIFView_PreviewWrapper()
+    }
 }
 #endif
