@@ -27,6 +27,7 @@ struct ComposeSIFView: View {
 
     @State private var deliveryType: DeliveryType = .oneToOne
     @State private var selectedFriends: [SIFRecipient] = []     // concrete type
+    @State private var showFriendPicker = false
 
     @State private var selectedTemplate: TemplateModel? = nil
 

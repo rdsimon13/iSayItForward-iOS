@@ -10,27 +10,49 @@ public extension FriendService {
 
     /// Returns all users except the caller.
     func fetchAllUsers(excluding uid: String) async throws -> [UserFriend] {
-        let db = Firestore.firestore()
-        let snap = try await db.collection("users")
-            .whereField(FieldPath.documentID(), isNotEqualTo: uid)
-            .getDocuments()
-
-        let users: [UserFriend] = snap.documents.compactMap { doc in
-            let data = doc.data()
-            let name = data["name"] as? String ?? data["displayName"] as? String ?? data["fullName"] as? String ?? data["email"] as? String ?? "Unknown"
-            let email = data["email"] as? String ?? ""
-            return UserFriend(id: doc.documentID, name: name, email: email)
+        return try await withCheckedThrowingContinuation { continuation in
+            let db = Firestore.firestore()
+            db.collection("users")
+                .whereField(FieldPath.documentID(), isNotEqualTo: uid)
+                .getDocuments { snapshot, error in
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                        return
+                    }
+                    guard let snapshot = snapshot else {
+                        continuation.resume(throwing: NSError(domain: "FriendService", code: 0, userInfo: [NSLocalizedDescriptionKey: "Snapshot is nil"]))
+                        return
+                    }
+                    let users: [UserFriend] = snapshot.documents.compactMap { doc in
+                        let data = doc.data()
+                        let name = data["name"] as? String ?? data["displayName"] as? String ?? data["fullName"] as? String ?? data["email"] as? String ?? "Unknown"
+                        let email = data["email"] as? String ?? ""
+                        return UserFriend(id: doc.documentID, name: name, email: email)
+                    }
+                    continuation.resume(returning: users)
+                }
         }
-        return users
     }
 
     /// IDs the current user has already requested.
     func fetchSentRequests(for uid: String) async throws -> Set<String> {
-        let db = Firestore.firestore()
-        let snap = try await db.collection("friendRequests")
-            .whereField("from", isEqualTo: uid)
-            .getDocuments()
-        return Set(snap.documents.compactMap { $0.data()["to"] as? String })
+        return try await withCheckedThrowingContinuation { continuation in
+            let db = Firestore.firestore()
+            db.collection("friendRequests")
+                .whereField("from", isEqualTo: uid)
+                .getDocuments { snapshot, error in
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                        return
+                    }
+                    guard let snapshot = snapshot else {
+                        continuation.resume(throwing: NSError(domain: "FriendService", code: 0, userInfo: [NSLocalizedDescriptionKey: "Snapshot is nil"]))
+                        return
+                    }
+                    let sentTo = Set(snapshot.documents.compactMap { $0.data()["to"] as? String })
+                    continuation.resume(returning: sentTo)
+                }
+        }
     }
 
     /// Creates/merges a pending friend request (idempotent).
@@ -42,18 +64,26 @@ public extension FriendService {
         toName: String,
         toEmail: String
     ) async throws {
-        let db = Firestore.firestore()
-        let docID = "\(from)__\(to)" // deterministic, prevents dupes
-        let ref = db.collection("friendRequests").document(docID)
-        try await ref.setData([
-            "from": from,
-            "fromName": fromName,
-            "fromEmail": fromEmail,
-            "to": to,
-            "toName": toName,
-            "toEmail": toEmail,
-            "status": "pending",
-            "createdAt": FieldValue.serverTimestamp()
-        ])
+        return try await withCheckedThrowingContinuation { continuation in
+            let db = Firestore.firestore()
+            let docID = "\(from)__\(to)" // deterministic, prevents dupes
+            let ref = db.collection("friendRequests").document(docID)
+            ref.setData([
+                "from": from,
+                "fromName": fromName,
+                "fromEmail": fromEmail,
+                "to": to,
+                "toName": toName,
+                "toEmail": toEmail,
+                "status": "pending",
+                "createdAt": FieldValue.serverTimestamp()
+            ]) { error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume()
+                }
+            }
+        }
     }
 }
