@@ -135,7 +135,11 @@ struct SignatureView: View {
 }
 
 #Preview {
-    SignatureView(isPresented: .constant(true)) { _ in }
-        .environmentObject(TabRouter())
-        .environmentObject(AuthState())
+    let authState = AuthState()
+    authState.uid = "preview-user"
+    let tabRouter = TabRouter()
+    
+    return SignatureView(isPresented: .constant(true)) { _ in }
+        .environmentObject(tabRouter)
+        .environmentObject(authState)
 }
