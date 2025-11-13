@@ -105,7 +105,7 @@ struct CreateSIFView: View {
         // MARK: - Confirmation Navigation
         .sheet(isPresented: $showConfirmation) {
             if let sentSIF = sentSIF {
-                ConfirmationView(sif: sentSIF)
+                SIFConfirmationView( sif: sentSIF)
             }
         }
         

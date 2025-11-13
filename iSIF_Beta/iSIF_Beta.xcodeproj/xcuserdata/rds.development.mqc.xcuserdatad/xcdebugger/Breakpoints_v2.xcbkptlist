@@ -23,22 +23,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "AC5C5594-AEC5-45E6-A478-2660004ED60F"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Views/ConfirmationView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "6"
-            endingLineNumber = "6"
-            landmarkName = "unknown"
-            landmarkType = "0">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "BFC68EA5-E89C-4A07-85A0-6209EB1D4578"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -50,46 +34,30 @@
             endingLineNumber = "7"
             landmarkName = "unknown"
             landmarkType = "0">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "D0274E56-A366-4270-8E4C-07D7AABFFBCE"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Views/ComposeSIFView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "5"
-            endingLineNumber = "5"
-            landmarkName = "ComposeSIFView"
-            landmarkType = "14">
             <Locations>
                <Location
-                  uuid = "D0274E56-A366-4270-8E4C-07D7AABFFBCE - a8098159d310b551"
+                  uuid = "BFC68EA5-E89C-4A07-85A0-6209EB1D4578 - 4cf31a13028695a8"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "iSIF_Beta.ComposeSIFView.authState.getter : iSIF_Beta.AuthState"
+                  symbolName = "iSIF_Beta.SIFService.deinit"
                   moduleName = "iSIF_Beta.debug.dylib"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/rds.development.mqc/Documents/Dev/iSIF_Beta/iSIF_Beta/Views/ComposeSIFView.swift"
+                  urlString = "file:///Users/rds.development.mqc/Documents/Dev/iSIF_Beta/iSIF_Beta/Services/SIFService.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "0"
                   endingLineNumber = "0">
                </Location>
                <Location
-                  uuid = "D0274E56-A366-4270-8E4C-07D7AABFFBCE - d5a75440be1e2d2a"
+                  uuid = "BFC68EA5-E89C-4A07-85A0-6209EB1D4578 - d4b7c0365d84c985"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "iSIF_Beta.ComposeSIFView.$authState.getter : SwiftUI.EnvironmentObject&lt;iSIF_Beta.AuthState&gt;.Wrapper"
+                  symbolName = "iSIF_Beta.SIFService.__deallocating_deinit"
                   moduleName = "iSIF_Beta.debug.dylib"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/rds.development.mqc/Documents/Dev/iSIF_Beta/iSIF_Beta/Views/ComposeSIFView.swift"
+                  urlString = "file:///Users/rds.development.mqc/Documents/Dev/iSIF_Beta/iSIF_Beta/Services/SIFService.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "0"

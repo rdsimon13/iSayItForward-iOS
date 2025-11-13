@@ -1,10 +1,10 @@
 //
-//  SIFConfirmationView.swift
+// SIFConfirmationView.swift
 //  iSIF_Beta
 //
 //  Created by Reginald Simon on 11/5/25.
 //
-
+/*
 import SwiftUI
 
 struct SIFConfirmationView: View {
@@ -173,3 +173,4 @@ struct ConfettiPiece: Identifiable {
     return SIFConfirmationView(sif: demoSIF)
         .environmentObject(tabRouter)
 }
+*/

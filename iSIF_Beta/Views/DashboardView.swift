@@ -308,21 +308,42 @@ struct DashboardView: View {
 
         Task {
             do {
-                // ✅ UPDATED to use sifDataManager
+                // Load everything once
                 let allSIFs = try await sifDataManager.fetchUserSIFs(for: user.uid)
-                sentSIFs = allSIFs.filter { $0.senderId == user.uid }
-                receivedSIFs = allSIFs.filter { sif in
-                    sif.recipients.contains { $0.email == user.email }
+
+                // Sent: match by canonical field name
+                let sent = allSIFs.filter { $0.senderUID == user.uid }
+
+                // Received: prefer matching by email if we have one; fall back to uid match
+                let received: [SIF]
+                if let email = user.email, !email.isEmpty {
+                    received = allSIFs.filter { sif in
+                        sif.recipients.contains { $0.email.caseInsensitiveCompare(email) == .orderedSame }
+                    }
+                } else {
+                    received = allSIFs.filter { sif in
+                        sif.recipients.contains { $0.id == user.uid }
+                    }
                 }
-                print("✅ Loaded \(sentSIFs.count) sent and \(receivedSIFs.count) received SIFs.")
+
+                // Update UI state on the main actor
+                await MainActor.run {
+                    sentSIFs = sent
+                    receivedSIFs = received
+                    isLoadingSIFs = false
+                }
+
+                print("✅ Loaded \(sent.count) sent and \(received.count) received SIFs.")
             } catch {
+                await MainActor.run { isLoadingSIFs = false }
                 print("❌ Failed to load SIFs: \(error.localizedDescription)")
             }
+        }
 
             isLoadingSIFs = false
         }
     }
-}
+
 
 #Preview {
     DashboardView()

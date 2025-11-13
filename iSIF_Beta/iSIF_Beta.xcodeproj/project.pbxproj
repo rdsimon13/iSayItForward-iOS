@@ -12,7 +12,6 @@
 		7B1885FF2EBBA558001AD116 /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885972EBBA558001AD116 /* ButtonStyles.swift */; };
 		7B1886002EBBA558001AD116 /* VisualEffectBlur.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885B32EBBA558001AD116 /* VisualEffectBlur.swift */; };
 		7B1886012EBBA558001AD116 /* SignatureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885F12EBBA558001AD116 /* SignatureView.swift */; };
-		7B1886022EBBA558001AD116 /* SIFConfirmationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885EC2EBBA558001AD116 /* SIFConfirmationView.swift */; };
 		7B1886032EBBA558001AD116 /* SidebarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885AD2EBBA558001AD116 /* SidebarItem.swift */; };
 		7B1886042EBBA558001AD116 /* AdvancedComposerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885D02EBBA558001AD116 /* AdvancedComposerView.swift */; };
 		7B1886052EBBA558001AD116 /*  SignatureCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885CF2EBBA558001AD116 /*  SignatureCaptureView.swift */; };
@@ -44,7 +43,6 @@
 		7B1886202EBBA558001AD116 /* BrandTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885962EBBA558001AD116 /* BrandTheme.swift */; };
 		7B1886222EBBA558001AD116 /* iPadMain16View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885E02EBBA558001AD116 /* iPadMain16View.swift */; };
 		7B1886232EBBA558001AD116 /* ScrollOffsetTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885AB2EBBA558001AD116 /* ScrollOffsetTracker.swift */; };
-		7B1886242EBBA558001AD116 /* SignatureModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885CB2EBBA558001AD116 /* SignatureModel.swift */; };
 		7B1886252EBBA558001AD116 /* PillTextFieldStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885A52EBBA558001AD116 /* PillTextFieldStyle.swift */; };
 		7B1886262EBBA558001AD116 /* IOSCardModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885A32EBBA558001AD116 /* IOSCardModifier.swift */; };
 		7B1886272EBBA558001AD116 /* Untitled.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885B22EBBA558001AD116 /* Untitled.swift */; };
@@ -58,7 +56,6 @@
 		7B18862F2EBBA558001AD116 /* VoiceNoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885F82EBBA558001AD116 /* VoiceNoteView.swift */; };
 		7B1886302EBBA558001AD116 /* GettingStartedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885DC2EBBA558001AD116 /* GettingStartedView.swift */; };
 		7B1886312EBBA558001AD116 /* SignaturePreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885CC2EBBA558001AD116 /* SignaturePreviewView.swift */; };
-		7B1886322EBBA558001AD116 /* FindFriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885D92EBBA558001AD116 /* FindFriendsView.swift */; };
 		7B1886332EBBA558001AD116 /* GradientTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885A22EBBA558001AD116 /* GradientTheme.swift */; };
 		7B1886342EBBA558001AD116 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885F32EBBA558001AD116 /* SplashView.swift */; };
 		7B1886352EBBA558001AD116 /* ManageSIFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885E22EBBA558001AD116 /* ManageSIFView.swift */; };
@@ -108,10 +105,12 @@
 		7B4561BA2EBBE8030087920E /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 7B4561B92EBBE8030087920E /* FirebaseFirestore */; };
 		7B4561BC2EBBE8160087920E /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 7B4561BB2EBBE8160087920E /* FirebaseStorage */; };
 		7B4561C82EBEADAF0087920E /* AllUsersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4561C72EBEADAF0087920E /* AllUsersView.swift */; };
-		7B5705E92EC4C0B000121974 /* DeliveryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B5705E82EC4C0B000121974 /* DeliveryType.swift */; };
-		7B5705EB2EC4C0EF00121974 /* SIFRecipient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B5705EA2EC4C0EF00121974 /* SIFRecipient.swift */; };
 		7B5705F42EC4CA2700121974 /* SIFDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B5705F32EC4CA2700121974 /* SIFDataManager.swift */; };
 		7B61E1C52EC3DAD000762348 /* SignatureDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B61E1C42EC3DAD000762348 /* SignatureDrawing.swift */; };
+		7BBDA7722EC58312007D64AB /* FriendService+FindFriends.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBDA7712EC58312007D64AB /* FriendService+FindFriends.swift */; };
+		7BBDA7742EC59F95007D64AB /* SIFDataManager+Send.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBDA7732EC59F95007D64AB /* SIFDataManager+Send.swift */; };
+		7BBDA7762EC5A494007D64AB /* SIFDataManager+Queries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBDA7752EC5A494007D64AB /* SIFDataManager+Queries.swift */; };
+		7BBDA7782EC5A4BA007D64AB /* SIF+Compat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBDA7772EC5A4BA007D64AB /* SIF+Compat.swift */; };
 		7BEC1D902EBB8FF700CC3D85 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 7BEC1D8F2EBB8FF700CC3D85 /* FirebaseAnalytics */; };
 		7BEC1D922EBB8FF700CC3D85 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 7BEC1D912EBB8FF700CC3D85 /* FirebaseAuth */; };
 		7BEC1D942EBB8FF700CC3D85 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 7BEC1D932EBB8FF700CC3D85 /* FirebaseCore */; };
@@ -192,7 +191,6 @@
 		7B1885C82EBBA558001AD116 /* KeyboardHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardHelpers.swift; sourceTree = "<group>"; };
 		7B1885C92EBBA558001AD116 /* SIFItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SIFItem.swift; sourceTree = "<group>"; };
 		7B1885CA2EBBA558001AD116 /* SignatureData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureData.swift; sourceTree = "<group>"; };
-		7B1885CB2EBBA558001AD116 /* SignatureModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureModel.swift; sourceTree = "<group>"; };
 		7B1885CC2EBBA558001AD116 /* SignaturePreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignaturePreviewView.swift; sourceTree = "<group>"; };
 		7B1885CD2EBBA558001AD116 /* TabRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabRouter.swift; sourceTree = "<group>"; };
 		7B1885CF2EBBA558001AD116 /*  SignatureCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = " SignatureCaptureView.swift"; sourceTree = "<group>"; };
@@ -205,7 +203,6 @@
 		7B1885D62EBBA558001AD116 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		7B1885D72EBBA558001AD116 /* DesignPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignPreviewView.swift; sourceTree = "<group>"; };
 		7B1885D82EBBA558001AD116 /* DocumentUploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentUploadView.swift; sourceTree = "<group>"; };
-		7B1885D92EBBA558001AD116 /* FindFriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindFriendsView.swift; sourceTree = "<group>"; };
 		7B1885DA2EBBA558001AD116 /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
 		7B1885DB2EBBA558001AD116 /* FriendPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendPickerView.swift; sourceTree = "<group>"; };
 		7B1885DC2EBBA558001AD116 /* GettingStartedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GettingStartedView.swift; sourceTree = "<group>"; };
@@ -242,10 +239,12 @@
 		7B4561A72EBBE57E0087920E /* iSIF_Beta.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iSIF_Beta.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B4561AC2EBBE6AA0087920E /* FirestoreSeeder */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = FirestoreSeeder; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B4561C72EBEADAF0087920E /* AllUsersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllUsersView.swift; sourceTree = "<group>"; };
-		7B5705E82EC4C0B000121974 /* DeliveryType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeliveryType.swift; sourceTree = "<group>"; };
-		7B5705EA2EC4C0EF00121974 /* SIFRecipient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SIFRecipient.swift; sourceTree = "<group>"; };
 		7B5705F32EC4CA2700121974 /* SIFDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SIFDataManager.swift; sourceTree = "<group>"; };
 		7B61E1C42EC3DAD000762348 /* SignatureDrawing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureDrawing.swift; sourceTree = "<group>"; };
+		7BBDA7712EC58312007D64AB /* FriendService+FindFriends.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FriendService+FindFriends.swift"; sourceTree = "<group>"; };
+		7BBDA7732EC59F95007D64AB /* SIFDataManager+Send.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SIFDataManager+Send.swift"; sourceTree = "<group>"; };
+		7BBDA7752EC5A494007D64AB /* SIFDataManager+Queries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SIFDataManager+Queries.swift"; sourceTree = "<group>"; };
+		7BBDA7772EC5A4BA007D64AB /* SIF+Compat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SIF+Compat.swift"; sourceTree = "<group>"; };
 		7BEC69E42EC4CD1C0035AA5C /* LegacyCompat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyCompat.swift; sourceTree = "<group>"; };
 		7BEC69E52EC4CD1C0035AA5C /* SIFDataManagerShim.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SIFDataManagerShim.swift; sourceTree = "<group>"; };
 		7BEC69E82EC4CD2C0035AA5C /* SIFService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SIFService.swift; sourceTree = "<group>"; };
@@ -349,10 +348,13 @@
 				7BEC69E42EC4CD1C0035AA5C /* LegacyCompat.swift */,
 				7BEC69E52EC4CD1C0035AA5C /* SIFDataManagerShim.swift */,
 				7B1885BE2EBBA558001AD116 /* AppAuthManager.swift */,
+				7BBDA7732EC59F95007D64AB /* SIFDataManager+Send.swift */,
 				7B1885BF2EBBA558001AD116 /* AppDelegate.swift */,
 				7B1885C02EBBA558001AD116 /* AppFlowCoordinator.swift */,
 				7B4561A32EBBD1330087920E /* View+ReportOverlay.swift */,
+				7BBDA7752EC5A494007D64AB /* SIFDataManager+Queries.swift */,
 				7B1885C12EBBA558001AD116 /* AppRouteEnvironment.swift */,
+				7BBDA7772EC5A4BA007D64AB /* SIF+Compat.swift */,
 				7B1885C22EBBA558001AD116 /* AppState.swift */,
 				7B1885C32EBBA558001AD116 /* AppTab.swift */,
 				7B1885C42EBBA558001AD116 /* AppUser.swift */,
@@ -361,12 +363,9 @@
 				7B1885C62EBBA558001AD116 /* GoogleAuthManager.swift */,
 				7B1885C72EBBA558001AD116 /* iSIF_BetaApp.swift */,
 				7B1885C82EBBA558001AD116 /* KeyboardHelpers.swift */,
-				7B5705EA2EC4C0EF00121974 /* SIFRecipient.swift */,
 				7B5705F32EC4CA2700121974 /* SIFDataManager.swift */,
-				7B5705E82EC4C0B000121974 /* DeliveryType.swift */,
 				7B1885C92EBBA558001AD116 /* SIFItem.swift */,
 				7B1885CA2EBBA558001AD116 /* SignatureData.swift */,
-				7B1885CB2EBBA558001AD116 /* SignatureModel.swift */,
 				7B1885CC2EBBA558001AD116 /* SignaturePreviewView.swift */,
 				7B61E1C42EC3DAD000762348 /* SignatureDrawing.swift */,
 				7B1886642EBBB3EC001AD116 /* TemplateModel.swift */,
@@ -389,7 +388,7 @@
 				7B1885D62EBBA558001AD116 /* DashboardView.swift */,
 				7B1885D72EBBA558001AD116 /* DesignPreviewView.swift */,
 				7B1885D82EBBA558001AD116 /* DocumentUploadView.swift */,
-				7B1885D92EBBA558001AD116 /* FindFriendsView.swift */,
+				7BBDA7712EC58312007D64AB /* FriendService+FindFriends.swift */,
 				7B1885DA2EBBA558001AD116 /* ForgotPasswordView.swift */,
 				7B1885DB2EBBA558001AD116 /* FriendPickerView.swift */,
 				7B1885DC2EBBA558001AD116 /* GettingStartedView.swift */,
@@ -604,12 +603,12 @@
 				7B1885FF2EBBA558001AD116 /* ButtonStyles.swift in Sources */,
 				7B1886002EBBA558001AD116 /* VisualEffectBlur.swift in Sources */,
 				7B1886012EBBA558001AD116 /* SignatureView.swift in Sources */,
-				7B1886022EBBA558001AD116 /* SIFConfirmationView.swift in Sources */,
 				7B1886032EBBA558001AD116 /* SidebarItem.swift in Sources */,
 				7B1886042EBBA558001AD116 /* AdvancedComposerView.swift in Sources */,
 				7B1886052EBBA558001AD116 /*  SignatureCaptureView.swift in Sources */,
 				7B1886062EBBA558001AD116 /* BackgroundGradientStyle.swift in Sources */,
 				7B1886072EBBA558001AD116 /* ScheduleView.swift in Sources */,
+				7BBDA7762EC5A494007D64AB /* SIFDataManager+Queries.swift in Sources */,
 				7B1886082EBBA558001AD116 /* ReportButton.swift in Sources */,
 				7B1886092EBBA558001AD116 /*  Theme.swift in Sources */,
 				7B18860A2EBBA558001AD116 /* WaveShapeOLD.swift in Sources */,
@@ -642,13 +641,11 @@
 				7B1886202EBBA558001AD116 /* BrandTheme.swift in Sources */,
 				7B1886222EBBA558001AD116 /* iPadMain16View.swift in Sources */,
 				7B1886232EBBA558001AD116 /* ScrollOffsetTracker.swift in Sources */,
-				7B1886242EBBA558001AD116 /* SignatureModel.swift in Sources */,
 				7B1886252EBBA558001AD116 /* PillTextFieldStyle.swift in Sources */,
 				7B1886262EBBA558001AD116 /* IOSCardModifier.swift in Sources */,
 				7B1886272EBBA558001AD116 /* Untitled.swift in Sources */,
 				7B1886282EBBA558001AD116 /* GlobalFontModifier.swift in Sources */,
 				7B1886292EBBA558001AD116 /* TemplateGalleryView.swift in Sources */,
-				7B5705E92EC4C0B000121974 /* DeliveryType.swift in Sources */,
 				7B18862A2EBBA558001AD116 /* UploadMediaView.swift in Sources */,
 				7B18862B2EBBA558001AD116 /* TextStyles.swift in Sources */,
 				7B18862C2EBBA558001AD116 /* BrandColor.swift in Sources */,
@@ -657,18 +654,18 @@
 				7B18862F2EBBA558001AD116 /* VoiceNoteView.swift in Sources */,
 				7B1886302EBBA558001AD116 /* GettingStartedView.swift in Sources */,
 				7B1886312EBBA558001AD116 /* SignaturePreviewView.swift in Sources */,
-				7B1886322EBBA558001AD116 /* FindFriendsView.swift in Sources */,
 				7B1886332EBBA558001AD116 /* GradientTheme.swift in Sources */,
 				7B1886342EBBA558001AD116 /* SplashView.swift in Sources */,
+				7BBDA7722EC58312007D64AB /* FriendService+FindFriends.swift in Sources */,
 				7B1886352EBBA558001AD116 /* ManageSIFView.swift in Sources */,
 				7B1886362EBBA558001AD116 /* PrimaryButton.swift in Sources */,
 				7B1886372EBBA558001AD116 /* AppRouteEnvironment.swift in Sources */,
 				7B1886382EBBA558001AD116 /* SendSIFView.swift in Sources */,
 				7B1886392EBBA558001AD116 /* ScheduleSIFView.swift in Sources */,
-				7B5705EB2EC4C0EF00121974 /* SIFRecipient.swift in Sources */,
 				7B18863A2EBBA558001AD116 /* AppTab.swift in Sources */,
 				7BEC69E62EC4CD1C0035AA5C /* SIFDataManagerShim.swift in Sources */,
 				7BEC69E72EC4CD1C0035AA5C /* LegacyCompat.swift in Sources */,
+				7BBDA7782EC5A4BA007D64AB /* SIF+Compat.swift in Sources */,
 				7B18863B2EBBA558001AD116 /* SIFSettingsView.swift in Sources */,
 				7B18863D2EBBA558001AD116 /* AppUser.swift in Sources */,
 				7B18863E2EBBA558001AD116 /* KeyboardHelpers.swift in Sources */,
@@ -698,6 +695,7 @@
 				7B1886592EBBA558001AD116 /* Color+Extension.swift in Sources */,
 				7B18865A2EBBA558001AD116 /* ConfirmationView.swift in Sources */,
 				7B18865C2EBBA558001AD116 /* SignupView.swift in Sources */,
+				7BBDA7742EC59F95007D64AB /* SIFDataManager+Send.swift in Sources */,
 				7B18865D2EBBA558001AD116 /* ProfileView.swift in Sources */,
 				7B18865E2EBBA558001AD116 /* TemplateDetailView.swift in Sources */,
 				7B18865F2EBBA558001AD116 /* BottomNavBar.swift in Sources */,

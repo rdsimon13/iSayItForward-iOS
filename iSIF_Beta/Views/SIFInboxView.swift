@@ -6,6 +6,8 @@ import FirebaseFirestore
 struct SIFInboxView: View {
     @EnvironmentObject var router: TabRouter
     @EnvironmentObject var authState: AuthState
+
+    // Use as a plain state object or plain let; both are fine as long as it exists for the view lifetime.
     @StateObject private var sifService = SIFDataManager()
 
     @State private var sifs: [SIF] = []
@@ -15,7 +17,6 @@ struct SIFInboxView: View {
     @State private var errorMessage: String?
     @State private var listener: ListenerRegistration? = nil
 
-    // MARK: - Enum for filtering
     enum SIFFilter: String, CaseIterable {
         case all = "All"
         case sent = "Sent"
@@ -23,7 +24,6 @@ struct SIFInboxView: View {
         case delivered = "Delivered"
     }
 
-    // MARK: - Body
     var body: some View {
         ZStack {
             LinearGradient(
@@ -42,7 +42,7 @@ struct SIFInboxView: View {
                         .progressViewStyle(CircularProgressViewStyle(tint: .blue))
                         .font(.custom("AvenirNext-Regular", size: 16))
                         .padding(.top, 50)
-                } else if let errorMessage = errorMessage {
+                } else if let errorMessage {
                     Text("⚠️ \(errorMessage)")
                         .foregroundColor(.red)
                         .padding()
@@ -75,10 +75,11 @@ struct SIFInboxView: View {
         .task { await loadUserSIFs() }
         .onDisappear {
             listener?.remove()
+            listener = nil
         }
     }
 
-    // MARK: - Header Section
+    // MARK: - Header
     private var headerSection: some View {
         VStack(spacing: 4) {
             Text("📬 SIF Inbox")
@@ -90,7 +91,7 @@ struct SIFInboxView: View {
         }
     }
 
-    // MARK: - Counter Bar
+    // MARK: - Counters
     private var counterBar: some View {
         HStack(spacing: 14) {
             counterTile(label: "Total", count: sifs.count)
@@ -130,7 +131,7 @@ struct SIFInboxView: View {
     }
 
     private var scheduledCount: Int {
-        sifs.filter { $0.isScheduled }.count
+        sifs.filter { $0.scheduledAt != nil }.count
     }
 
     // MARK: - Filter Bar
@@ -169,7 +170,7 @@ struct SIFInboxView: View {
         }
     }
 
-    // MARK: - Search Bar
+    // MARK: - Search
     private var searchBar: some View {
         HStack {
             Image(systemName: "magnifyingglass")
@@ -187,7 +188,7 @@ struct SIFInboxView: View {
         .padding(.horizontal)
     }
 
-    // MARK: - Content Section
+    // MARK: - Content
     private var contentSection: some View {
         Group {
             if filteredSIFs.isEmpty {
@@ -207,18 +208,22 @@ struct SIFInboxView: View {
         }
     }
 
-    // MARK: - Filtered Data
+    // MARK: - Filtering
     private var filteredSIFs: [SIF] {
         sifs.filter { sif in
-            let matchesSearch = searchText.isEmpty || sif.message.localizedCaseInsensitiveContains(searchText)
+            let matchesSearch = searchText.isEmpty ||
+                sif.message.localizedCaseInsensitiveContains(searchText) ||
+                (sif.subject ?? "").localizedCaseInsensitiveContains(searchText)
+
             let matchesFilter: Bool = {
                 switch filter {
                 case .all: return true
                 case .sent: return sif.status.lowercased() == "sent"
-                case .scheduled: return sif.isScheduled
+                case .scheduled: return sif.scheduledAt != nil
                 case .delivered: return sif.status.lowercased() == "delivered"
                 }
             }()
+
             return matchesSearch && matchesFilter
         }
     }
@@ -234,20 +239,20 @@ struct SIFInboxView: View {
         errorMessage = nil
 
         do {
+            // ✅ call the service directly (no $ binding)
             sifs = try await sifService.fetchUserSIFs(for: user.uid)
-            print("📬 Loaded \(sifs.count) SIFs")
 
-            // Optional: Real-time updates
+            // Optional: realtime updates
             listener?.remove()
             listener = sifService.observeUserSIFs(for: user.uid) { newSIFs in
                 self.sifs = newSIFs
             }
-
         } catch {
             errorMessage = "Failed to load SIFs: \(error.localizedDescription)"
         }
 
         isLoading = false
+    
     }
 
     // MARK: - Frosted Container
@@ -288,9 +293,12 @@ struct SIFRowView: View {
                         .foregroundColor(.gray)
                 }
 
-                Text(sif.subject)
-                    .font(.custom("AvenirNext-DemiBold", size: 15))
-                    .foregroundColor(.black)
+                // Avoid force-unwrapping
+                if let subject = sif.subject, !subject.isEmpty {
+                    Text(subject)
+                        .font(.custom("AvenirNext-DemiBold", size: 15))
+                        .foregroundColor(.black)
+                }
 
                 Text(sif.message)
                     .font(.custom("AvenirNext-Regular", size: 13))

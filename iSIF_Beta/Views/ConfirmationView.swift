@@ -1,19 +1,12 @@
-//
-//  SIFConfirmationView.swift
-//  iSIF_Beta
-//
-//  Created by Reginald Simon on 11/5/25.
-//
-/*
 import SwiftUI
 
 struct SIFConfirmationView: View {
     @EnvironmentObject var router: TabRouter
     let sif: SIF
-    
+
     @State private var animateSuccess = false
     @State private var fadeOut = false
-    
+
     var body: some View {
         ZStack {
             LinearGradient(
@@ -22,9 +15,9 @@ struct SIFConfirmationView: View {
                 endPoint: .bottom
             )
             .ignoresSafeArea()
-            
+
             VStack(spacing: 32) {
-                // ✅ Success Checkmark Animation
+                // Success Checkmark Animation
                 Image(systemName: "checkmark.circle.fill")
                     .resizable()
                     .scaledToFit()
@@ -33,18 +26,16 @@ struct SIFConfirmationView: View {
                     .scaleEffect(animateSuccess ? 1.1 : 0.7)
                     .shadow(color: .black.opacity(0.15), radius: 5, y: 3)
                     .animation(.spring(response: 0.6, dampingFraction: 0.6), value: animateSuccess)
-                    .onAppear {
-                        animateSuccess = true
-                    }
-                
-                // ✅ Header
+                    .onAppear { animateSuccess = true }
+
+                // Header
                 Text("SIF Sent Successfully! 🎉")
                     .font(.custom("AvenirNext-DemiBold", size: 24))
                     .foregroundColor(Color(hex: "132E37"))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
-                
-                // ✅ SIF Summary Card
+
+                // Summary Card
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
                         Text("Recipient:")
@@ -54,6 +45,7 @@ struct SIFConfirmationView: View {
                             .font(.custom("AvenirNext-Regular", size: 15))
                     }
                     Divider()
+
                     HStack(alignment: .top) {
                         Text("Message:")
                             .font(.custom("AvenirNext-DemiBold", size: 15))
@@ -63,19 +55,24 @@ struct SIFConfirmationView: View {
                             .lineLimit(3)
                     }
                     Divider()
+
                     HStack {
-                        Text("Tone:")
+                        Text("Delivery:")
                             .font(.custom("AvenirNext-DemiBold", size: 15))
                         Spacer()
-                        Text(sif.tone ?? "None")
+                        Text(sif.deliveryType.displayTitle)
                             .font(.custom("AvenirNext-Regular", size: 15))
                     }
-                    HStack {
-                        Text("Emotion:")
-                            .font(.custom("AvenirNext-DemiBold", size: 15))
-                        Spacer()
-                        Text(sif.emotion ?? "None")
-                            .font(.custom("AvenirNext-Regular", size: 15))
+
+                    if let when = sif.scheduledAt {
+                        Divider()
+                        HStack {
+                            Text("Scheduled For:")
+                                .font(.custom("AvenirNext-DemiBold", size: 15))
+                            Spacer()
+                            Text(when.formatted(date: .abbreviated, time: .shortened))
+                                .font(.custom("AvenirNext-Regular", size: 15))
+                        }
                     }
                 }
                 .padding()
@@ -83,14 +80,12 @@ struct SIFConfirmationView: View {
                 .background(RoundedRectangle(cornerRadius: 18).fill(Color.white.opacity(0.95)))
                 .shadow(color: .black.opacity(0.15), radius: 4, y: 3)
                 .padding(.horizontal, 30)
-                
+
                 Spacer()
-                
-                // ✅ Navigation Button
+
+                // Navigation Button
                 Button {
-                    withAnimation(.easeInOut(duration: 0.5)) {
-                        fadeOut = true
-                    }
+                    withAnimation(.easeInOut(duration: 0.5)) { fadeOut = true }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                         router.selectedTab = .profile
                     }
@@ -117,24 +112,18 @@ struct SIFConfirmationView: View {
 }
 
 #Preview {
+    // Canonical demo SIF using the extension initializer
     let demoSIF = SIF(
-        senderId: "12345",
+        senderUID: "12345",
         recipients: [SIFRecipient(name: "John Doe", email: "john@example.com")],
         subject: "A Test SIF",
         message: "Here’s a warm message from your future self.",
-        category: "General",
-        tone: "Supportive",
-        emotion: "Joyful",
-        templateId: nil,
-        documentURL: nil,
-        deliveryType: "One-to-One",
-        isScheduled: true,
-        scheduledDate: Date().addingTimeInterval(86400),
+        deliveryType: .oneToOne,
+        scheduledAt: Date().addingTimeInterval(86_400),
         createdAt: Date(),
         status: "sent"
     )
-    
-    SIFConfirmationView(sif: demoSIF)
+
+    return SIFConfirmationView(sif: demoSIF)
         .environmentObject(TabRouter())
 }
-*/
