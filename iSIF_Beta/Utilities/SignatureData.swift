@@ -13,14 +13,3 @@ public struct SignatureData: Identifiable, Codable {
         self.userUID = userUID
     }
 }
-
-// MARK: - Drawing Path Model
-public struct SignatureStroke {
-    public var points: [CGPoint] = []
-    public var lineWidth: CGFloat = 2.0
-    
-    public init(points: [CGPoint] = [], lineWidth: CGFloat = 2.0) {
-        self.points = points
-        self.lineWidth = lineWidth
-    }
-}
