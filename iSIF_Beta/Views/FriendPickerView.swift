@@ -1,41 +1,59 @@
 // FriendPickerView.swift
 
-import UIKit
+import SwiftUI
 
-class FriendPickerView: UIViewController {
+struct FriendPickerView: View {
+    let deliveryType: DeliveryType
+    @Binding var selectedFriends: [SIFRecipient]
+    @Environment(\.dismiss) private var dismiss
     
-    enum SelectionMode {
-        case single
-        case multiple
-    }
+    // Mock data for friends
+    private let mockFriends = [
+        SIFRecipient(name: "John Doe", email: "john@example.com"),
+        SIFRecipient(name: "Jane Roe", email: "jane@example.com"),
+        SIFRecipient(name: "Alex Smith", email: "alex@example.com")
+    ]
     
-    var selectionMode: SelectionMode = .single
-    var selectedFriends: [Friend] = []
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Set up the view based on selection mode
-        setupView() 
-    }
-    
-    func setupView() {
-        switch selectionMode {
-        case .single:
-            // Configure the view for single selection
-            break
-        case .multiple:
-            // Configure the view for multiple selection
-            break
+    var body: some View {
+        NavigationView {
+            List(mockFriends, id: \.id) { friend in
+                Button(action: {
+                    selectFriend(friend)
+                }) {
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(friend.name)
+                                .font(.headline)
+                            Text(friend.email)
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                        }
+                        Spacer()
+                        if selectedFriends.contains(where: { $0.id == friend.id }) {
+                            Image(systemName: "checkmark")
+                                .foregroundColor(.blue)
+                        }
+                    }
+                }
+                .foregroundColor(.primary)
+            }
+            .navigationTitle(deliveryType == .oneToMany ? "Pick Recipients" : "Pick Recipient")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
         }
     }
     
-    // Method to handle friend selection
-    func friendSelected(friend: Friend) {
-        switch selectionMode {
-        case .single:
+    private func selectFriend(_ friend: SIFRecipient) {
+        if deliveryType == .oneToOne {
             selectedFriends = [friend]
-        case .multiple:
-            if let index = selectedFriends.firstIndex(of: friend) {
+            dismiss()
+        } else {
+            if let index = selectedFriends.firstIndex(where: { $0.id == friend.id }) {
                 selectedFriends.remove(at: index)
             } else {
                 selectedFriends.append(friend)

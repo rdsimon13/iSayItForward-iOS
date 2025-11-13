@@ -88,9 +88,9 @@ struct ComposeSIFView: View {
         // MARK: Sheets
 
         .sheet(isPresented: $showFriendPicker) {
-            // ✅ Correct initializer: NO `coder:` parameter
+            // 🚫 Do not use `coder:` initializers in SwiftUI sheets. Always present a View.
             FriendPickerView(
-                coder: <#NSCoder#>, deliveryType: deliveryType,
+                deliveryType: deliveryType,
                 selectedFriends: $selectedFriends
             )
             .presentationDetents([.medium, .large])
