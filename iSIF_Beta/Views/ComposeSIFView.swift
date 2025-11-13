@@ -1,3 +1,8 @@
+//
+//  ComposeSIFView.swift
+//  iSIF_Beta
+//
+
 import SwiftUI
 import FirebaseAuth
 import FirebaseFirestore
@@ -6,8 +11,7 @@ struct ComposeSIFView: View {
     @EnvironmentObject var authState: AuthState
     @EnvironmentObject var router: TabRouter
 
-    // Prefer the canonical service. If your project still exposes SIFDataManager,
-    // you can temporarily switch this back until R1 removes the shim.
+    // If you’re still using SIFDataManager as a shim, keep this:
     private let sifService = SIFDataManager()
     private let friendService = FriendService()
 
@@ -16,15 +20,13 @@ struct ComposeSIFView: View {
     var isEditing: Bool = false
     var isResend: Bool = false
 
-    // MARK: - State Variables
+    // MARK: - State
     @State private var message = ""
-    // UI-only (not stored on SIF model per Workpack)
-    @State private var tone = "Supportive"
-    @State private var emotion = "Joyful"
+    @State private var tone = "Supportive"     // UI-only
+    @State private var emotion = "Joyful"      // UI-only
 
-    // ✅ Use canonical enum, not String
     @State private var deliveryType: DeliveryType = .oneToOne
-    @State private var selectedFriends: [UserFriend] = []
+    @State private var selectedFriends: [SIFRecipient] = []     // concrete type
 
     @State private var selectedTemplate: TemplateModel? = nil
 
@@ -38,27 +40,17 @@ struct ComposeSIFView: View {
     @State private var showConfirmation = false
     @State private var sentSIF: SIF?
 
-    // ✅ Mock templates
+    // Demo templates
     @State private var mockTemplates: [TemplateModel] = [
-        TemplateModel(id: UUID().uuidString, title: "Sunset Bliss", subtitle: "Warm, gentle, reflective",
-                      imageName: "sunset_placeholder", colorHex: "#FF9500"),
-        TemplateModel(id: UUID().uuidString, title: "Ocean Whisper", subtitle: "Calming, cool, peaceful",
-                      imageName: "ocean_placeholder", colorHex: "#007AFF"),
-        TemplateModel(id: UUID().uuidString, title: "Minimal Calm", subtitle: "Simple, clean, modern",
-                      imageName: "calm_placeholder", colorHex: "#8E8E93")
+        .init(id: UUID().uuidString, title: "Sunset Bliss",  subtitle: "Warm, gentle, reflective", imageName: "sunset_placeholder", colorHex: "#FF9500"),
+        .init(id: UUID().uuidString, title: "Ocean Whisper", subtitle: "Calming, cool, peaceful",  imageName: "ocean_placeholder",  colorHex: "#007AFF"),
+        .init(id: UUID().uuidString, title: "Minimal Calm",  subtitle: "Simple, clean, modern",   imageName: "calm_placeholder",   colorHex: "#8E8E93"),
     ]
-
-    init(existingSIF: SIF? = nil, isEditing: Bool = false, isResend: Bool = false) {
-        self.existingSIF = existingSIF
-        self.isEditing = isEditing
-        self.isResend = isResend
-    }
 
     var body: some View {
         NavigationStack {
             ZStack {
-                GradientTheme.welcomeBackground
-                    .ignoresSafeArea()
+                GradientTheme.welcomeBackground.ignoresSafeArea()
 
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 30) {
@@ -74,6 +66,7 @@ struct ComposeSIFView: View {
                     .padding(.bottom, 120)
                 }
 
+                // Navigate to confirmation
                 NavigationLink(
                     destination: SIFConfirmationView(sif: sentSIF ?? placeholderSIF)
                         .environmentObject(router)
@@ -81,14 +74,11 @@ struct ComposeSIFView: View {
                     isActive: $showConfirmation
                 ) { EmptyView() }
 
-                VStack {
-                    Spacer()
-                    BottomNavBar(
-                        selectedTab: $router.selectedTab,
-                        isVisible: .constant(true)
-                    )
-                    .environmentObject(router)
-                    .environmentObject(authState)
+                // Bottom nav
+                VStack { Spacer()
+                    BottomNavBar(selectedTab: $router.selectedTab, isVisible: .constant(true))
+                        .environmentObject(router)
+                        .environmentObject(authState)
                 }
             }
         }
@@ -96,68 +86,66 @@ struct ComposeSIFView: View {
         .onAppear(perform: populateIfEditing)
 
         // MARK: Sheets
+
         .sheet(isPresented: $showFriendPicker) {
-            // ✅ Correct order and type
-            FriendPickerView(deliveryType: deliveryType, selectedFriends: $selectedFriends)
-                .presentationDetents([.medium, .large])
-                .environmentObject(router)
-                .environmentObject(authState)
+            // ✅ Correct initializer: NO `coder:` parameter
+            FriendPickerView(
+                coder: <#NSCoder#>, deliveryType: deliveryType,
+                selectedFriends: $selectedFriends
+            )
+            .presentationDetents([.medium, .large])
+            .environmentObject(router)
+            .environmentObject(authState)
         }
+
         .sheet(isPresented: $showTemplateGallery) {
             TemplateGalleryView(selectedTemplate: $selectedTemplate)
                 .environmentObject(router)
                 .environmentObject(authState)
         }
+
         .sheet(isPresented: $showSignatureView) {
             SignatureView(isPresented: $showSignatureView) { sig in
-                if let image = UIImage(data: sig.signatureImageData) {
-                    savedSignature = image
-                }
+                if let image = UIImage(data: sig.signatureImageData) { savedSignature = image }
             }
             .environmentObject(router)
             .environmentObject(authState)
         }
 
-        // MARK: Alerts
+        // Alerts
         .alert("SIF Composer", isPresented: $showingAlert) {
             Button("OK") {}
         } message: { Text(alertMessage) }
 
-        // MARK: Autofill message from template
-        .onChange(of: selectedTemplate) { newValue in
-            if let tmpl = newValue, !tmpl.subtitle.isEmpty { message = tmpl.subtitle }
+        // Autofill from template
+        .onChange(of: selectedTemplate) { newVal in
+            if let t = newVal, !t.subtitle.isEmpty { message = t.subtitle }
         }
     }
 
-    // MARK: - Prefill
+    // MARK: Prefill
     private func populateIfEditing() {
         guard let sif = existingSIF else { return }
         message = sif.message
-        // ✅ No tone/emotion on SIF model per Workpack
         deliveryType = sif.deliveryType
-        // UserFriend is a typealias for SIFRecipient
         selectedFriends = sif.recipients
     }
 
-    // MARK: Header
+    // MARK: UI sections
+
     private var headerSection: some View {
         VStack(spacing: 10) {
             Image("isiFLogo")
-                .resizable()
-                .scaledToFit()
-                .frame(height: 90)
+                .resizable().scaledToFit().frame(height: 90)
                 .shadow(color: .black.opacity(0.3), radius: 5, y: 3)
 
-            Text(isEditing ? "Edit Your SIF" :
-                 isResend ? "Re-Send Your SIF" :
-                 "Compose Your SIF")
-            .font(.custom("AvenirNext-DemiBold", size: 24))
-            .foregroundColor(Color(hex: "132E37"))
+            Text(isEditing ? "Edit Your SIF" : (isResend ? "Re-Send Your SIF" : "Compose Your SIF"))
+                .font(.custom("AvenirNext-DemiBold", size: 24))
+                .foregroundColor(Color(hex: "132E37"))
         }
         .padding(.top, 40)
     }
 
-    // MARK: Delivery Type
     private var deliveryTypeSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Delivery Type")
@@ -167,39 +155,33 @@ struct ComposeSIFView: View {
 
             HStack(spacing: 12) {
                 ForEach(DeliveryType.allCases) { type in
-                    deliveryTypeButton(type)
+                    Button {
+                        deliveryType = type
+                        selectedFriends.removeAll()
+                    } label: {
+                        Text(type.displayTitle)
+                            .font(.custom("AvenirNext-Regular", size: 15))
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 16)
+                            .background(
+                                Capsule()
+                                    .fill(deliveryType == type ? Color.blue.opacity(0.8) : Color.white.opacity(0.9))
+                            )
+                            .foregroundColor(deliveryType == type ? .white : .black)
+                            .shadow(radius: deliveryType == type ? 3 : 0)
+                    }
                 }
             }
             .padding(.horizontal)
         }
     }
 
-    private func deliveryTypeButton(_ type: DeliveryType) -> some View {
-        Button {
-            deliveryType = type
-            selectedFriends.removeAll()
-        } label: {
-            Text(type.displayTitle)
-                .font(.custom("AvenirNext-Regular", size: 15))
-                .padding(.vertical, 8)
-                .padding(.horizontal, 16)
-                .background(
-                    Capsule()
-                        .fill(deliveryType == type ? Color.blue.opacity(0.8) : Color.white.opacity(0.9))
-                )
-                .foregroundColor(deliveryType == type ? .white : .black)
-                .shadow(radius: deliveryType == type ? 3 : 0)
-        }
-    }
-
-    // MARK: Recipients
     private var recipientSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text("Recipient\(deliveryType == .oneToMany ? "s" : "")")
                     .font(.custom("AvenirNext-Regular", size: 16))
                     .foregroundColor(.gray)
-
                 Spacer()
                 Button { showFriendPicker = true } label: {
                     Label("Select", systemImage: "person.crop.circle.badge.plus")
@@ -217,11 +199,11 @@ struct ComposeSIFView: View {
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
-                        ForEach(selectedFriends, id: \.id) { friend in
+                        ForEach(selectedFriends, id: \.id) { f in
                             Capsule()
                                 .fill(Color.white.opacity(0.9))
                                 .overlay(
-                                    Text(friend.name)
+                                    Text(f.name)
                                         .font(.custom("AvenirNext-Regular", size: 14))
                                         .foregroundColor(.black.opacity(0.8))
                                         .padding(.horizontal, 10)
@@ -235,7 +217,6 @@ struct ComposeSIFView: View {
         }
     }
 
-    // MARK: - Template Section
     private var templateSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Select a Template")
@@ -245,28 +226,19 @@ struct ComposeSIFView: View {
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 14) {
-                    ForEach(mockTemplates, id: \.id) { template in
+                    ForEach(mockTemplates, id: \.id) { t in
                         VStack {
-                            Image(template.imageName ?? "photo")
-                                .resizable()
-                                .scaledToFill()
+                            Image(t.imageName ?? "photo")
+                                .resizable().scaledToFill()
                                 .frame(width: 100, height: 80)
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 12)
-                                        .stroke(
-                                            selectedTemplate?.id == template.id
-                                            ? Color.blue : Color.clear,
-                                            lineWidth: 3
-                                        )
+                                        .stroke(selectedTemplate?.id == t.id ? Color.blue : .clear, lineWidth: 3)
                                 )
-                                .onTapGesture {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        selectedTemplate = template
-                                    }
-                                }
+                                .onTapGesture { withAnimation(.easeInOut(duration: 0.3)) { selectedTemplate = t } }
 
-                            Text(template.title)
+                            Text(t.title)
                                 .font(.custom("AvenirNext-Regular", size: 12))
                                 .foregroundColor(.black.opacity(0.7))
                         }
@@ -275,9 +247,7 @@ struct ComposeSIFView: View {
                 .padding(.horizontal)
             }
 
-            Button {
-                showTemplateGallery = true
-            } label: {
+            Button { showTemplateGallery = true } label: {
                 Label("🌅 Explore Full Gallery", systemImage: "photo.on.rectangle")
                     .font(.custom("AvenirNext-DemiBold", size: 14))
                     .foregroundColor(.blue)
@@ -286,15 +256,12 @@ struct ComposeSIFView: View {
         }
     }
 
-    // MARK: Message Section
     private var messageSection: some View {
         ZStack {
-            if let selectedTemplate = selectedTemplate, let imageName = selectedTemplate.imageName {
-                Image(imageName)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(height: 200)
-                    .clipped()
+            if let t = selectedTemplate, let img = t.imageName {
+                Image(img)
+                    .resizable().scaledToFill()
+                    .frame(height: 200).clipped()
                     .blur(radius: 5)
                     .overlay(Color.white.opacity(0.75))
                     .cornerRadius(20)
@@ -317,7 +284,6 @@ struct ComposeSIFView: View {
         }
     }
 
-    // MARK: Signature Section
     private var signatureSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Signature")
@@ -325,11 +291,9 @@ struct ComposeSIFView: View {
                 .foregroundColor(.gray)
                 .padding(.horizontal)
 
-            if let savedSignature = savedSignature {
-                Image(uiImage: savedSignature)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 100)
+            if let img = savedSignature {
+                Image(uiImage: img)
+                    .resizable().scaledToFit().frame(height: 100)
                     .clipShape(RoundedRectangle(cornerRadius: 14))
                     .shadow(radius: 3, y: 2)
                     .padding(.horizontal)
@@ -344,7 +308,6 @@ struct ComposeSIFView: View {
         }
     }
 
-    // MARK: Tone & Emotion (UI only)
     private var toneEmotionSection: some View {
         VStack(spacing: 18) {
             HStack(spacing: 16) {
@@ -365,15 +328,12 @@ struct ComposeSIFView: View {
                 .font(.custom("AvenirNext-Regular", size: 15))
                 .padding(.vertical, 10)
                 .padding(.horizontal, 16)
-                .background(
-                    Capsule().fill(selected ? Color.yellow.opacity(0.7) : Color.white.opacity(0.9))
-                )
+                .background(Capsule().fill(selected ? Color.yellow.opacity(0.7) : Color.white.opacity(0.9)))
                 .shadow(color: .black.opacity(0.1), radius: 2, y: 1)
                 .foregroundColor(.black)
         }
     }
 
-    // MARK: Send Button
     private var sendButton: some View {
         Button(action: sendSIF) {
             HStack {
@@ -392,46 +352,25 @@ struct ComposeSIFView: View {
         .padding(.top, 10)
     }
 
-    // MARK: Send Logic
+    // MARK: Send
     private func sendSIF() {
-        guard !message.isEmpty else {
-            alertMessage = "Please compose your SIF before sending."
-            showingAlert = true
-            return
-        }
-
-        guard !selectedFriends.isEmpty else {
-            alertMessage = "Please select at least one recipient."
-            showingAlert = true
-            return
-        }
-
-        guard let userId = Auth.auth().currentUser?.uid else {
-            alertMessage = "You must be logged in to send a SIF."
-            showingAlert = true
-            return
-        }
+        guard !message.isEmpty else { alertMessage = "Please compose your SIF before sending."; showingAlert = true; return }
+        guard !selectedFriends.isEmpty else { alertMessage = "Please select at least one recipient."; showingAlert = true; return }
+        guard let uid = Auth.auth().currentUser?.uid else { alertMessage = "You must be logged in to send a SIF."; showingAlert = true; return }
 
         Task {
             isSending = true
             do {
-                let recipients: [SIFRecipient] = selectedFriends.map {
-                    SIFRecipient(id: $0.id, name: $0.name, email: $0.email)
-                }
-
-                // ✅ Canonical SIF initializer (no tone/emotion/category/etc.)
                 let sif = SIF(
-                    senderUID: userId,
-                    recipients: recipients,
+                    senderUID: uid,
+                    recipients: selectedFriends,
                     subject: "My SIF",
                     message: message,
                     deliveryType: deliveryType,
                     scheduledAt: nil
                 )
 
-                // Keep your existing method name; R1 may align the service API
-                try await sifService.sendSIF(sif, for: userId)
-
+                try await sifService.sendSIF(sif, for: uid)
                 sentSIF = sif
                 showConfirmation = true
             } catch {
@@ -442,7 +381,6 @@ struct ComposeSIFView: View {
         }
     }
 
-    // MARK: - Placeholder SIF
     private var placeholderSIF: SIF {
         SIF(
             senderUID: "demoUser",
