@@ -347,6 +347,7 @@ struct CreateSIFView: View {
             .padding(.bottom, 80)
     }
 }
+
 struct CreateSIFView_PreviewWrapper: View {
     @StateObject private var authState = AuthState()
     @StateObject private var tabRouter = TabRouter()
