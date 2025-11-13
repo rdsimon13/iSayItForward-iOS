@@ -1,8 +1,8 @@
 import SwiftUI
-import FirebaseAuth
 
 struct MySIFsView: View {
     @EnvironmentObject var router: TabRouter
+    @EnvironmentObject var authState: AuthState
     @State private var sifs: [SIF] = []
     @State private var isLoading = false
     @State private var errorMessage: String?
@@ -67,7 +67,7 @@ struct MySIFsView: View {
     }
     
     private func loadSIFs() async {
-        guard let currentUser = Auth.auth().currentUser else {
+        guard let userUID = authState.uid else {
             errorMessage = "You must be logged in to view SIFs"
             return
         }
@@ -76,7 +76,7 @@ struct MySIFsView: View {
         defer { isLoading = false }
         
         do {
-            sifs = try await sifService.fetchSentSIFs(for: currentUser.uid)
+            sifs = try await sifService.fetchSentSIFs(for: userUID)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -84,7 +84,9 @@ struct MySIFsView: View {
 }
 
 #Preview {
-    MySIFsView()
+    let authState = AuthState()
+    authState.uid = "preview-user"
+    return MySIFsView()
         .environmentObject(TabRouter())
-        .environmentObject(AuthState())
+        .environmentObject(authState)
 }
