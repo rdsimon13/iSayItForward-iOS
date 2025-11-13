@@ -159,18 +159,12 @@ struct ConfettiPiece: Identifiable {
 // MARK: - Preview
 #Preview {
     let demoSIF = SIF(
-        senderId: "12345",
-        recipients: [SIFRecipient(id: UUID().uuidString, name: "John Doe", email: "john@example.com")],
+        senderUID: "12345",
+        recipients: [SIFRecipient(name: "John Doe", email: "john@example.com")],
         subject: "A Test SIF",
         message: "Here’s a warm message from your future self.",
-        category: "General",
-        tone: "Supportive",
-        emotion: "Joyful",
-        templateId: nil,
-        documentURL: nil,
-        deliveryType: "One-to-One",
-        isScheduled: true,
-        scheduledDate: Date().addingTimeInterval(86400),
+        deliveryType: .oneToOne,
+        scheduledAt: Date().addingTimeInterval(86400),
         createdAt: Date(),
         status: "sent"
     )
