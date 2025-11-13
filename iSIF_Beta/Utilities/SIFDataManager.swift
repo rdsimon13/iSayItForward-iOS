@@ -1,53 +1,63 @@
-//  SIFDataManager.swift
-//  iSIF_Beta
-//
-//  Single source of truth for Firestore SIF operations.
-
 import Foundation
 import FirebaseFirestore
 
 final class SIFDataManager {
 
     static let shared = SIFDataManager()
-    private let col = Firestore.firestore().collection("SIFs")
+    private init() {}
 
-    // MARK: - Send (create/merge)
-    func sendSIF(_ sif: SIF, for uid: String) async throws {
+    // ✅ Always use the same collection name
+    private let collectionName = "SIFs"
+    private var db: Firestore { Firestore.firestore() }
+
+    // MARK: - Save or Update SIF
+    func saveSIF(_ sif: SIF) async throws {
+        let encoder = Firestore.Encoder()
         do {
-            let encoder = Firestore.Encoder()
             let data = try encoder.encode(sif)
-            
-            print("🧾 Writing to Firestore collection path: \(col.path)")
+            print("🧾 Writing to Firestore collection path: \(collectionName)")
             print("📄 Data to be written: \(data)")
 
-            try await col.document(sif.id).setData(data, merge: true)
+            try await db.collection(collectionName)
+                .document(sif.id)
+                .setData(data, merge: true)
 
             print("✅ SIF successfully written to Firestore with ID: \(sif.id)")
         } catch {
-            print("❌ Firestore encoding/write failed: \(error)")
+            print("❌ Error writing SIF: \(error.localizedDescription)")
             throw error
         }
     }
 
-    // MARK: - Fetch user SIFs (sent)
-    func fetchUserSIFs(for uid: String) async throws -> [SIF] {
-        let snapshot = try await col
-            .whereField("senderId", isEqualTo: uid)
-            .order(by: "createdAt", descending: true)
-            .limit(to: 100)
-            .getDocuments()
-
+    // MARK: - Fetch SIFs for a User
+    func fetchUserSIFs(for userId: String) async throws -> [SIF] {
+        print("📡 Fetching SIFs for user: \(userId) from \(collectionName)...")
         let decoder = Firestore.Decoder()
-        let sifs = snapshot.documents.compactMap { doc -> SIF? in
-            do {
-                return try decoder.decode(SIF.self, from: doc.data())
-            } catch {
-                print("⚠️ Could not decode SIF \(doc.documentID): \(error)")
-                return nil
-            }
-        }
+        do {
+            let snapshot = try await db.collection(collectionName)
+                .whereField("senderId", isEqualTo: userId)
+                .order(by: "createdAt", descending: true)
+                .limit(to: 100)
+                .getDocuments()
 
-        print("📦 Retrieved \(sifs.count) SIFs for user: \(uid)")
-        return sifs
+            print("📦 Retrieved \(snapshot.documents.count) SIF(s) for user: \(userId)")
+
+            let sifs = snapshot.documents.compactMap {
+                try? $0.data(as: SIF.self)
+            }
+
+            return sifs
+        } catch {
+            print("❌ Error fetching SIFs: \(error.localizedDescription)")
+            throw error
+        }
+    }
+
+    // MARK: - Delete SIF (optional)
+    func deleteSIF(_ sifId: String) async throws {
+        try await db.collection(collectionName)
+            .document(sifId)
+            .delete()
+        print("🗑️ SIF \(sifId) deleted successfully.")
     }
 }

@@ -10,6 +10,7 @@ public struct SIF: Codable, Identifiable {
     public var scheduledAt: Date?
     public var createdAt: Date
     public var status: String
+    public var signatureURL: URL?
 
     // ✅ Explicit public member-wise init INSIDE the struct.
     // This suppresses the synthesized one and avoids the redeclaration clash.
@@ -33,6 +34,21 @@ public struct SIF: Codable, Identifiable {
         self.scheduledAt = scheduledAt
         self.createdAt = createdAt
         self.status = status
+    }
+
+    // ✅ Add coding keys only — this is the minimal required change
+    //     It ensures Firestore sees "senderId" while Swift still uses "senderUID"
+    enum CodingKeys: String, CodingKey {
+        case id
+        case senderUID = "senderId" // 🔥 This fixes Firestore field mismatch
+        case recipients
+        case subject
+        case message
+        case deliveryType
+        case scheduledAt
+        case createdAt
+        case status
+        case signatureURL
     }
 }
 

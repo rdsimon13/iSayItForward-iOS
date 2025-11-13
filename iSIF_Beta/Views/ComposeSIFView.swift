@@ -3,6 +3,13 @@ import FirebaseAuth
 import FirebaseFirestore
 
 struct ComposeSIFView: View {
+   
+    // MARK: - Initializers
+    init(existingSIF: SIF? = nil, isEditing: Bool = false, isResend: Bool = false) {
+        self._message = State(initialValue: existingSIF?.message ?? "")
+        self._selectedFriends = State(initialValue: existingSIF?.recipients ?? [])
+        self.deliveryType = existingSIF?.deliveryType ?? .oneToOne
+    }
     // MARK: - State
     @State private var message = ""
     @State private var selectedFriends: [SIFRecipient] = []
@@ -12,26 +19,9 @@ struct ComposeSIFView: View {
     @State private var isSending = false
     @State private var sentSIF: SIF?
 
-    // MARK: - Properties
     var deliveryType: DeliveryType = .oneToOne
-    var existingSIF: SIF?
-    var isEditing: Bool
-    var isResend: Bool
 
-    // MARK: - Init
-    init(existingSIF: SIF? = nil, isEditing: Bool = false, isResend: Bool = false) {
-        self.existingSIF = existingSIF
-        self.isEditing = isEditing
-        self.isResend = isResend
-
-        // Prefill message and recipients for edit/resend
-        if let existing = existingSIF {
-            _message = State(initialValue: existing.message)
-            _selectedFriends = State(initialValue: existing.recipients)
-        }
-    }
-
-    // MARK: - Send
+    // MARK: - Send Logic
     private func sendSIF() {
         guard !message.isEmpty else {
             alertMessage = "Please compose your SIF before sending."
@@ -56,29 +46,33 @@ struct ComposeSIFView: View {
             defer { isSending = false }
 
             do {
-                // Build new or updated SIF object
+                // 🧩 Build SIF object
                 let sif = SIF(
-                    id: existingSIF?.id ?? UUID().uuidString,
+                    id: UUID().uuidString,
                     senderUID: uid,
                     recipients: selectedFriends,
-                    subject: existingSIF?.subject ?? "My SIF",
+                    subject: "My SIF",
                     message: message,
                     deliveryType: deliveryType,
                     scheduledAt: nil,
-                    createdAt: existingSIF?.createdAt ?? Date(),
-                    status: isEditing ? "edited" : "sent"
+                    createdAt: Date(),
+                    status: "sent"
                 )
 
-                print("🚀 Sending SIF for user: \(uid)")
-                print("📦 Payload: \(sif)")
+                print("🚀 Preparing to send SIF to Firestore for user: \(uid)")
+                print("📦 SIF payload: \(sif)")
 
-                try await SIFDataManager.shared.sendSIF(sif, for: uid)
+                // 🔥 Write to Firestore
+                try await SIFDataManager.shared.saveSIF(sif)
+                print("✅ Firestore write completed successfully.")
 
-                print("✅ SIF successfully written to Firestore")
-
+                // Update UI
                 sentSIF = sif
                 showConfirmation = true
 
+                // Optional cleanup
+                message = ""
+                selectedFriends.removeAll()
             } catch {
                 alertMessage = "Failed to send SIF: \(error.localizedDescription)"
                 showingAlert = true
@@ -87,49 +81,59 @@ struct ComposeSIFView: View {
         }
     }
 
-    // MARK: - View Body
+    // MARK: - Body
     var body: some View {
-        VStack(spacing: 20) {
-            Text(isEditing ? "Edit Your SIF" : isResend ? "Re-Send This SIF" : "Compose a New SIF")
-                .font(.title2)
-                .fontWeight(.semibold)
-                .padding(.top)
+        NavigationView {
+            VStack(spacing: 20) {
+                TextEditor(text: $message)
+                    .padding()
+                    .background(Color.white.opacity(0.9))
+                    .cornerRadius(12)
+                    .frame(minHeight: 150)
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.gray.opacity(0.3)))
 
-            TextField("Write your message...", text: $message, axis: .vertical)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding(.horizontal)
-                .frame(minHeight: 100)
-
-            Button(action: sendSIF) {
-                if isSending {
-                    ProgressView()
-                } else {
-                    Text(isEditing ? "Save Changes" : isResend ? "Re-Send SIF" : "Send SIF")
-                        .bold()
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
+                Button(action: sendSIF) {
+                    if isSending {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                    } else {
+                        Text("Send SIF")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                    }
                 }
-            }
-            .disabled(isSending)
-            .padding(.horizontal)
+                .background(Color.blue)
+                .cornerRadius(12)
+                .shadow(radius: 3)
+                .disabled(isSending)
 
-            Spacer()
-        }
-        .alert("Error", isPresented: $showingAlert) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            Text(alertMessage)
-        }
-        .sheet(isPresented: $showConfirmation) {
-            if let sent = sentSIF {
-                SIFConfirmationView(sif: sent)
-            } else {
-                Text("SIF Sent Successfully!")
+                Spacer()
+            }
+            .padding()
+            .navigationTitle("Compose SIF")
+            .alert(isPresented: $showingAlert) {
+                Alert(title: Text("Error"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+            }
+            .sheet(isPresented: $showConfirmation) {
+                VStack(spacing: 20) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .resizable()
+                        .frame(width: 60, height: 60)
+                        .foregroundColor(.green)
+                    Text("SIF Sent Successfully!")
+                        .font(.title2)
+                        .bold()
+                    Button("Close") {
+                        showConfirmation = false
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                .padding()
             }
         }
-        .padding(.bottom)
     }
 }
