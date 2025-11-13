@@ -357,6 +357,8 @@ struct CreateSIFView_PreviewWrapper: View {
     }
 }
 
+#if DEBUG
 #Preview {
     CreateSIFView_PreviewWrapper()
 }
+#endif
