@@ -1,6 +1,7 @@
 // FriendService+FindFriends.swift
 import Foundation
 import FirebaseFirestore
+import FirebaseFirestoreSwift
 
 // NOTE: Do NOT redeclare `FriendService` here.
 // NOTE: Assume `public typealias UserFriend = SIFRecipient` already exists (LegacyCompat.swift).
@@ -10,20 +11,14 @@ public extension FriendService {
     /// Returns all users except the caller.
     func fetchAllUsers(excluding uid: String) async throws -> [UserFriend] {
         let db = Firestore.firestore()
-        let snap = try await db.collection("users").getDocuments()
+        let snap = try await db.collection("users")
+            .whereField(FieldPath.documentID(), isNotEqualTo: uid)
+            .getDocuments()
 
         let users: [UserFriend] = snap.documents.compactMap { doc in
-            guard doc.documentID != uid else { return nil }
-
-            let name =
-                (doc.get("name") as? String) ??
-                (doc.get("displayName") as? String) ??
-                (doc.get("fullName") as? String) ??
-                (doc.get("email") as? String) ??
-                "Unknown"
-
-            let email = (doc.get("email") as? String) ?? ""
-
+            let data = doc.data()
+            let name = data["name"] as? String ?? data["displayName"] as? String ?? data["fullName"] as? String ?? data["email"] as? String ?? "Unknown"
+            let email = data["email"] as? String ?? ""
             return UserFriend(id: doc.documentID, name: name, email: email)
         }
         return users
@@ -32,9 +27,10 @@ public extension FriendService {
     /// IDs the current user has already requested.
     func fetchSentRequests(for uid: String) async throws -> Set<String> {
         let db = Firestore.firestore()
-        let q = db.collection("friendRequests").whereField("from", isEqualTo: uid)
-        let snap = try await q.getDocuments()
-        return Set(snap.documents.compactMap { $0.get("to") as? String })
+        let snap = try await db.collection("friendRequests")
+            .whereField("from", isEqualTo: uid)
+            .getDocuments()
+        return Set(snap.documents.compactMap { $0.data()["to"] as? String })
     }
 
     /// Creates/merges a pending friend request (idempotent).
@@ -58,6 +54,6 @@ public extension FriendService {
             "toEmail": toEmail,
             "status": "pending",
             "createdAt": FieldValue.serverTimestamp()
-        ], merge: true)
+        ])
     }
 }
