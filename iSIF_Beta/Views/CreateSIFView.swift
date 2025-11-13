@@ -12,7 +12,6 @@ struct CreateSIFView: View {
     @State private var messageText: String = ""
     @State private var signatureData: Data? = nil
     @State private var selectedTemplate: TemplateModel? = nil
-    @State private var selectedRecipients: [SIFRecipient] = []
     @State private var deliveryType: DeliveryType = .oneToOne
 
     // MARK: - UI State
@@ -129,8 +128,8 @@ struct CreateSIFView: View {
         
         // Enforce delivery type constraints
         .onChange(of: deliveryType) { oldValue, newValue in
-            if newValue == .oneToOne && selectedRecipients.count > 1 {
-                selectedRecipients = Array(selectedRecipients.prefix(1))
+            if newValue == .oneToOne && selectedFriends.count > 1 {
+                selectedFriends = Array(selectedFriends.prefix(1))
             }
         }
     }
@@ -279,7 +278,7 @@ struct CreateSIFView: View {
     // MARK: - Send Button
     private var sendButton: some View {
         Button {
-            if selectedRecipients.isEmpty || messageText.isEmpty {
+            if selectedFriends.isEmpty || messageText.isEmpty {
                 showValidationAlert = true
                 return
             }
