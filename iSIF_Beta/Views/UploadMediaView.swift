@@ -1,6 +1,7 @@
 
 import SwiftUI
 import PhotosUI
+import UIKit
 
 struct UploadMediaView: View {
     @Binding var selectedImages: [UIImage]
