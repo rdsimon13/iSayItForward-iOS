@@ -14,13 +14,12 @@ struct BottomNavBar: View {
         VStack {
             if isVisible {
                 HStack {
-                    navButton(icon: AppTab.home.systemImage,    label: AppTab.home.title,    tab: .home)
-                    navButton(icon: AppTab.compose.systemImage, label: AppTab.compose.title, tab: .compose)
-
-                    profileButton() // avatar in the middle
-
-                    navButton(icon: AppTab.schedule.systemImage,label: AppTab.schedule.title,tab: .schedule)
-                    navButton(icon: AppTab.settings.systemImage,label: AppTab.settings.title,tab: .settings)
+                    navButton(icon: AppTab.home.systemImage,       label: AppTab.home.title,       tab: .home)
+                    navButton(icon: AppTab.compose.systemImage,    label: AppTab.compose.title,    tab: .compose)
+                    navButton(icon: AppTab.gallery.systemImage,    label: AppTab.gallery.title,    tab: .gallery)
+                    navButton(icon: AppTab.schedule.systemImage,   label: AppTab.schedule.title,   tab: .schedule)
+                    navButton(icon: AppTab.sifConnect.systemImage, label: AppTab.sifConnect.title, tab: .sifConnect)
+                    profileButton() 
                 }
                 .padding(.horizontal)
                 .padding(.vertical, 10)
