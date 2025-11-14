@@ -107,8 +107,7 @@ struct SIFDetailView: View {
             metaRow(label: "Tone", value: "—")
             metaRow(label: "Emotion", value: "—")
 
-            // ✅ Updated to match your SIF model’s computed property
-            metaRow(label: "Delivery Type", value: sif.deliveryTypeDisplayTitle)
+            metaRow(label: "Delivery Type", value: sif.deliveryType.displayTitle)
 
             if let date = sif.scheduledAt {
                 metaRow(label: "Scheduled For", value: date.formatted(date: .abbreviated, time: .shortened))
@@ -197,7 +196,7 @@ struct SIFDetailView: View {
 
         Tone: —
         Emotion: —
-        Delivery: \(sif.deliveryTypeDisplayTitle)
+        Delivery: \(sif.deliveryType.displayTitle)
 
         Subject: \(subjectText)
         ✨ Sent via iSayItForward — where kindness travels through time.
