@@ -2,30 +2,27 @@ import SwiftUI
 
 // This struct is your main content view presented after login
 struct MainTabView: View {
+    @StateObject private var router = TabRouter()
+    @StateObject private var authState = AuthState()
     @State private var selectedTab: AppTab = .home
 
     var body: some View {
         TabView(selection: $selectedTab) {
             // Home View
-            GettingStartedView() // Now acting as your initial 'Home' tab content
+            GettingStartedView()
                 .tabItem {
                     Label(AppTab.home.title, systemImage: AppTab.home.systemImage)
                 }
                 .tag(AppTab.home)
 
-            // ✍️ Compose SIF View (replaces .create)
-            CreateSIFView() // Assuming you have this view
+            // ✍️ Compose SIF View
+            CreateSIFView()
+                .environmentObject(router)
+                .environmentObject(authState)
                 .tabItem {
                     Label(AppTab.compose.title, systemImage: AppTab.compose.systemImage)
                 }
                 .tag(AppTab.compose)
-
-            // 🖼️ Gallery View
-            TemplateGalleryView(selectedTemplate: .constant(nil))// Assuming you have this view
-                .tabItem {
-                    Label(AppTab.gallery.title, systemImage: AppTab.gallery.systemImage)
-                }
-                .tag(AppTab.gallery)
 
             // 📅 Schedule View
             ScheduleSIFView()
@@ -43,12 +40,15 @@ struct MainTabView: View {
 
             // 👤 Profile View
             ProfileView()
+                .environmentObject(authState)
                 .tabItem {
                     Label(AppTab.profile.title, systemImage: AppTab.profile.systemImage)
                 }
                 .tag(AppTab.profile)
         }
-        .accentColor(Color(hex: "132E37")) // Active tab color
+        .accentColor(Color(hex: "132E37"))
+        .environmentObject(router)
+        .environmentObject(authState)
     }
 }
 
