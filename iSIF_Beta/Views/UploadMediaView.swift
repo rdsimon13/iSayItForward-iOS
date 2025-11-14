@@ -76,6 +76,7 @@ struct UploadMediaView: View {
         .cornerRadius(14)
         .shadow(radius: 4)
         .onChange(of: selectedItems) { newItems in
+            guard !newItems.isEmpty else { return }
             Task {
                 for item in newItems {
                     if let data = try? await item.loadTransferable(type: Data.self) {
@@ -83,8 +84,10 @@ struct UploadMediaView: View {
                             // Check image size (convert to JPEG for size check)
                             if let jpegData = image.jpegData(compressionQuality: 0.7) {
                                 if jpegData.count > 30 * 1024 * 1024 {
-                                    uploadError = "Image is too large (max 30MB)"
-                                    showingErrorAlert = true
+                                    await MainActor.run {
+                                        uploadError = "Image is too large (max 30MB)"
+                                        showingErrorAlert = true
+                                    }
                                     continue
                                 }
                             }
@@ -96,7 +99,9 @@ struct UploadMediaView: View {
                         }
                     }
                 }
-                selectedItems.removeAll()
+                await MainActor.run {
+                    selectedItems.removeAll()
+                }
             }
         }
         .sheet(isPresented: $showingCamera) {
