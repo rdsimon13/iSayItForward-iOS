@@ -203,7 +203,7 @@ struct SIFDetailView: View {
 
         Tone: —
         Emotion: —
-        Delivery: \(sif.deliveryType.displayTitle)
+        Delivery: \(DeliveryType(rawValue: sif.deliveryType)?.displayTitle ?? sif.deliveryType)
 
         Subject: \(subjectText)
         ✨ Sent via iSayItForward — where kindness travels through time.
