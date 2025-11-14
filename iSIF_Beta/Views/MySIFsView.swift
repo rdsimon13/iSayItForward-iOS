@@ -7,7 +7,7 @@ struct MySIFsView: View {
     @State private var isLoading = false
     @State private var errorMessage: String?
     
-    private let sifService: SIFProviding = SIFService.shared
+    private let sifService = SIFDataManager.shared
     
     var body: some View {
         NavigationStack {
@@ -76,9 +76,10 @@ struct MySIFsView: View {
         defer { isLoading = false }
         
         do {
-            sifs = try await sifService.fetchSentSIFs(for: userUID)
+            sifs = try await sifService.fetchUserSIFs(for: userUID)
         } catch {
-            errorMessage = error.localizedDescription
+            print("❌ Failed to fetch SIFs:", error)
+            errorMessage = "Failed to load SIFs: \(error.localizedDescription)"
         }
     }
 }

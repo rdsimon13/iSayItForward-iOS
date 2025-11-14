@@ -1,3 +1,8 @@
+//
+//  SIFConfirmationView.swift
+//  iSIF_Beta
+//
+
 import SwiftUI
 
 struct SIFConfirmationView: View {
@@ -83,11 +88,11 @@ struct SIFConfirmationView: View {
 
                 Spacer()
 
-                // Navigation Button
+                // Back to Inbox (Home tab)
                 Button {
                     withAnimation(.easeInOut(duration: 0.5)) { fadeOut = true }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                        router.selectedTab = .profile
+                        router.selectedTab = .home
                     }
                 } label: {
                     Text("📬 Back to Inbox")
@@ -109,21 +114,4 @@ struct SIFConfirmationView: View {
         }
         .navigationBarBackButtonHidden(true)
     }
-}
-
-#Preview {
-    // Canonical demo SIF using the extension initializer
-    let demoSIF = SIF(
-        senderUID: "12345",
-        recipients: [SIFRecipient(name: "John Doe", email: "john@example.com")],
-        subject: "A Test SIF",
-        message: "Here’s a warm message from your future self.",
-        deliveryType: .oneToOne,
-        scheduledAt: Date().addingTimeInterval(86_400),
-        createdAt: Date(),
-        status: "sent"
-    )
-
-    return SIFConfirmationView(sif: demoSIF)
-        .environmentObject(TabRouter())
 }

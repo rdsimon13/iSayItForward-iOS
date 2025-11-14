@@ -1,8 +1,3 @@
-//
-//  SIFConfirmationView.swift
-//  iSIF_Beta
-//
-
 import SwiftUI
 
 struct SIFConfirmationView: View {
@@ -33,14 +28,12 @@ struct SIFConfirmationView: View {
                     .animation(.spring(response: 0.6, dampingFraction: 0.6), value: animateSuccess)
                     .onAppear { animateSuccess = true }
 
-                // Header
                 Text("SIF Sent Successfully! 🎉")
                     .font(.custom("AvenirNext-DemiBold", size: 24))
                     .foregroundColor(Color(hex: "132E37"))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
 
-                // Summary Card
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
                         Text("Recipient:")
@@ -88,7 +81,6 @@ struct SIFConfirmationView: View {
 
                 Spacer()
 
-                // Back to Inbox (Home tab)
                 Button {
                     withAnimation(.easeInOut(duration: 0.5)) { fadeOut = true }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
@@ -122,11 +114,11 @@ struct SIFConfirmationView: View {
         recipients: [SIFRecipient(name: "John Doe", email: "john@example.com")],
         subject: "A Test SIF",
         message: "Here’s a warm message from your future self.",
-        deliveryType: .oneToOne,
+        deliveryType: .oneToOne, // ✅ Now works via String extension
         scheduledAt: Date().addingTimeInterval(86_400),
         createdAt: Date(),
         status: "sent"
     )
-    return SIFConfirmationView(sif: demo)
+    SIFConfirmationView(sif: demo)
         .environmentObject(TabRouter())
 }

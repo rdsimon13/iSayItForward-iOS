@@ -1,6 +1,6 @@
 import Foundation
 import FirebaseFirestore
-
+/*
 // FriendService class already exists elsewhere. Do NOT redeclare it.
 public extension FriendService {
     func fetchAllUsers(excluding uid: String) async throws -> [UserFriend] {
@@ -48,3 +48,4 @@ public extension FriendService {
         ], merge: true)
     }
 }
+*/

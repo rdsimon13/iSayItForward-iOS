@@ -1,348 +1,193 @@
+//
+//  SIFInboxView.swift
+//  iSIF_Beta
+//
+
 import SwiftUI
 import FirebaseAuth
 import FirebaseFirestore
 
-// MARK: - SIF Inbox View
+/// Inbox with Sent / Received tabs
 struct SIFInboxView: View {
-    @EnvironmentObject var router: TabRouter
-    @EnvironmentObject var authState: AuthState
-
-    // Use as a plain state object or plain let; both are fine as long as it exists for the view lifetime.
-    @StateObject private var sifService = SIFDataManager()
-
-    @State private var sifs: [SIF] = []
-    @State private var searchText = ""
-    @State private var filter: SIFFilter = .all
-    @State private var isLoading = false
-    @State private var errorMessage: String?
-    @State private var listener: ListenerRegistration? = nil
-
-    enum SIFFilter: String, CaseIterable {
-        case all = "All"
-        case sent = "Sent"
-        case scheduled = "Scheduled"
-        case delivered = "Delivered"
-    }
+    @State private var sentSIFs: [SIF] = []
+    @State private var receivedSIFs: [SIF] = []
+    @State private var error: Error?
+    @State private var loading = false
 
     var body: some View {
-        ZStack {
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color.white.opacity(0.95),
-                    Color(red: 0.0, green: 0.7, blue: 1.0).opacity(0.9)
-                ]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+        TabView {
+            SentView(sentSIFs: sentSIFs, error: $error)
+                .tabItem { Label("Sent", systemImage: "paperplane.fill") }
 
-            VStack(spacing: 0) {
-                if isLoading {
-                    ProgressView("Loading your SIFs…")
-                        .progressViewStyle(CircularProgressViewStyle(tint: .blue))
-                        .font(.custom("AvenirNext-Regular", size: 16))
-                        .padding(.top, 50)
-                } else if let errorMessage {
-                    Text("⚠️ \(errorMessage)")
-                        .foregroundColor(.red)
-                        .padding()
-                } else {
-                    ScrollView(showsIndicators: false) {
-                        VStack(spacing: 20) {
-                            headerSection
-                            blurredContainer { counterBar }
-                                .padding(.horizontal)
-                            blurredContainer { filterBar }
-                                .padding(.horizontal)
-                            searchBar
-                            contentSection
-                                .padding(.top, 5)
-                        }
-                        .padding(.top, 10)
-                    }
-                }
-
-                BottomNavBar(
-                    selectedTab: $router.selectedTab,
-                    isVisible: .constant(true)
-                )
-                .environmentObject(router)
-                .environmentObject(authState)
-                .padding(.bottom, 5)
-            }
+            ReceivedView(receivedSIFs: receivedSIFs, error: $error)
+                .tabItem { Label("Received", systemImage: "tray.fill") }
         }
-        .navigationBarHidden(true)
-        .task { await loadUserSIFs() }
-        .onDisappear {
-            listener?.remove()
-            listener = nil
+        .onAppear {
+            fetchSentSIFs()
+            fetchReceivedSIFs()
         }
     }
 
-    // MARK: - Header
-    private var headerSection: some View {
-        VStack(spacing: 4) {
-            Text("📬 SIF Inbox")
-                .font(.custom("AvenirNext-Bold", size: 28))
-                .foregroundColor(Color(hex: "132E37"))
-            Text("Your sent, delivered, and scheduled SIFs")
-                .font(.custom("AvenirNext-Regular", size: 15))
-                .foregroundColor(.black.opacity(0.6))
-        }
-    }
+    // MARK: - Firestore Loads
 
-    // MARK: - Counters
-    private var counterBar: some View {
-        HStack(spacing: 14) {
-            counterTile(label: "Total", count: sifs.count)
-            counterTile(label: "Delivered", count: deliveredCount)
-            counterTile(label: "Scheduled", count: scheduledCount)
-        }
-    }
-
-    private func counterTile(label: String, count: Int) -> some View {
-        VStack(spacing: 4) {
-            Text("\(count)")
-                .font(.custom("AvenirNext-DemiBold", size: 20))
-                .foregroundColor(Color(hex: "132E37"))
-            Text(label)
-                .font(.custom("AvenirNext-Regular", size: 12))
-                .foregroundColor(.gray)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 12)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(.ultraThinMaterial)
-        )
-        .onTapGesture {
-            switch label.lowercased() {
-            case "delivered": filter = .delivered
-            case "scheduled": filter = .scheduled
-            case "total": filter = .all
-            default: break
-            }
-        }
-        .animation(.easeInOut, value: filter)
-    }
-
-    private var deliveredCount: Int {
-        sifs.filter { $0.status.lowercased() == "delivered" }.count
-    }
-
-    private var scheduledCount: Int {
-        sifs.filter { $0.scheduledAt != nil }.count
-    }
-
-    // MARK: - Filter Bar
-    private var filterBar: some View {
-        HStack(spacing: 10) {
-            ForEach(SIFFilter.allCases, id: \.self) { f in
-                filterButton(for: f)
-            }
-        }
-        .padding(.vertical, 8)
-    }
-
-    private func filterButton(for f: SIFFilter) -> some View {
-        let isSelected = filter == f
-        return Button {
-            withAnimation(.easeInOut(duration: 0.25)) { filter = f }
-        } label: {
-            Text(f.rawValue)
-                .font(.custom("AvenirNext-Medium", size: 14))
-                .padding(.vertical, 8)
-                .padding(.horizontal, 14)
-                .background(
-                    Capsule().fill(
-                        isSelected
-                        ? AnyShapeStyle(
-                            LinearGradient(
-                                colors: [Color.blue.opacity(0.8), Color.cyan.opacity(0.85)],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        : AnyShapeStyle(.ultraThinMaterial)
-                    )
-                )
-                .foregroundColor(isSelected ? .white : .black.opacity(0.75))
-        }
-    }
-
-    // MARK: - Search
-    private var searchBar: some View {
-        HStack {
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(.gray.opacity(0.7))
-            TextField("Search SIF history...", text: $searchText)
-                .font(.custom("AvenirNext-Regular", size: 15))
-                .autocorrectionDisabled()
-        }
-        .padding(.vertical, 10)
-        .padding(.horizontal)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(.ultraThinMaterial)
-        )
-        .padding(.horizontal)
-    }
-
-    // MARK: - Content
-    private var contentSection: some View {
-        Group {
-            if filteredSIFs.isEmpty {
-                Text("No SIFs match your filters.")
-                    .font(.custom("AvenirNext-Regular", size: 15))
-                    .foregroundColor(.gray)
-                    .padding(.top, 80)
-            } else {
-                LazyVStack(spacing: 14) {
-                    ForEach(filteredSIFs) { sif in
-                        SIFRowView(sif: sif)
-                    }
-                }
-                .padding(.horizontal)
-                .padding(.bottom, 100)
-            }
-        }
-    }
-
-    // MARK: - Filtering
-    private var filteredSIFs: [SIF] {
-        sifs.filter { sif in
-            let matchesSearch = searchText.isEmpty ||
-                sif.message.localizedCaseInsensitiveContains(searchText) ||
-                (sif.subject ?? "").localizedCaseInsensitiveContains(searchText)
-
-            let matchesFilter: Bool = {
-                switch filter {
-                case .all: return true
-                case .sent: return sif.status.lowercased() == "sent"
-                case .scheduled: return sif.scheduledAt != nil
-                case .delivered: return sif.status.lowercased() == "delivered"
-                }
-            }()
-
-            return matchesSearch && matchesFilter
-        }
-    }
-
-    // MARK: - Data Loading
-    private func loadUserSIFs() async {
-        guard let user = Auth.auth().currentUser else {
-            errorMessage = "User not authenticated."
+    /// Fetches all SIFs sent by the current user
+    private func fetchSentSIFs() {
+        loading = true
+        guard let uid = Auth.auth().currentUser?.uid else {
+            loading = false
             return
         }
 
-        isLoading = true
-        errorMessage = nil
+        Firestore.firestore().collection("SIFs")  // ✅ Corrected: Firestore collection name is case-sensitive
+            .whereField("senderUID", isEqualTo: uid)
+            .order(by: "createdAt", descending: true)
+            .getDocuments { snap, err in
+                loading = false
+                if let err = err {
+                    self.error = err
+                    return
+                }
 
-        do {
-            // ✅ call the service directly (no $ binding)
-            sifs = try await sifService.fetchUserSIFs(for: user.uid)
+                // ✅ Firestore Codable decoding
+                let items = snap?.documents.compactMap { doc in
+                    try? doc.data(as: SIF.self)
+                } ?? []
 
-            // Optional: realtime updates
-            listener?.remove()
-            listener = sifService.observeUserSIFs(for: user.uid) { newSIFs in
-                self.sifs = newSIFs
+                print("📬 Loaded Sent SIFs: \(items.count)")
+                self.sentSIFs = items
             }
-        } catch {
-            errorMessage = "Failed to load SIFs: \(error.localizedDescription)"
-        }
-
-        isLoading = false
-    
     }
 
-    // MARK: - Frosted Container
-    private func blurredContainer<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 20)
-                .fill(.ultraThinMaterial)
-            content().padding(8)
+    /// Fetches all SIFs received by the current user
+    private func fetchReceivedSIFs() {
+        loading = true
+
+        guard let currentEmail = Auth.auth().currentUser?.email?.lowercased() else {
+            loading = false
+            receivedSIFs = []
+            return
+        }
+
+        let q = Firestore.firestore().collection("SIFs")  // ✅ Corrected capitalization
+            .whereField("status", isEqualTo: "sent")
+
+        q.getDocuments { snap, err in
+            self.loading = false
+            if let err = err {
+                self.error = err
+                return
+            }
+
+            // ✅ Decode all and filter client-side by recipient email
+            let all = snap?.documents.compactMap { doc in
+                try? doc.data(as: SIF.self)
+            } ?? []
+
+            let filtered = all.filter { sif in
+                sif.recipients.contains { recipient in
+                    recipient.email.lowercased() == currentEmail
+                }
+            }
+
+            print("📥 Loaded Received SIFs: \(filtered.count)")
+            self.receivedSIFs = filtered
         }
     }
 }
 
-// MARK: - SIF Row View
-struct SIFRowView: View {
-    let sif: SIF
+// MARK: - Sent / Received Subviews
+
+private struct SentView: View {
+    var sentSIFs: [SIF]
+    @Binding var error: Error?
 
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
-            Circle()
-                .fill(Color.gray.opacity(0.2))
-                .frame(width: 40, height: 40)
-                .overlay(
-                    Text(sif.initials)
-                        .font(.custom("AvenirNext-Bold", size: 14))
-                        .foregroundColor(.gray)
-                )
+        if let error {
+            ErrorView(error: error)
+        } else if sentSIFs.isEmpty {
+            EmptyStateView(text: "No sent SIFs yet.")
+        } else {
+            List(sentSIFs) { sif in
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(sif.subject ?? "No Subject")
+                        .font(.headline)
+                        .foregroundColor(.primary)
 
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
-                    Circle()
-                        .fill(sif.statusColor)
-                        .frame(width: 8, height: 8)
-                    Text(sif.displayName)
-                        .font(.custom("AvenirNext-DemiBold", size: 14))
-                    Spacer()
-                    Text(sif.formattedDate)
-                        .font(.custom("AvenirNext-Regular", size: 12))
-                        .foregroundColor(.gray)
+                    Text(sif.message)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .lineLimit(2)
+
+                    HStack {
+                        Text("📤 \(sif.deliveryType.displayTitle)")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                        Spacer()
+                        Text(sif.status.capitalized)
+                            .font(.caption)
+                            .foregroundColor(sif.status.lowercased() == "sent" ? .green : .gray)
+                    }
                 }
-
-                // Avoid force-unwrapping
-                if let subject = sif.subject, !subject.isEmpty {
-                    Text(subject)
-                        .font(.custom("AvenirNext-DemiBold", size: 15))
-                        .foregroundColor(.black)
-                }
-
-                Text(sif.message)
-                    .font(.custom("AvenirNext-Regular", size: 13))
-                    .foregroundColor(.gray)
-                    .lineLimit(2)
+                .padding(.vertical, 4)
             }
-            Spacer()
+        }
+    }
+}
+
+private struct ReceivedView: View {
+    var receivedSIFs: [SIF]
+    @Binding var error: Error?
+
+    var body: some View {
+        if let error {
+            ErrorView(error: error)
+        } else if receivedSIFs.isEmpty {
+            EmptyStateView(text: "No received SIFs yet.")
+        } else {
+            List(receivedSIFs) { sif in
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(sif.recipients.first?.name ?? "Unknown Sender")
+                        .font(.headline)
+                        .foregroundColor(.primary)
+
+                    Text(sif.message)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .lineLimit(2)
+
+                    Text("📬 \(sif.deliveryType.displayTitle)")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
+                .padding(.vertical, 4)
+            }
+        }
+    }
+}
+
+private struct ErrorView: View {
+    var error: Error
+    var body: some View {
+        VStack(spacing: 12) {
+            Text("An error occurred:")
+                .font(.headline)
+            Text(error.localizedDescription)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.secondary)
+            Button("Retry") { /* Optional retry logic */ }
+                .buttonStyle(.borderedProminent)
+                .tint(.blue)
         }
         .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(.ultraThinMaterial)
-                .shadow(color: .black.opacity(0.05), radius: 3, y: 1)
-        )
     }
 }
 
-// MARK: - SIF Display Helpers
-extension SIF {
-    var displayName: String {
-        recipients.first?.name ?? "Unknown"
+private struct EmptyStateView: View {
+    var text: String
+    var body: some View {
+        Text(text)
+            .font(.subheadline)
+            .foregroundColor(.gray)
+            .padding()
     }
-
-    var initials: String {
-        displayName.split(separator: " ").compactMap { $0.first }.prefix(2).map(String.init).joined()
-    }
-
-    var statusColor: Color {
-        switch status.lowercased() {
-        case "sent": return .blue
-        case "scheduled": return .orange
-        case "delivered": return .green
-        default: return .gray
-        }
-    }
-
-    var formattedDate: String {
-        createdAt.formatted(date: .abbreviated, time: .omitted)
-    }
-}
-
-// MARK: - Preview
-#Preview {
-    SIFInboxView()
-        .environmentObject(AuthState())
-        .environmentObject(TabRouter())
 }

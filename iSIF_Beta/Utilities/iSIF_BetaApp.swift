@@ -1,12 +1,20 @@
 import SwiftUI
 import FirebaseCore
+import FirebaseFirestore
 
 @main
 struct iSIF_BetaApp: App {
 
+    // MARK: - Global State Objects
+    @StateObject private var authState = AuthState()
+    @StateObject private var appState = AppState()
+    @StateObject private var router = TabRouter()
+
     // MARK: - Initialize Firebase
     init() {
         FirebaseApp.configure()
+        FirebaseConfiguration.shared.setLoggerLevel(.debug)
+        Firestore.enableLogging(true)
 
         if let app = FirebaseApp.app() {
             print("✅ Firebase configured successfully:")
@@ -17,11 +25,6 @@ struct iSIF_BetaApp: App {
             print("❌ Firebase failed to initialize. Check GoogleService-Info.plist.")
         }
     }
-
-    // MARK: - Global State Objects
-    @StateObject private var authState = AuthState()
-    @StateObject private var appState = AppState()
-    @StateObject private var router = TabRouter()
 
     // MARK: - Main Scene
     var body: some Scene {

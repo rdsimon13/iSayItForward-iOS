@@ -6,18 +6,18 @@ import FirebaseFirestore
 struct DashboardView: View {
     @EnvironmentObject var router: TabRouter
     @EnvironmentObject var authState: AuthState
-
+    
     @State private var displayName: String = ""
     @State private var sentSIFs: [SIF] = []
     @State private var receivedSIFs: [SIF] = []
     @State private var isLoadingSIFs = false
-
+    
     // ✅ UPDATED to use the new service instead of SIFService
-    private let sifDataManager = SIFDataManager()
-
+    private let sifDataManager = SIFDataManager.shared
+    
     let titleFillColor = Color(hex: "E6F4F5")
     let titleStrokeColor = Color(hex: "132E37")
-
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -31,7 +31,7 @@ struct DashboardView: View {
                     endRadius: UIScreen.main.bounds.height
                 )
                 .ignoresSafeArea()
-
+                
                 VStack(spacing: 0) {
                     ScrollView(showsIndicators: false) {
                         VStack(spacing: 20) {
@@ -47,7 +47,7 @@ struct DashboardView: View {
                         .padding(.top, 10)
                         .refreshable { fetchSIFs() }
                     }
-
+                    
                     BottomNavBar(
                         selectedTab: $router.selectedTab,
                         isVisible: .constant(true)
@@ -68,7 +68,7 @@ struct DashboardView: View {
         }
         .navigationBarHidden(true)
     }
-
+    
     private var headerSection: some View {
         VStack(spacing: 8) {
             Image("isiFLogo")
@@ -77,7 +77,7 @@ struct DashboardView: View {
                 .frame(height: 150)
                 .shadow(color: .black.opacity(0.25), radius: 5, y: 3)
                 .padding(.top, 25)
-
+            
             ZStack {
                 Text("iSayItForward")
                     .font(.custom("AvenirNext-Bold", size: 38))
@@ -90,14 +90,14 @@ struct DashboardView: View {
                     .foregroundColor(titleFillColor)
             }
             .shadow(color: .black.opacity(0.25), radius: 3, y: 2)
-
+            
             Text("The Ultimate Way to Express Yourself")
                 .font(.custom("AvenirNext-DemiBold", size: 16))
                 .foregroundColor(.black.opacity(0.75))
                 .padding(.bottom, 10)
         }
     }
-
+    
     private var welcomeCard: some View {
         VStack(spacing: 6) {
             Text("Welcome to iSIF, \(displayName.isEmpty ? "User" : displayName).")
@@ -120,7 +120,7 @@ struct DashboardView: View {
         )
         .padding(.horizontal, 28)
     }
-
+    
     private var featureButtons: some View {
         HStack(spacing: 25) {
             NavigationLink(destination: GettingStartedView()
@@ -129,13 +129,13 @@ struct DashboardView: View {
                     featureButton(icon: "Large FAB", label: "Getting\nStarted", width: 75)
                         .offset(x: 17, y: 10)
                 }
-
+            
             Button {
                 router.selectedTab = .compose
             } label: {
                 featureButton(icon: "Large FAB-1", label: "CREATE\nA SIF", width: 85)
             }
-
+            
             NavigationLink(destination: SIFInboxView()
                 .environmentObject(router)
                 .environmentObject(authState)) {
@@ -144,7 +144,7 @@ struct DashboardView: View {
         }
         .padding(.top, 4)
     }
-
+    
     private func featureButton(icon: String, label: String, width: CGFloat) -> some View {
         VStack(spacing: 6) {
             Image(icon)
@@ -159,7 +159,7 @@ struct DashboardView: View {
         }
         .frame(width: 100, height: 100)
     }
-
+    
     private var divider: some View {
         Rectangle()
             .fill(Color.gray.opacity(0.6))
@@ -169,7 +169,7 @@ struct DashboardView: View {
             .padding(.top, 14)
             .shadow(color: .black.opacity(0.15), radius: 1.5, y: 1)
     }
-
+    
     private var recentSIFsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Your Recent SIFs")
@@ -177,7 +177,7 @@ struct DashboardView: View {
                 .foregroundColor(.black.opacity(0.8))
                 .padding(.leading, 30)
                 .padding(.top, 6)
-
+            
             if isLoadingSIFs {
                 ProgressView("Loading SIFs...")
                     .padding()
@@ -193,18 +193,18 @@ struct DashboardView: View {
                             .font(.custom("AvenirNext-Medium", size: 15))
                             .padding(.leading, 30)
                             .foregroundColor(.black.opacity(0.7))
-
+                        
                         ForEach(sentSIFs.prefix(5)) { sif in
                             sifPreview(sif)
                         }
                     }
-
+                    
                     if !receivedSIFs.isEmpty {
                         Text("📥 Received")
                             .font(.custom("AvenirNext-Medium", size: 15))
                             .padding(.leading, 30)
                             .foregroundColor(.black.opacity(0.7))
-
+                        
                         ForEach(receivedSIFs.prefix(5)) { sif in
                             sifPreview(sif)
                         }
@@ -214,7 +214,7 @@ struct DashboardView: View {
         }
         .padding(.bottom, 15)
     }
-
+    
     private func sifPreview(_ sif: SIF) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(sif.message)
@@ -232,7 +232,7 @@ struct DashboardView: View {
         .shadow(color: .black.opacity(0.1), radius: 2, y: 1)
         .padding(.horizontal, 30)
     }
-
+    
     private var templateGalleryCard: some View {
         NavigationLink(destination: TemplateGalleryView(selectedTemplate: .constant(nil)).environmentObject(router).environmentObject(authState)) {
             middleCard(
@@ -243,7 +243,7 @@ struct DashboardView: View {
         }
         .buttonStyle(PlainButtonStyle())
     }
-
+    
     private var scheduleCard: some View {
         NavigationLink(destination: ScheduleSIFView().environmentObject(router).environmentObject(authState)) {
             middleCard(
@@ -254,7 +254,7 @@ struct DashboardView: View {
         }
         .buttonStyle(PlainButtonStyle())
     }
-
+    
     private func middleCard(title: String, subtitle: String, imageName: String) -> some View {
         HStack(alignment: .center, spacing: 10) {
             VStack(alignment: .leading, spacing: 5) {
@@ -271,7 +271,7 @@ struct DashboardView: View {
                     .padding(.leading, 15)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-
+            
             Image(imageName)
                 .resizable()
                 .scaledToFit()
@@ -287,7 +287,7 @@ struct DashboardView: View {
         )
         .padding(.horizontal, 28)
     }
-
+    
     private func loadUser() {
         if let user = Auth.auth().currentUser {
             displayName = user.displayName ?? user.email?.components(separatedBy: "@").first?.capitalized ?? "User"
@@ -297,24 +297,21 @@ struct DashboardView: View {
             print("⚠️ No active Firebase user.")
         }
     }
-
+    
     private func fetchSIFs() {
         guard let user = Auth.auth().currentUser else {
             print("⚠️ No user logged in; skipping SIF fetch.")
             return
         }
-
+        
         isLoadingSIFs = true
-
+        
         Task {
             do {
-                // Load everything once
                 let allSIFs = try await sifDataManager.fetchUserSIFs(for: user.uid)
-
-                // Sent: match by canonical field name
+                
                 let sent = allSIFs.filter { $0.senderUID == user.uid }
-
-                // Received: prefer matching by email if we have one; fall back to uid match
+                
                 let received: [SIF]
                 if let email = user.email, !email.isEmpty {
                     received = allSIFs.filter { sif in
@@ -325,28 +322,17 @@ struct DashboardView: View {
                         sif.recipients.contains { $0.id == user.uid }
                     }
                 }
-
-                // Update UI state on the main actor
+                
                 await MainActor.run {
-                    sentSIFs = sent
-                    receivedSIFs = received
-                    isLoadingSIFs = false
+                    self.sentSIFs = sent
+                    self.receivedSIFs = received
+                    self.isLoadingSIFs = false
                 }
-
-                print("✅ Loaded \(sent.count) sent and \(received.count) received SIFs.")
             } catch {
-                await MainActor.run { isLoadingSIFs = false }
+                await MainActor.run { self.isLoadingSIFs = false }
                 print("❌ Failed to load SIFs: \(error.localizedDescription)")
             }
         }
-
-            isLoadingSIFs = false
-        }
     }
-
-
-#Preview {
-    DashboardView()
-        .environmentObject(TabRouter())
-        .environmentObject(AuthState())
+    
 }

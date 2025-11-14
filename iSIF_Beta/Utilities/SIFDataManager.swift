@@ -1,9 +1,8 @@
 import Foundation
+import FirebaseCore
 import FirebaseFirestore
-import FirebaseFirestoreSwift
 
 final class SIFDataManager {
-
     static let shared = SIFDataManager()
     private init() {}
 
@@ -12,36 +11,39 @@ final class SIFDataManager {
 
     // MARK: - Save or Update SIF
     func saveSIF(_ sif: SIF) async throws {
-        do {
-            let documentRef = db.collection(collectionName).document()
-            var sifToSave = sif
+        var sifToSave = sif
+
+        // ✅ Use existing ID if available; otherwise, generate a new one
+        let documentRef: DocumentReference
+        if !sifToSave.id.isEmpty {
+            documentRef = db.collection(collectionName).document(sifToSave.id)
+        } else {
+            documentRef = db.collection(collectionName).document()
             sifToSave.id = documentRef.documentID
-            
-            print("🧾 Writing to Firestore collection: \(collectionName)")
-            print("🧾 Firestore project: \(FirebaseApp.app()?.options.projectID ?? "unknown")")
-            print("📄 Document ID: \(documentRef.documentID)")
-            print("📄 SIF data: \(sifToSave)")
+        }
 
-            try documentRef.setData(from: sifToSave, merge: false)
+        // Debug output
+        print("🧾 Writing to Firestore collection: \(collectionName)")
+        print("🧾 Document ID: \(sifToSave.id)")
+        print("📄 SIF data: \(sifToSave)")
 
-            print("✅ SIF successfully written to Firestore with ID: \(documentRef.documentID)")
-            
-            // Verify the document was written
-            let doc = try await documentRef.getDocument()
-            if doc.exists {
-                print("✅ Document verified to exist after write")
-            } else {
-                print("❌ Document does not exist after write!")
-            }
-        } catch {
-            print("❌ Error writing SIF: \(error.localizedDescription)")
-            throw error
+        // ✅ Write data to Firestore
+        try documentRef.setData(from: sifToSave, merge: false)
+        print("✅ SIF successfully written to Firestore with ID: \(sifToSave.id)")
+
+        // ✅ Verify the document was written correctly
+        let snapshot = try await documentRef.getDocument()
+        if snapshot.exists {
+            print("✅ Document verified to exist after write")
+        } else {
+            print("❌ Document not found after write")
         }
     }
 
     // MARK: - Fetch SIFs for a User
     func fetchUserSIFs(for userId: String) async throws -> [SIF] {
         print("📡 Fetching SIFs for user: \(userId) from \(collectionName)...")
+
         do {
             let snapshot = try await db.collection(collectionName)
                 .whereField("senderUID", isEqualTo: userId)
@@ -51,7 +53,7 @@ final class SIFDataManager {
 
             print("📦 Retrieved \(snapshot.documents.count) document(s) for user: \(userId)")
 
-            let sifs = snapshot.documents.compactMap { document -> SIF? in
+            let sifs: [SIF] = snapshot.documents.compactMap { document in
                 do {
                     return try document.data(as: SIF.self)
                 } catch {
@@ -68,11 +70,10 @@ final class SIFDataManager {
         }
     }
 
-    // MARK: - Delete SIF (optional)
-    func deleteSIF(_ sifId: String) async throws {
-        try await db.collection(collectionName)
-            .document(sifId)
-            .delete()
-        print("🗑️ SIF \(sifId) deleted successfully.")
+    // MARK: - Delete SIF
+    func deleteSIF(withId sifId: String) async throws {
+        print("🗑️ Attempting to delete SIF with ID: \(sifId)")
+        try await db.collection(collectionName).document(sifId).delete()
+        print("✅ SIF \(sifId) deleted successfully.")
     }
 }

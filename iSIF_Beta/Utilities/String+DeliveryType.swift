@@ -1,11 +1,12 @@
 import Foundation
 
 extension String {
-    // MARK: - Delivery Type Constants
+    // MARK: - Canonical Delivery Type Constants
     static let oneToOne = "One-to-One"
     static let oneToMany = "One-to-Many"
     static let toGroup = "To Group"
     static let scheduled = "Scheduled"
+    static let broadcast = "Broadcast"
 
     // MARK: - User-Friendly Display Title
     var displayTitle: String {
