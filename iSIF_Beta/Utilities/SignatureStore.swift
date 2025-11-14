@@ -10,7 +10,7 @@ import FirebaseStorage
 public enum SignatureStore {
 
     public static func save(imageData: Foundation.Data, for uid: String) async throws -> URL {
-        let path = "users/\(uid)/signatures/latest.png"
+        let path = "signatures/\(uid).png"
         let ref = Storage.storage().reference().child(path)
         let meta = StorageMetadata()
         meta.contentType = "image/png"
@@ -19,7 +19,7 @@ public enum SignatureStore {
     }
 
     public static func loadLatestURL(for uid: String) async throws -> URL? {
-        let ref = Storage.storage().reference().child("users/\(uid)/signatures/latest.png")
+        let ref = Storage.storage().reference().child("signatures/\(uid).png")
         do { return try await ref.downloadURLAsync() } catch { return nil }
     }
 }
