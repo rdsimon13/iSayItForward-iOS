@@ -62,7 +62,7 @@ struct SIFConfirmationView: View {
                             .font(.custom("AvenirNext-Regular", size: 15))
                     }
 
-                    if let when = sif.scheduledAt {
+                    if let when = sif.deliveryDate {
                         Divider()
                         HStack {
                             Text("Scheduled For:")
@@ -114,10 +114,15 @@ struct SIFConfirmationView: View {
         recipients: [SIFRecipient(name: "John Doe", email: "john@example.com")],
         subject: "A Test SIF",
         message: "Here’s a warm message from your future self.",
-        deliveryType: .oneToOne, // ✅ Now works via String extension
-        scheduledAt: Date().addingTimeInterval(86_400),
+        deliveryType: "oneToOne",
+        deliveryChannel: "inApp",
+        deliveryDate: Date().addingTimeInterval(86_400),
         createdAt: Date(),
-        status: "sent"
+        status: "sent",
+        signatureURLString: nil,
+        attachments: nil,
+        templateName: nil,
+        textOverlay: nil
     )
     SIFConfirmationView(sif: demo)
         .environmentObject(TabRouter())
