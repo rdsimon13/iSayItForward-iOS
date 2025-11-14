@@ -115,7 +115,7 @@ struct AllUsersView: View {
                     }
                 }
             }
-            .navigationTitle("Friends")
+            .navigationTitle("SIF Connect")
             .onAppear(perform: fetchData)
             .onChange(of: selectedTab) { _ in
                 fetchData()
