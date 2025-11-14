@@ -7,11 +7,15 @@ public struct SIF: Codable, Identifiable, Hashable {
     public var recipients: [SIFRecipient]
     public var subject: String?
     public var message: String
-    public var deliveryType: String          // ✅ Firestore-safe String
-    public var scheduledAt: Date?
+    public var deliveryType: String          // "oneToOne", "oneToMany", "group"
+    public var deliveryChannel: String       // "inApp", "email", "sms"
+    public var deliveryDate: Date?
     public var createdAt: Date
     public var status: String
-    public var signatureURLString: String?   // ✅ Firestore-safe URL
+    public var signatureURLString: String?   // Firestore-safe URL
+    public var attachments: [String]?        // Array of attachment URLs
+    public var templateName: String?         // Template identifier
+    public var textOverlay: String?          // Text overlay content
 
     // MARK: - Computed property for optional URL
     public var signatureURL: URL? {
@@ -19,7 +23,7 @@ public struct SIF: Codable, Identifiable, Hashable {
         return URL(string: signatureURLString)
     }
 
-    // MARK: - Main Initializer (✅ single source of truth)
+    // MARK: - Main Initializer
     public init(
         id: String = UUID().uuidString,
         senderUID: String,
@@ -27,10 +31,14 @@ public struct SIF: Codable, Identifiable, Hashable {
         subject: String? = nil,
         message: String,
         deliveryType: String,
-        scheduledAt: Date? = nil,
+        deliveryChannel: String = "inApp",
+        deliveryDate: Date? = nil,
         createdAt: Date = Date(),
         status: String = "sent",
-        signatureURLString: String? = nil
+        signatureURLString: String? = nil,
+        attachments: [String]? = nil,
+        templateName: String? = nil,
+        textOverlay: String? = nil
     ) {
         self.id = id
         self.senderUID = senderUID
@@ -38,15 +46,20 @@ public struct SIF: Codable, Identifiable, Hashable {
         self.subject = subject
         self.message = message
         self.deliveryType = deliveryType
-        self.scheduledAt = scheduledAt
+        self.deliveryChannel = deliveryChannel
+        self.deliveryDate = deliveryDate
         self.createdAt = createdAt
         self.status = status
         self.signatureURLString = signatureURLString
+        self.attachments = attachments
+        self.templateName = templateName
+        self.textOverlay = textOverlay
     }
 
     // MARK: - Firestore Codable Keys
     enum CodingKeys: String, CodingKey {
         case id, senderUID, recipients, subject, message,
-             deliveryType, scheduledAt, createdAt, status, signatureURLString
+             deliveryType, deliveryChannel, deliveryDate, createdAt, status, 
+             signatureURLString, attachments, templateName, textOverlay
     }
 }

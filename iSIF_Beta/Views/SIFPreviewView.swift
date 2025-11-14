@@ -1,20 +1,54 @@
 import SwiftUI
 
 struct SIFPreviewView: View {
-    let sif: SIFItem
+    let sif: SIF
 
     var body: some View {
         VStack(spacing: 20) {
-            // The image section has been removed since our new
-            // SIFItem doesn't have an attachmentImageName property.
+            // Template preview if available
+            if let templateName = sif.templateName {
+                Text("Template: \(templateName)")
+                    .font(.headline)
+            }
+            
+            // Text overlay preview
+            if let textOverlay = sif.textOverlay {
+                Text("Overlay: \(textOverlay)")
+                    .font(.subheadline)
+                    .padding()
+                    .background(Color.white.opacity(0.8))
+                    .cornerRadius(8)
+            }
+            
+            // Signature preview
+            if let signatureURL = sif.signatureURL {
+                AsyncImage(url: signatureURL) { image in
+                    image
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 100)
+                } placeholder: {
+                    ProgressView()
+                }
+            }
 
             VStack(alignment: .leading, spacing: 8) {
-                Text("To: \(sif.recipients.joined(separator: ", "))")
-                Text("Scheduled For: \(sif.scheduledDate.formatted(date: .long, time: .shortened))")
+                Text("To: \(sif.recipients.map { $0.name }.joined(separator: ", "))")
+                if let deliveryDate = sif.deliveryDate {
+                    Text("Scheduled For: \(deliveryDate.formatted(date: .long, time: .shortened))")
+                }
+                Text("Delivery Type: \(sif.deliveryType)")
+                Text("Delivery Channel: \(sif.deliveryChannel)")
                 Text("Message:")
                     .font(.headline)
                 Text("“\(sif.message)”")
                     .italic()
+                
+                // Attachments preview
+                if let attachments = sif.attachments, !attachments.isEmpty {
+                    Text("Attachments: \(attachments.count) file(s)")
+                        .font(.subheadline)
+                }
             }
             .padding()
             .background(Color.white)
@@ -25,7 +59,6 @@ struct SIFPreviewView: View {
             Button("Confirm & Send") {
                 // Logic to send would go here
             }
-            // Using one of our new button styles for consistency
             .buttonStyle(PrimaryActionButtonStyle())
             
         }

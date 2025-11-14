@@ -109,8 +109,15 @@ struct SIFDetailView: View {
 
             metaRow(label: "Delivery Type", value: sif.deliveryType.displayTitle)
 
-            if let date = sif.scheduledAt {
+            if let date = sif.deliveryDate {
                 metaRow(label: "Scheduled For", value: date.formatted(date: .abbreviated, time: .shortened))
+            }
+            metaRow(label: "Delivery Channel", value: sif.deliveryChannel)
+            if let template = sif.templateName {
+                metaRow(label: "Template", value: template)
+            }
+            if let attachments = sif.attachments, !attachments.isEmpty {
+                metaRow(label: "Attachments", value: "\(attachments.count) file(s)")
             }
         }
         .padding()

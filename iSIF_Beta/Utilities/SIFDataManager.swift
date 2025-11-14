@@ -70,6 +70,36 @@ final class SIFDataManager {
         }
     }
 
+    // MARK: - Fetch Received SIFs for a User (for inbox)
+    func fetchReceivedSIFs(for userId: String) async throws -> [SIF] {
+        print("📡 Fetching received SIFs for user: \(userId)...")
+
+        do {
+            let snapshot = try await db.collection(collectionName)
+                .whereField("recipients", arrayContains: userId)
+                .order(by: "createdAt", descending: true)
+                .limit(to: 100)
+                .getDocuments()
+
+            print("📦 Retrieved \(snapshot.documents.count) received SIF document(s)")
+
+            let sifs: [SIF] = snapshot.documents.compactMap { document in
+                do {
+                    return try document.data(as: SIF.self)
+                } catch {
+                    print("❌ Error decoding document \(document.documentID): \(error)")
+                    return nil
+                }
+            }
+
+            print("✅ Successfully decoded \(sifs.count) received SIF(s)")
+            return sifs
+        } catch {
+            print("❌ Error fetching received SIFs: \(error.localizedDescription)")
+            throw error
+        }
+    }
+
     // MARK: - Delete SIF
     func deleteSIF(withId sifId: String) async throws {
         print("🗑️ Attempting to delete SIF with ID: \(sifId)")
