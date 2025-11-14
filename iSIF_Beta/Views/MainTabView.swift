@@ -9,28 +9,42 @@ struct MainTabView: View {
             // Home View
             GettingStartedView() // Now acting as your initial 'Home' tab content
                 .tabItem {
-                    Label(AppTab.home.id.capitalized, systemImage: AppTab.home.systemImage)
+                    Label(AppTab.home.title, systemImage: AppTab.home.systemImage)
                 }
                 .tag(AppTab.home)
 
             // ✍️ Compose SIF View (replaces .create)
             CreateSIFView() // Assuming you have this view
                 .tabItem {
-                    Label(AppTab.compose.id.capitalized, systemImage: AppTab.compose.systemImage)
+                    Label(AppTab.compose.title, systemImage: AppTab.compose.systemImage)
                 }
                 .tag(AppTab.compose)
 
             // 🖼️ Gallery View
             TemplateGalleryView(selectedTemplate: .constant(nil))// Assuming you have this view
                 .tabItem {
-                    Label(AppTab.gallery.id.capitalized, systemImage: AppTab.gallery.systemImage)
+                    Label(AppTab.gallery.title, systemImage: AppTab.gallery.systemImage)
                 }
                 .tag(AppTab.gallery)
 
-            // ⚙️ Profile / Settings View
-            SettingsView() // Assuming you have this view
+            // 📅 Schedule View
+            ScheduleSIFView()
                 .tabItem {
-                    Label(AppTab.profile.id.capitalized, systemImage: AppTab.profile.systemImage)
+                    Label(AppTab.schedule.title, systemImage: AppTab.schedule.systemImage)
+                }
+                .tag(AppTab.schedule)
+
+            // 👥 Connect View
+            AllUsersView()
+                .tabItem {
+                    Label(AppTab.sifConnect.title, systemImage: AppTab.sifConnect.systemImage)
+                }
+                .tag(AppTab.sifConnect)
+
+            // 👤 Profile View
+            ProfileView()
+                .tabItem {
+                    Label(AppTab.profile.title, systemImage: AppTab.profile.systemImage)
                 }
                 .tag(AppTab.profile)
         }

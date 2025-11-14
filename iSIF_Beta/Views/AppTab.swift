@@ -1,6 +1,6 @@
 import Foundation
 
-public enum AppTab: String, CaseIterable {
+public enum AppTab: String, CaseIterable, Identifiable {
     case home
     case compose
     case gallery
@@ -8,6 +8,8 @@ public enum AppTab: String, CaseIterable {
     case sifConnect
     case profile
 
+    public var id: String { rawValue }
+    
     public var title: String {
         switch self {
         case .home: return "Home"
