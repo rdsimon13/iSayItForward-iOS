@@ -13,7 +13,7 @@ final class SIFDataManager {
     func saveSIF(_ sif: SIF) async throws {
         var sifToSave = sif
 
-        // ✅ Use existing ID if available; otherwise, generate a new one
+        // Use existing ID if available; otherwise, generate a new one
         let documentRef: DocumentReference
         if !sifToSave.id.isEmpty {
             documentRef = db.collection(collectionName).document(sifToSave.id)
@@ -22,16 +22,48 @@ final class SIFDataManager {
             sifToSave.id = documentRef.documentID
         }
 
+        // Convert SIF to dictionary for Firestore
+        var sifData: [String: Any] = [
+            "id": sifToSave.id,
+            "senderUID": sifToSave.senderUID,
+            "recipients": sifToSave.recipients.map { ["id": $0.id, "name": $0.name, "email": $0.email] },
+            "message": sifToSave.message,
+            "deliveryType": sifToSave.deliveryType,
+            "deliveryChannel": sifToSave.deliveryChannel,
+            "createdAt": sifToSave.createdAt,
+            "status": sifToSave.status
+        ]
+        
+        // Add optional fields
+        if let subject = sifToSave.subject {
+            sifData["subject"] = subject
+        }
+        if let deliveryDate = sifToSave.deliveryDate {
+            sifData["deliveryDate"] = deliveryDate
+        }
+        if let signatureURLString = sifToSave.signatureURLString {
+            sifData["signatureURLString"] = signatureURLString
+        }
+        if let attachments = sifToSave.attachments {
+            sifData["attachments"] = attachments
+        }
+        if let templateName = sifToSave.templateName {
+            sifData["templateName"] = templateName
+        }
+        if let textOverlay = sifToSave.textOverlay {
+            sifData["textOverlay"] = textOverlay
+        }
+
         // Debug output
         print("🧾 Writing to Firestore collection: \(collectionName)")
         print("🧾 Document ID: \(sifToSave.id)")
-        print("📄 SIF data: \(sifToSave)")
+        print("📄 SIF data: \(sifData)")
 
-        // ✅ Write data to Firestore
-        try documentRef.setData(from: sifToSave, merge: false)
+        // Write data to Firestore
+        try await documentRef.setData(sifData)
         print("✅ SIF successfully written to Firestore with ID: \(sifToSave.id)")
 
-        // ✅ Verify the document was written correctly
+        // Verify the document was written correctly
         let snapshot = try await documentRef.getDocument()
         if snapshot.exists {
             print("✅ Document verified to exist after write")
