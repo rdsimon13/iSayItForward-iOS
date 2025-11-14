@@ -104,15 +104,12 @@ struct SIFDetailView: View {
 
             metaRow(label: "Recipient", value: sif.recipients.first?.name ?? "Unknown")
             metaRow(label: "Email", value: sif.recipients.first?.email ?? "N/A")
-
-            // These two were previously on the model; show UI placeholders instead.
             metaRow(label: "Tone", value: "—")
             metaRow(label: "Emotion", value: "—")
 
-            // Canonical pretty label for enum
-            metaRow(label: "Delivery Type", value: sif.deliveryType.displayTitle)
+            // ✅ Updated to match your SIF model’s computed property
+            metaRow(label: "Delivery Type", value: sif.deliveryTypeDisplayTitle)
 
-            // Canonical property name is `scheduledAt`
             if let date = sif.scheduledAt {
                 metaRow(label: "Scheduled For", value: date.formatted(date: .abbreviated, time: .shortened))
             }
@@ -141,7 +138,7 @@ struct SIFDetailView: View {
     // MARK: - Buttons
     private var actionButtons: some View {
         VStack(spacing: 15) {
-            NavigationLink(destination: ComposeSIFView(existingSIF: sif, isEditing: true, isResend: false)) {
+            NavigationLink(destination: ComposeSIFView()) {
                 actionButton(title: "✏️ Edit SIF", color: .orange)
             }
 
@@ -186,6 +183,7 @@ struct SIFDetailView: View {
             )
     }
 
+    // MARK: - Share + Mail Logic
     private func buildShareMessage() -> String {
         let senderName = Auth.auth().currentUser?.displayName ?? "An iSayItForward user"
         let subjectText = sif.subject ?? "SIF Message"
@@ -199,7 +197,7 @@ struct SIFDetailView: View {
 
         Tone: —
         Emotion: —
-        Delivery: \(sif.deliveryType.displayTitle)
+        Delivery: \(sif.deliveryTypeDisplayTitle)
 
         Subject: \(subjectText)
         ✨ Sent via iSayItForward — where kindness travels through time.
@@ -213,6 +211,7 @@ struct SIFDetailView: View {
         mailData = MailData(subject: subjectText, recipients: recipients, message: body)
     }
 
+    // MARK: - Toast View
     private var toastView: some View {
         VStack {
             Spacer()
@@ -228,13 +227,13 @@ struct SIFDetailView: View {
         .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 
+    // MARK: - Delete Logic
     private func deleteSIF() {
         Task {
             do {
                 isDeleting = true
                 let db = Firestore.firestore()
-                let sifId = sif.id // canonical model uses non-optional String
-                try await db.collection("sifs").document(sifId).delete()
+                try await db.collection("SIFs").document(sif.id).delete()
 
                 isDeleting = false
                 showDeleteAlert = false
