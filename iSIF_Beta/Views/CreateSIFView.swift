@@ -13,6 +13,8 @@ struct CreateSIFView: View {
     @State private var signatureData: Data? = nil
     @State private var selectedTemplate: TemplateModel? = nil
     @State private var deliveryType: DeliveryType = .oneToOne
+    @State private var scheduledDate: Date? = nil
+    @State private var showDatePicker = false
 
     // MARK: - UI State
     @State private var showSignatureSheet = false
@@ -49,6 +51,7 @@ struct CreateSIFView: View {
                     headerSection
                     deliveryTypeSection
                     recipientSection
+                    schedulingSection
                     templateSection
                     messageSection
                     signatureSection
@@ -203,6 +206,73 @@ struct CreateSIFView: View {
         }
     }
 
+    // MARK: - Scheduling
+    private var schedulingSection: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Delivery Schedule")
+                .font(.custom("AvenirNext-DemiBold", size: 16))
+
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    showDatePicker.toggle()
+                }
+            } label: {
+                HStack {
+                    if let scheduledDate = scheduledDate {
+                        Text("Scheduled for \(scheduledDate.formatted(date: .abbreviated, time: .shortened))")
+                            .foregroundColor(.black)
+                    } else {
+                        Text("Schedule for later")
+                            .foregroundColor(.gray)
+                    }
+                    Spacer()
+                    Image(systemName: "calendar")
+                        .foregroundColor(.gray)
+                }
+                .padding()
+                .background(Color.white.opacity(0.9))
+                .cornerRadius(12)
+            }
+
+            if showDatePicker {
+                VStack {
+                    DatePicker(
+                        "Select delivery date",
+                        selection: Binding(
+                            get: { scheduledDate ?? Date().addingTimeInterval(24 * 3600) },
+                            set: { scheduledDate = $0 }
+                        ),
+                        in: Date()...,
+                        displayedComponents: [.date, .hourAndMinute]
+                    )
+                    .datePickerStyle(GraphicalDatePickerStyle())
+                    .padding()
+                    .background(Color.white.opacity(0.9))
+                    .cornerRadius(12)
+
+                    HStack {
+                        Button("Clear Schedule") {
+                            scheduledDate = nil
+                            showDatePicker = false
+                        }
+                        .foregroundColor(.red)
+                        .padding(.horizontal)
+
+                        Spacer()
+
+                        Button("Done") {
+                            showDatePicker = false
+                        }
+                        .foregroundColor(.blue)
+                        .padding(.horizontal)
+                    }
+                    .padding(.top, 8)
+                }
+                .transition(.opacity.combined(with: .scale(scale: 0.9)))
+            }
+        }
+    }
+
     // MARK: - Templates
     private var templateSection: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -315,9 +385,9 @@ struct CreateSIFView: View {
                 message: messageText,
                 deliveryType: deliveryType.rawValue,
                 deliveryChannel: "inApp",
-                deliveryDate: nil,
+                deliveryDate: scheduledDate,
                 createdAt: Date(),
-                status: "sent",
+                status: scheduledDate != nil ? "scheduled" : "sent",
                 signatureURLString: nil,
                 attachments: nil,
                 templateName: selectedTemplate?.id,
