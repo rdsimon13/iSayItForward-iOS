@@ -107,7 +107,7 @@ struct SIFDetailView: View {
             metaRow(label: "Tone", value: "—")
             metaRow(label: "Emotion", value: "—")
 
-            metaRow(label: "Delivery Type", value: sif.deliveryType.displayTitle)
+            metaRow(label: "Delivery Type", value: DeliveryType(rawValue: sif.deliveryType)?.displayTitle ?? sif.deliveryType)
 
             if let date = sif.deliveryDate {
                 metaRow(label: "Scheduled For", value: date.formatted(date: .abbreviated, time: .shortened))

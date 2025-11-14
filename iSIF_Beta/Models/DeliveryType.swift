@@ -25,14 +25,3 @@ public enum DeliveryType: String, Codable, CaseIterable, Identifiable {
     }
 }
 
-// Extension to handle string-based delivery types from Firestore
-extension String {
-    public var displayTitle: String {
-        switch self {
-        case "oneToOne": return "One-to-One"
-        case "oneToMany": return "One-to-Many"
-        case "toGroup": return "To Group"
-        default: return self
-        }
-    }
-}

@@ -37,7 +37,7 @@ struct SIFPreviewView: View {
                 if let deliveryDate = sif.deliveryDate {
                     Text("Scheduled For: \(deliveryDate.formatted(date: .long, time: .shortened))")
                 }
-                Text("Delivery Type: \(sif.deliveryType)")
+                Text("Delivery Type: \(DeliveryType(rawValue: sif.deliveryType)?.displayTitle ?? sif.deliveryType)")
                 Text("Delivery Channel: \(sif.deliveryChannel)")
                 Text("Message:")
                     .font(.headline)
