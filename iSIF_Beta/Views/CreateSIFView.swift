@@ -27,6 +27,10 @@ struct CreateSIFView: View {
     @State private var errorMessage: String?
     @State private var sentSIF: SIF?
     @State private var selectedFriends: [SIFRecipient] = []
+    @State private var showGroupPicker = false
+    @State private var attachments: [URL] = []
+    @State private var showDocumentPicker = false
+    @State private var showImagePicker = false
 
     private let friendsService: FriendsProviding = FriendService()
     private let sifService: SIFProviding = SIFService.shared
@@ -96,6 +100,7 @@ struct CreateSIFView: View {
                     
                     messageSection
                     signatureSection
+                    attachmentsSection
                     toneEmotionSection
                     sendButton
                 }
@@ -140,6 +145,24 @@ struct CreateSIFView: View {
             FriendPickerSheet(deliveryType: deliveryType, selected: $selectedFriends)
                 .environmentObject(router)
                 .environmentObject(authState)
+        }
+        
+        .sheet(isPresented: $showGroupPicker) {
+            GroupPickerView(selectedFriends: $selectedFriends)
+                .environmentObject(router)
+                .environmentObject(authState)
+        }
+        
+        .fileImporter(
+            isPresented: $showDocumentPicker,
+            allowedContentTypes: [.item],
+            allowsMultipleSelection: true
+        ) { result in
+            handleDocumentPickerResult(result)
+        }
+        
+        .sheet(isPresented: $showImagePicker) {
+            ImagePicker(attachments: $attachments)
         }
         
         // MARK: - Confirmation Navigation
@@ -215,11 +238,15 @@ struct CreateSIFView: View {
                 .font(.custom("AvenirNext-DemiBold", size: 16))
 
             Button {
-                showFriendPicker = true
+                if deliveryType == .toGroup {
+                    showGroupPicker = true
+                } else {
+                    showFriendPicker = true
+                }
             } label: {
                 HStack {
                     if selectedFriends.isEmpty {
-                        Text("Choose Recipients")
+                        Text(deliveryType == .toGroup ? "Choose Group" : "Choose Recipients")
                             .foregroundColor(.gray)
                     } else {
                         Text("\(selectedFriends.count) recipient(s) selected")
@@ -396,6 +423,40 @@ struct CreateSIFView: View {
         }
     }
 
+    // MARK: - Attachments
+    private var attachmentsSection: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Attachments")
+                .font(.custom("AvenirNext-DemiBold", size: 16))
+            
+            HStack {
+                Button("Attach Document") {
+                    showDocumentPicker = true
+                }
+                .buttonStyle(AttachmentButtonStyle())
+                
+                Button("Attach Photo") {
+                    showImagePicker = true
+                }
+                .buttonStyle(AttachmentButtonStyle())
+            }
+            
+            if !attachments.isEmpty {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Attached Files:")
+                        .font(.caption)
+                        .foregroundColor(.black.opacity(0.7))
+                    ForEach(attachments, id: \.self) { url in
+                        Text("• \(url.lastPathComponent)")
+                            .font(.caption)
+                            .foregroundColor(.blue)
+                    }
+                }
+                .padding(.horizontal, 4)
+            }
+        }
+    }
+    
     // MARK: - Tone/Emotion (placeholder)
     private var toneEmotionSection: some View {
         Text("Tone & Emotion Section")
@@ -485,6 +546,121 @@ struct CreateSIFView: View {
             .background(Capsule().fill(Color.green.opacity(0.9)))
             .shadow(radius: 4)
             .padding(.bottom, 80)
+    }
+    
+    // MARK: - Document Picker Handler
+    private func handleDocumentPickerResult(_ result: Result<[URL], Error>) {
+        do {
+            let selectedFiles = try result.get()
+            attachments.append(contentsOf: selectedFiles)
+        } catch {
+            errorMessage = "Failed to import documents: \(error.localizedDescription)"
+        }
+    }
+}
+
+// MARK: - Group Picker View
+struct GroupPickerView: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var router: TabRouter
+    @EnvironmentObject var authState: AuthState
+    @Binding var selectedFriends: [SIFRecipient]
+    
+    // Sample groups - in a real app, these would come from a service
+    private let sampleGroups: [GroupModel] = [
+        GroupModel(
+            name: "Family",
+            members: [
+                SIFRecipient(id: "1", name: "John Doe", email: "john@example.com"),
+                SIFRecipient(id: "2", name: "Jane Doe", email: "jane@example.com")
+            ]
+        ),
+        GroupModel(
+            name: "Friends", 
+            members: [
+                SIFRecipient(id: "3", name: "Alice Smith", email: "alice@example.com"),
+                SIFRecipient(id: "4", name: "Bob Johnson", email: "bob@example.com")
+            ]
+        )
+    ]
+    
+    var body: some View {
+        NavigationView {
+            List(sampleGroups) { group in
+                Button(action: {
+                    selectedFriends = group.members
+                    dismiss()
+                }) {
+                    VStack(alignment: .leading) {
+                        Text(group.name)
+                            .font(.headline)
+                        Text("\(group.members.count) members")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                }
+            }
+            .navigationTitle("Select Group")
+            .navigationBarItems(trailing: Button("Cancel") { dismiss() })
+        }
+    }
+}
+
+// MARK: - Group Model
+struct GroupModel: Identifiable {
+    let id = UUID().uuidString
+    let name: String
+    let members: [SIFRecipient]
+}
+
+// MARK: - Image Picker (UIKit-based)
+struct ImagePicker: UIViewControllerRepresentable {
+    @Environment(\.dismiss) private var dismiss
+    @Binding var attachments: [URL]
+    
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.delegate = context.coordinator
+        picker.sourceType = .photoLibrary
+        return picker
+    }
+    
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+        let parent: ImagePicker
+        
+        init(_ parent: ImagePicker) {
+            self.parent = parent
+        }
+        
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+            if let imageURL = info[.imageURL] as? URL {
+                parent.attachments.append(imageURL)
+            }
+            parent.dismiss()
+        }
+        
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            parent.dismiss()
+        }
+    }
+}
+
+// MARK: - Attachment Button Style
+struct AttachmentButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.custom("AvenirNext-Regular", size: 14))
+            .foregroundColor(.blue)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(Color.blue.opacity(0.1))
+            .cornerRadius(8)
     }
 }
 
