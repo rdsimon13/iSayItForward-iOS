@@ -9,124 +9,175 @@ struct FindFriendsAlert: Identifiable {
 }
 
 enum FriendTab {
-    case allUsers
+    case search
     case pendingRequests
     case friends
 }
 
 struct AllUsersView: View {
+    @EnvironmentObject var router: TabRouter
+    @EnvironmentObject var authState: AuthState
+    
     @State private var allUsers: [UserFriend] = []
     @State private var pendingRequests: [UserFriend] = []
     @State private var friends: [UserFriend] = []
     @State private var sentRequests: Set<String> = []
     @State private var isLoading = true
     @State private var alertMessage: FindFriendsAlert?
-    @State private var selectedTab: FriendTab = .allUsers
+    @State private var selectedTab: FriendTab = .search
+    @State private var searchText = ""
+    @State private var isNavVisible = true
 
     private let friendService = FriendService()
+    
+    var filteredUsers: [UserFriend] {
+        if searchText.isEmpty {
+            return []
+        }
+        return allUsers.filter { user in
+            user.name.localizedCaseInsensitiveContains(searchText) ||
+            user.email.localizedCaseInsensitiveContains(searchText)
+        }
+    }
 
     var body: some View {
-        NavigationStack {
-            VStack {
+        ZStack {
+            // Background
+            LinearGradient(
+                colors: [Color(red: 0.0, green: 0.796, blue: 1.0), Color.white],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                // Header
+                Text("SIF Connect")
+                    .font(.custom("AvenirNext-DemiBold", size: 24))
+                    .foregroundColor(Color(hex: "132E37"))
+                    .padding(.top, 20)
+                
+                // Tab Picker
                 Picker("Select Tab", selection: $selectedTab) {
-                    Text("All Users").tag(FriendTab.allUsers)
+                    Text("Search").tag(FriendTab.search)
                     Text("Pending Requests").tag(FriendTab.pendingRequests)
                     Text("Friends").tag(FriendTab.friends)
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding()
-
+                
+                // Search Bar for Search Tab
+                if selectedTab == .search {
+                    HStack {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.gray)
+                        TextField("Search by name or email", text: $searchText)
+                            .textFieldStyle(PlainTextFieldStyle())
+                    }
+                    .padding()
+                    .background(Color.white.opacity(0.9))
+                    .cornerRadius(12)
+                    .padding(.horizontal)
+                    .padding(.bottom, 8)
+                }
+                
+                // Content
                 ZStack {
                     if isLoading {
                         ProgressView("Loading…")
                     } else {
                         switch selectedTab {
-                        case .allUsers:
-                            List {
-                                ForEach(allUsers) { user in
-                                    HStack {
-                                        VStack(alignment: .leading) {
-                                            Text(user.name)
-                                                .font(.headline)
-                                            Text(user.email)
-                                                .font(.subheadline)
-                                                .foregroundColor(.gray)
-                                        }
-
-                                        Spacer()
-
-                                        if sentRequests.contains(user.id) {
-                                            Text("Requested")
-                                                .font(.caption)
-                                                .foregroundColor(.gray)
-                                        } else {
-                                            Button("Add") {
-                                                sendFriendRequest(to: user)
-                                            }
-                                            .buttonStyle(.bordered)
+                        case .search:
+                            if searchText.isEmpty {
+                                Text("Search for users by name or email")
+                                    .foregroundColor(.gray)
+                                    .padding()
+                            } else if filteredUsers.isEmpty {
+                                Text("No users found for '\(searchText)'")
+                                    .foregroundColor(.gray)
+                                    .padding()
+                            } else {
+                                ScrollView {
+                                    LazyVStack(spacing: 12) {
+                                        ForEach(filteredUsers) { user in
+                                            UserCardView(
+                                                user: user,
+                                                isFriend: friends.contains(where: { $0.id == user.id }),
+                                                isRequested: sentRequests.contains(user.id),
+                                                onAdd: { sendFriendRequest(to: user) },
+                                                onViewProfile: { viewProfile(user) }
+                                            )
                                         }
                                     }
+                                    .padding()
                                 }
                             }
+                            
                         case .pendingRequests:
-                            List {
-                                ForEach(pendingRequests) { user in
-                                    HStack {
-                                        VStack(alignment: .leading) {
-                                            Text(user.name)
-                                                .font(.headline)
-                                            Text(user.email)
-                                                .font(.subheadline)
-                                                .foregroundColor(.gray)
-                                        }
-
-                                        Spacer()
-
-                                        HStack {
-                                            Button("Accept") {
-                                                acceptFriendRequest(from: user)
-                                            }
-                                            .buttonStyle(.borderedProminent)
-                                            
-                                            Button("Decline") {
-                                                declineFriendRequest(from: user)
-                                            }
-                                            .buttonStyle(.bordered)
+                            if pendingRequests.isEmpty {
+                                Text("No pending requests")
+                                    .foregroundColor(.gray)
+                                    .padding()
+                            } else {
+                                ScrollView {
+                                    LazyVStack(spacing: 12) {
+                                        ForEach(pendingRequests) { user in
+                                            PendingRequestCardView(
+                                                user: user,
+                                                onAccept: { acceptFriendRequest(from: user) },
+                                                onDecline: { declineFriendRequest(from: user) }
+                                            )
                                         }
                                     }
+                                    .padding()
                                 }
                             }
+                            
                         case .friends:
-                            List {
-                                ForEach(friends) { user in
-                                    HStack {
-                                        VStack(alignment: .leading) {
-                                            Text(user.name)
-                                                .font(.headline)
-                                            Text(user.email)
-                                                .font(.subheadline)
-                                                .foregroundColor(.gray)
+                            if friends.isEmpty {
+                                Text("No friends yet")
+                                    .foregroundColor(.gray)
+                                    .padding()
+                            } else {
+                                ScrollView {
+                                    LazyVStack(spacing: 12) {
+                                        ForEach(friends) { user in
+                                            FriendCardView(user: user)
                                         }
-                                        Spacer()
                                     }
+                                    .padding()
                                 }
                             }
                         }
                     }
                 }
+                
+                Spacer()
             }
-            .navigationTitle("SIF Connect")
-            .onAppear(perform: fetchData)
-            .onChange(of: selectedTab) { _ in
-                fetchData()
-            }
-            .alert(item: $alertMessage) { alert in
-                Alert(
-                    title: Text("Friend Request"),
-                    message: Text(alert.message),
-                    dismissButton: .default(Text("OK"))
+            
+            // Bottom Navigation
+            VStack {
+                Spacer()
+                BottomNavBar(
+                    selectedTab: $router.selectedTab,
+                    isVisible: $isNavVisible
                 )
+                .environmentObject(router)
+                .environmentObject(authState)
+                .padding(.bottom, 8)
             }
+        }
+        .navigationBarHidden(true)
+        .onAppear(perform: fetchData)
+        .onChange(of: selectedTab) { _ in
+            fetchData()
+        }
+        .alert(item: $alertMessage) { alert in
+            Alert(
+                title: Text("Friend Request"),
+                message: Text(alert.message),
+                dismissButton: .default(Text("OK"))
+            )
         }
     }
 
@@ -141,9 +192,10 @@ struct AllUsersView: View {
         Task {
             do {
                 switch selectedTab {
-                case .allUsers:
+                case .search:
                     allUsers = try await friendService.fetchAllUsers(excluding: currentUser.uid)
                     sentRequests = try await friendService.fetchSentRequests(for: currentUser.uid)
+                    friends = try await friendService.fetchFriends(for: currentUser.uid)
                 case .pendingRequests:
                     pendingRequests = try await friendService.fetchReceivedRequests(for: currentUser.uid)
                 case .friends:
@@ -155,6 +207,11 @@ struct AllUsersView: View {
                 alertMessage = FindFriendsAlert(message: "Failed to load data: \(error.localizedDescription)")
             }
         }
+    }
+
+    private func viewProfile(_ user: UserFriend) {
+        // Navigate to user profile
+        print("View profile for \(user.name)")
     }
 
     // MARK: - Send Friend Request
@@ -230,5 +287,154 @@ struct AllUsersView: View {
                 alertMessage = FindFriendsAlert(message: "Error declining request: \(error.localizedDescription)")
             }
         }
+    }
+}
+
+// MARK: - User Card View
+struct UserCardView: View {
+    let user: UserFriend
+    let isFriend: Bool
+    let isRequested: Bool
+    let onAdd: () -> Void
+    let onViewProfile: () -> Void
+    
+    var body: some View {
+        HStack {
+            Image(systemName: "person.circle.fill")
+                .resizable()
+                .frame(width: 50, height: 50)
+                .foregroundColor(.gray)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(user.name)
+                    .font(.headline)
+                Text(user.email)
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+            }
+            
+            Spacer()
+            
+            if isFriend {
+                Button("Profile") {
+                    onViewProfile()
+                }
+                .buttonStyle(.bordered)
+                .tint(.blue)
+            } else if isRequested {
+                Text("Requested")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(8)
+            } else {
+                Button(action: onAdd) {
+                    Text("Add")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 8)
+                        .background(
+                            LinearGradient(
+                                colors: [Color(hex: "003366"), Color(hex: "00AEEF")],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .cornerRadius(20)
+                        .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
+                }
+            }
+        }
+        .padding()
+        .background(Color.white.opacity(0.9))
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.1), radius: 4, y: 2)
+    }
+}
+
+// MARK: - Pending Request Card View
+struct PendingRequestCardView: View {
+    let user: UserFriend
+    let onAccept: () -> Void
+    let onDecline: () -> Void
+    
+    var body: some View {
+        HStack {
+            Image(systemName: "person.circle.fill")
+                .resizable()
+                .frame(width: 50, height: 50)
+                .foregroundColor(.gray)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(user.name)
+                    .font(.headline)
+                Text(user.email)
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                Text("Friend Request")
+                    .font(.caption)
+                    .foregroundColor(.orange)
+            }
+            
+            Spacer()
+            
+            HStack {
+                Button("Accept") {
+                    onAccept()
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.green)
+                
+                Button("Decline") {
+                    onDecline()
+                }
+                .buttonStyle(.bordered)
+                .tint(.red)
+            }
+        }
+        .padding()
+        .background(Color.white.opacity(0.9))
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.1), radius: 4, y: 2)
+    }
+}
+
+// MARK: - Friend Card View
+struct FriendCardView: View {
+    let user: UserFriend
+    
+    var body: some View {
+        HStack {
+            Image(systemName: "person.circle.fill")
+                .resizable()
+                .frame(width: 50, height: 50)
+                .foregroundColor(.blue)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(user.name)
+                    .font(.headline)
+                Text(user.email)
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                Text("Friend")
+                    .font(.caption)
+                    .foregroundColor(.green)
+            }
+            
+            Spacer()
+            
+            Button("Message") {
+                // Start chat with friend
+            }
+            .buttonStyle(.bordered)
+            .tint(.blue)
+        }
+        .padding()
+        .background(Color.white.opacity(0.9))
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.1), radius: 4, y: 2)
     }
 }
