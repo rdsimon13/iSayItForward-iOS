@@ -33,7 +33,7 @@ struct ComposeSIFView: View {
         _message = State(initialValue: existingSIF?.message ?? "")
         _selectedFriends = State(initialValue: existingSIF?.recipients ?? [])
         _deliveryType = State(initialValue: existingSIF?.deliveryType ?? "One-to-One")
-        _scheduledAt = State(initialValue: existingSIF?.scheduledAt)
+        _scheduledAt = State(initialValue: existingSIF?.deliveryDate)
     }
 
     // MARK: - View Body
@@ -220,7 +220,7 @@ struct ComposeSIFView: View {
             subject: nil,
             message: message,
             deliveryType: deliveryType, // ✅ pure String, Firestore-safe
-            scheduledAt: scheduledAt,
+            deliveryDate: scheduledAt,
             createdAt: Date(),
             status: "sent"
         )
