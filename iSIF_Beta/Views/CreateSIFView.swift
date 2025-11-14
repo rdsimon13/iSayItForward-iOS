@@ -314,9 +314,14 @@ struct CreateSIFView: View {
                 subject: subject.isEmpty ? nil : subject,
                 message: messageText,
                 deliveryType: deliveryType.rawValue,
-                scheduledAt: nil,
+                deliveryChannel: "inApp",
+                deliveryDate: nil,
                 createdAt: Date(),
-                status: "sent"
+                status: "sent",
+                signatureURLString: nil,
+                attachments: nil,
+                templateName: selectedTemplate?.id,
+                textOverlay: nil
             )
             
             // Use SIFDataManager directly instead of sifService
