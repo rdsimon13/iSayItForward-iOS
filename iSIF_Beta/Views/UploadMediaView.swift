@@ -37,7 +37,7 @@ struct UploadMediaView: View {
                     }
                     .buttonStyle(.bordered)
                     
-                    PhotosPicker(selection: $selectedItems, maxSelectionCount: 10, matching: .any(of: [.images, .videos])) {
+                    PhotosPicker(selection: $selectedItems, maxSelectionCount: 10, matching: .images) {
                         Image(systemName: "photo.stack")
                             .font(.title2)
                     }
@@ -92,9 +92,7 @@ struct UploadMediaView: View {
                                 }
                             }
                             await MainActor.run {
-                                if !selectedImages.contains(image) {
-                                    selectedImages.append(image)
-                                }
+                                selectedImages.append(image)
                             }
                         }
                     }
