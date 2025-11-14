@@ -27,13 +27,13 @@ struct NavigationHostView: View {
                     .environmentObject(router)
                     .environmentObject(authState)
 
-            case .profile:
-                ProfileView()
+            case .sifConnect:
+                AllUsersView()
                     .environmentObject(router)
                     .environmentObject(authState)
 
-            case .settings:
-                SettingsView()
+            case .profile:
+                ProfileView()
                     .environmentObject(router)
                     .environmentObject(authState)
             }

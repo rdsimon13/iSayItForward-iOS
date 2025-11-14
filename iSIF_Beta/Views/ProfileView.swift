@@ -90,48 +90,75 @@ struct ProfileView: View {
         }
     }
 
-    // MARK: - Header Section
+    // MARK: - Header Section (Instagram-style)
     private var profileHeader: some View {
-        VStack(spacing: 15) {
-            ZStack {
-                Circle()
-                    .fill(Color.white.opacity(0.3))
-                    .frame(width: 150, height: 150)
-                    .shadow(color: cardShadowColor, radius: 10, y: 6)
-
+        VStack(spacing: 20) {
+            ZStack(alignment: .bottomTrailing) {
                 if let image = profileImage {
                     Image(uiImage: image)
                         .resizable()
                         .scaledToFill()
-                        .frame(width: 140, height: 140)
+                        .frame(width: 100, height: 100)
                         .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.white, lineWidth: 4))
+                        .overlay(Circle().stroke(
+                            LinearGradient(
+                                colors: [.purple, .pink, .orange],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 3
+                        ))
                 } else {
                     Image(systemName: "person.crop.circle.fill")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 130, height: 130)
-                        .foregroundColor(.white.opacity(0.8))
+                        .frame(width: 100, height: 100)
+                        .foregroundColor(.gray.opacity(0.7))
+                        .overlay(Circle().stroke(
+                            LinearGradient(
+                                colors: [.purple, .pink, .orange],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 3
+                        ))
+                }
+                
+                PhotosPicker(selection: $selectedItem, matching: .images) {
+                    Image(systemName: "camera.circle.fill")
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(.white, .blue)
+                        .font(.system(size: 24))
+                        .background(Circle().fill(Color.blue))
+                }
+                .offset(x: 5, y: 5)
+                .onChange(of: selectedItem) { newItem in
+                    Task {
+                        if let newItem,
+                           let data = try? await newItem.loadTransferable(type: Data.self),
+                           let uiImage = UIImage(data: data) {
+                            profileImage = uiImage
+                            await uploadProfileImage(uiImage)
+                        }
+                    }
                 }
             }
 
-            PhotosPicker(selection: $selectedItem, matching: .images) {
-                Text("Change Profile Picture")
-                    .font(.custom("AvenirNext-SemiBold", size: 16))
-                    .foregroundColor(Color(hex: "132E37"))
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 15)
-                    .background(Capsule().fill(Color.white.opacity(0.6)))
-                    .shadow(color: cardShadowColor, radius: 3, y: 1)
-            }
-            .onChange(of: selectedItem) { newItem in
-                Task {
-                    if let newItem,
-                       let data = try? await newItem.loadTransferable(type: Data.self),
-                       let uiImage = UIImage(data: data) {
-                        profileImage = uiImage
-                        await uploadProfileImage(uiImage)
-                    }
+            VStack(spacing: 8) {
+                Text(userName.isEmpty ? "Your Name" : userName)
+                    .font(.custom("AvenirNext-Bold", size: 22))
+                    .foregroundColor(primaryTextColor)
+                
+                Text(userEmail)
+                    .font(.custom("AvenirNext-Regular", size: 14))
+                    .foregroundColor(.gray)
+                
+                if !bio.isEmpty {
+                    Text(bio)
+                        .font(.custom("AvenirNext-Regular", size: 14))
+                        .foregroundColor(primaryTextColor)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 40)
                 }
             }
         }
@@ -227,15 +254,19 @@ struct ProfileView: View {
     private var editSaveButton: some View {
         Button(action: toggleEdit) {
             Text(isEditing ? "Save Changes" : "Edit Profile")
-                .font(.custom("AvenirNext-Bold", size: 18))
-                .foregroundColor(primaryTextColor)
-                .padding(.vertical, 15)
-                .frame(maxWidth: .infinity)
+                .font(.custom("AvenirNext-Bold", size: 16))
+                .foregroundColor(.white)
+                .padding(.vertical, 12)
+                .padding(.horizontal, 30)
                 .background(
-                    Capsule()
-                        .fill(goldButtonColor)
-                        .shadow(color: cardShadowColor, radius: 5, y: 3)
+                    LinearGradient(
+                        colors: [.purple, .pink, .orange],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
                 )
+                .clipShape(Capsule())
+                .shadow(color: cardShadowColor, radius: 5, y: 3)
         }
         .padding(.horizontal, 40)
     }
