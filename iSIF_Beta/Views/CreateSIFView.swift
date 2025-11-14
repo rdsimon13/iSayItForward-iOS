@@ -155,9 +155,9 @@ struct CreateSIFView: View {
                 .font(.custom("AvenirNext-DemiBold", size: 16))
 
             Picker("Delivery Type", selection: $deliveryType) {
-                ForEach(DeliveryType.allCases) { type in
-                    Text(type.displayTitle).tag(type)
-                }
+                Text(String.oneToOne.displayTitle).tag(String.oneToOne)
+                Text(String.oneToMany.displayTitle).tag(String.oneToMany)
+                Text(String.toGroup.displayTitle).tag(String.toGroup)
             }
             .pickerStyle(.segmented)
             .padding(.vertical, 8)
@@ -313,7 +313,7 @@ struct CreateSIFView: View {
                 recipients: selectedFriends,
                 subject: subject.isEmpty ? nil : subject,
                 message: messageText,
-                deliveryType: deliveryType,
+                deliveryType: deliveryType.rawValue,
                 scheduledAt: nil,
                 createdAt: Date(),
                 status: "sent"
