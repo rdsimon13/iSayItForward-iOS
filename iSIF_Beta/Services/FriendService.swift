@@ -1,4 +1,5 @@
 import Foundation
+import FirebaseAuth
 
 public protocol FriendsProviding {
     func fetchFriends() async throws -> [SIFRecipient]
@@ -8,11 +9,10 @@ public final class FriendService: FriendsProviding {
     public init() {}
     
     public func fetchFriends() async throws -> [SIFRecipient] {
-        // Mock implementation - replace with actual Firestore query later
-        return [
-            SIFRecipient(name: "Demo User", email: "demo@isif.app"),
-            SIFRecipient(name: "Ada Lovelace", email: "ada@isif.app")
-        ]
+        guard let currentUser = Auth.auth().currentUser else {
+            return []
+        }
+        return try await fetchFriends(for: currentUser.uid)
     }
 }
 
