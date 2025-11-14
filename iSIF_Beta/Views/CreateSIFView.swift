@@ -53,6 +53,47 @@ struct CreateSIFView: View {
                     recipientSection
                     schedulingSection
                     templateSection
+                    
+                    // Show selected template preview if available
+                    if let selectedTemplate = selectedTemplate {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Selected Template")
+                                .font(.custom("AvenirNext-DemiBold", size: 16))
+                            
+                            HStack {
+                                Image(systemName: selectedTemplate.icon ?? "photo")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 40, height: 40)
+                                    .foregroundColor(.black.opacity(0.8))
+                                    .padding(8)
+                                    .background(selectedTemplate.color)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                                
+                                VStack(alignment: .leading) {
+                                    Text(selectedTemplate.title)
+                                        .font(.custom("AvenirNext-DemiBold", size: 14))
+                                        .foregroundColor(.black)
+                                    Text(selectedTemplate.subtitle)
+                                        .font(.custom("AvenirNext-Regular", size: 12))
+                                        .foregroundColor(.black.opacity(0.7))
+                                        .lineLimit(2)
+                                }
+                                
+                                Spacer()
+                                
+                                Button("Remove") {
+                                    self.selectedTemplate = nil
+                                }
+                                .font(.custom("AvenirNext-Regular", size: 12))
+                                .foregroundColor(.red)
+                            }
+                            .padding()
+                            .background(Color.white.opacity(0.9))
+                            .cornerRadius(12)
+                        }
+                    }
+                    
                     messageSection
                     signatureSection
                     toneEmotionSection
@@ -319,22 +360,39 @@ struct CreateSIFView: View {
 
     // MARK: - Signature
     private var signatureSection: some View {
-        Button {
-            showSignatureSheet = true
-        } label: {
-            HStack {
-                Text(signatureData == nil ? "Add Signature" : "Edit Signature")
-                    .font(.custom("AvenirNext-Regular", size: 15))
-                    .foregroundColor(.black)
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Signature")
+                .font(.custom("AvenirNext-DemiBold", size: 16))
+            
+            Button {
+                showSignatureSheet = true
+            } label: {
+                HStack {
+                    if signatureData != nil {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                    }
+                    
+                    Text(signatureData == nil ? "Add Signature" : "Signature Added")
+                        .font(.custom("AvenirNext-Regular", size: 15))
+                        .foregroundColor(.black)
 
-                Spacer()
+                    Spacer()
 
-                Image(systemName: "pencil")
-                    .foregroundColor(.gray)
+                    Image(systemName: "pencil")
+                        .foregroundColor(.gray)
+                }
+                .padding()
+                .background(Color.white.opacity(0.9))
+                .cornerRadius(12)
             }
-            .padding()
-            .background(Color.white.opacity(0.9))
-            .cornerRadius(12)
+            
+            if signatureData != nil {
+                Text("Signature will be included with your SIF")
+                    .font(.caption)
+                    .foregroundColor(.green)
+                    .padding(.horizontal, 4)
+            }
         }
     }
 
@@ -378,6 +436,13 @@ struct CreateSIFView: View {
         defer { isLoading = false }
         
         do {
+            // Upload signature if available
+            var signatureURLString: String? = nil
+            if let signatureData = signatureData {
+                let signatureURL = try await SignatureStore.save(imageData: signatureData, for: userUID)
+                signatureURLString = signatureURL.absoluteString
+            }
+            
             let sif = SIF(
                 senderUID: userUID,
                 recipients: selectedFriends,
@@ -388,7 +453,7 @@ struct CreateSIFView: View {
                 deliveryDate: scheduledDate,
                 createdAt: Date(),
                 status: scheduledDate != nil ? "scheduled" : "sent",
-                signatureURLString: nil,
+                signatureURLString: signatureURLString,
                 attachments: nil,
                 templateName: selectedTemplate?.id,
                 textOverlay: nil
@@ -404,6 +469,7 @@ struct CreateSIFView: View {
             messageText = ""
             selectedFriends = []
             selectedTemplate = nil
+            signatureData = nil
         } catch {
             errorMessage = error.localizedDescription
         }
