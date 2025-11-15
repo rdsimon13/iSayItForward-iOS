@@ -4,27 +4,86 @@ struct FriendPickerSheet: View {
     let deliveryType: DeliveryType
     @Binding var selected: [SIFRecipient]
     @Environment(\.dismiss) private var dismiss
+    @State private var showGroupPicker = false
 
+    // Mock data for friends
+    private let mockFriends = [
+        SIFRecipient(name: "John Doe", email: "john@example.com"),
+        SIFRecipient(name: "Jane Roe", email: "jane@example.com"),
+        SIFRecipient(name: "Alex Smith", email: "alex@example.com")
+    ]
+    
     var body: some View {
         NavigationView {
-            VStack(spacing: 16) {
-                Text("Friend Picker (stub)")
-                    .font(.headline)
-                Button("Add Demo Recipient") {
-                    selected.append(SIFRecipient(name: "Demo", email: "demo@example.com"))
-                    dismiss()
+            VStack {
+                if deliveryType == .toGroup {
+                    Button("Select Group") {
+                        showGroupPicker = true
+                    }
+                    .buttonStyle(PrimaryButtonStyle())
+                    .padding()
                 }
-                .buttonStyle(.borderedProminent)
+                
+                List(mockFriends, id: \.id) { friend in
+                    Button(action: {
+                        selectFriend(friend)
+                    }) {
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(friend.name)
+                                    .font(.headline)
+                                Text(friend.email)
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                            }
+                            Spacer()
+                            if selected.contains(where: { $0.id == friend.id }) {
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(.blue)
+                            }
+                        }
+                    }
+                    .foregroundColor(.primary)
+                }
             }
-            .padding()
-            .navigationTitle("Select Friends")
+            .navigationTitle(deliveryType == .oneToMany ? "Pick Recipients" : 
+                            deliveryType == .toGroup ? "Pick Group or Friends" : "Pick Recipient")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Close") { 
+                    Button("Done") {
                         dismiss()
                     }
                 }
             }
+            .sheet(isPresented: $showGroupPicker) {
+                GroupPickerView(selectedFriends: $selected)
+            }
         }
+    }
+    
+    private func selectFriend(_ friend: SIFRecipient) {
+        if deliveryType == .oneToOne {
+            selected = [friend]
+            dismiss()
+        } else {
+            if let index = selected.firstIndex(where: { $0.id == friend.id }) {
+                selected.remove(at: index)
+            } else {
+                selected.append(friend)
+            }
+        }
+    }
+}
+
+struct PrimaryButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.headline)
+            .foregroundColor(.white)
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(Color.blue)
+            .cornerRadius(10)
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
     }
 }

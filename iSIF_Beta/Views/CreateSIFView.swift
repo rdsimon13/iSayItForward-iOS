@@ -520,8 +520,8 @@ struct CreateSIFView: View {
                 textOverlay: nil
             )
             
-            // Use SIFDataManager directly instead of sifService
-            try await SIFDataManager.shared.saveSIF(sif)
+            // Use sifService to save the SIF
+            try await sifService.saveSIF(sif)
             sentSIF = sif
             showConfirmation = true
             
@@ -531,6 +531,7 @@ struct CreateSIFView: View {
             selectedFriends = []
             selectedTemplate = nil
             signatureData = nil
+            attachments = []
         } catch {
             errorMessage = error.localizedDescription
         }

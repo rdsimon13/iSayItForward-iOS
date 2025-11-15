@@ -24,12 +24,6 @@ struct MainTabView: View {
                 }
                 .tag(AppTab.compose)
 
-            // 📅 Schedule View
-            ScheduleSIFView()
-                .tabItem {
-                    Label(AppTab.schedule.title, systemImage: AppTab.schedule.systemImage)
-                }
-                .tag(AppTab.schedule)
 
             // 👥 Connect View
             AllUsersView()
