@@ -1,0 +1,17 @@
+# Xcode user data
+*.xcuserdatad/
+*.xcuserdata/
+DerivedData/
+build/
+
+# macOS
+.DS_Store
+
+# Firebase + fastlane
+GoogleService-Info.plist
+fastlane/report.xml
+fastlane/test_output/
+
+# Environment / logs
+.env
+*.log
