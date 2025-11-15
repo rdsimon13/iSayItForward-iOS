@@ -62,7 +62,6 @@
 		7B1886362EBBA558001AD116 /* PrimaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885A82EBBA558001AD116 /* PrimaryButton.swift */; };
 		7B1886372EBBA558001AD116 /* AppRouteEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885C12EBBA558001AD116 /* AppRouteEnvironment.swift */; };
 		7B1886382EBBA558001AD116 /* SendSIFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885EA2EBBA558001AD116 /* SendSIFView.swift */; };
-		7B1886392EBBA558001AD116 /* ScheduleSIFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885E82EBBA558001AD116 /* ScheduleSIFView.swift */; };
 		7B18863A2EBBA558001AD116 /* AppTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885C32EBBA558001AD116 /* AppTab.swift */; };
 		7B18863B2EBBA558001AD116 /* SIFSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885F02EBBA558001AD116 /* SIFSettingsView.swift */; };
 		7B18863D2EBBA558001AD116 /* AppUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1885C42EBBA558001AD116 /* AppUser.swift */; };
@@ -669,7 +668,6 @@
 				7B1886362EBBA558001AD116 /* PrimaryButton.swift in Sources */,
 				7B1886372EBBA558001AD116 /* AppRouteEnvironment.swift in Sources */,
 				7B1886382EBBA558001AD116 /* SendSIFView.swift in Sources */,
-				7B1886392EBBA558001AD116 /* ScheduleSIFView.swift in Sources */,
 				7B18863A2EBBA558001AD116 /* AppTab.swift in Sources */,
 				7BEC69E72EC4CD1C0035AA5C /* LegacyCompat.swift in Sources */,
 				7BBDA7782EC5A4BA007D64AB /* SIF+Compat.swift in Sources */,

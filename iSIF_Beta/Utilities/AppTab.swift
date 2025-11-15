@@ -1,34 +1,32 @@
-import SwiftUI
+import Foundation
 
-enum AppTab: String, CaseIterable, Identifiable {
+public enum AppTab: String, CaseIterable {
     case home
     case compose
-    case profile
+    case gallery
     case schedule
-    case gallery  // ✅ Added to fix "Type 'AppTab' has no member 'gallery'"
-    case settings
+    case sifConnect
+    case profile
 
-    var id: String { rawValue }
-
-    var systemImage: String {
+    public var title: String {
         switch self {
-        case .home:     return "house.fill"
-        case .compose:  return "square.and.pencil"
-        case .profile:  return "person.fill"
-        case .schedule: return "calendar"
-        case .gallery:  return "photo.on.rectangle" // ✅ Added icon
-        case .settings: return "gearshape.fill"
+        case .home: return "Home"
+        case .compose: return "Compose"
+        case .gallery: return "Gallery"
+        case .schedule: return "Schedule"
+        case .sifConnect: return "Connect"
+        case .profile: return "Profile"
         }
     }
 
-    var title: String {
+    public var systemImage: String {
         switch self {
-        case .home:     return "Home"
-        case .compose:  return "Compose"
-        case .profile:  return "Profile"
-        case .schedule: return "Schedule"
-        case .gallery:  return "Gallery" // ✅ Added title
-        case .settings: return "Settings"
+        case .home: return "house.fill"
+        case .compose: return "plus.circle.fill"
+        case .gallery: return "photo.stack.fill"
+        case .schedule: return "calendar.circle.fill"
+        case .sifConnect: return "person.2.fill"
+        case .profile: return "person.crop.circle.fill"
         }
     }
 }

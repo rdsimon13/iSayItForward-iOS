@@ -245,7 +245,7 @@ struct DashboardView: View {
     }
     
     private var scheduleCard: some View {
-        NavigationLink(destination: ScheduleSIFView().environmentObject(router).environmentObject(authState)) {
+        NavigationLink(destination: ComposeSIFView().environmentObject(router).environmentObject(authState)) {
             middleCard(
                 title: "Schedule a SIF",
                 subtitle: "Never forget to send greetings on that special day again.",

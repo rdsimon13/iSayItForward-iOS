@@ -75,7 +75,7 @@ struct FriendPickerSheet: View {
     }
 }
 
-struct PrimaryButtonStyle: ButtonStyle {
+struct PrimaryButtonStyleBluePill: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.headline)

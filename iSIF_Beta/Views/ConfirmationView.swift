@@ -69,7 +69,8 @@ struct SIFConfirmationView: View {
                             .font(.custom("AvenirNext-Regular", size: 15))
                     }
 
-                    if let when = sif.scheduledAt {
+                    if let when = sif.deliveryDate
+                    {
                         Divider()
                         HStack {
                             Text("Scheduled For:")

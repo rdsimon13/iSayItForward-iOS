@@ -22,11 +22,6 @@ struct NavigationHostView: View {
                     .environmentObject(router)
                     .environmentObject(authState)
 
-            case .schedule:
-                ScheduleSIFView()
-                    .environmentObject(router)
-                    .environmentObject(authState)
-
             case .sifConnect:
                 AllUsersView()
                     .environmentObject(router)
@@ -34,6 +29,11 @@ struct NavigationHostView: View {
 
             case .profile:
                 ProfileView()
+                    .environmentObject(router)
+                    .environmentObject(authState)
+
+            default:
+                DashboardView()
                     .environmentObject(router)
                     .environmentObject(authState)
             }
